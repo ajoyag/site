@@ -382,10 +382,15 @@
         }
         
         .logo-pagination {
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
             font-weight: bold;
-            letter-spacing: 0.2rem;
+            letter-spacing: 0.1em;
             margin-bottom: 0.5rem;
+            color: var(--light);
+            display: flex;
+        }
+        body.light-mode .logo-pagination {
+            color: var(--dark);
         }
 
         .logo-pagination span:nth-child(1),
@@ -395,34 +400,38 @@
         
         .page-numbers {
             display: flex;
-            gap: 0.5rem;
+            gap: 1.2em;
             align-items: center;
+            justify-content: center;
+            margin-left: 0.5em;
         }
 
         .page-btn {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 50%;
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            padding: 0.2rem;
+            font-weight: bold;
         }
-        
+        body.light-mode .page-btn {
+            color: #777;
+        }
+
         .page-btn:hover {
-            background: var(--primary);
-            color: var(--darker);
+            color: var(--primary);
         }
 
         .page-btn.active {
-            background: var(--primary);
-            color: var(--darker);
-            font-weight: bold;
+            color: var(--primary);
+            transform: scale(1.2);
         }
         
         .ellipsis {
             color: var(--gray);
+            padding: 0 0.5rem;
         }
         
         footer {
