@@ -374,10 +374,29 @@
 
         .pagination-container {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             margin-top: 3rem;
             gap: 0.5rem;
+        }
+        
+        .logo-pagination {
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 0.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-pagination span:nth-child(1),
+        .logo-pagination span:nth-child(5) {
+            color: var(--primary);
+        }
+        
+        .page-numbers {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
         }
 
         .page-btn {
@@ -400,6 +419,10 @@
             background: var(--primary);
             color: var(--darker);
             font-weight: bold;
+        }
+        
+        .ellipsis {
+            color: var(--gray);
         }
         
         footer {
@@ -544,7 +567,12 @@
                 <div class="project-content"><div class="project-category">Threat Intelligence</div><h3 class="project-title">IoC Feed Aggregator</h3><p class="project-description">A tool to aggregate and de-duplicate Indicators of Compromise from multiple public feeds.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
         </div>
-        <div class="pagination-container" id="pagination"></div>
+        <div class="pagination-container" id="pagination">
+             <div class="logo-pagination">
+                 <span>0</span><span>x</span><span>p</span><span>r</span><span>0</span><span>w</span><span>l</span><span>3</span><span>r</span>
+             </div>
+             <div class="page-numbers"></div>
+        </div>
     </section>
 
     <!-- Footer -->
@@ -613,7 +641,7 @@
             initThemeSelector();
 
             const projectItems = Array.from(document.querySelectorAll('.project-item'));
-            const paginationContainer = document.getElementById('pagination');
+            const paginationContainer = document.querySelector('.pagination-container .page-numbers');
             const searchInput = document.getElementById('searchInput');
             const noResultsMessage = document.getElementById('no-results');
             const itemsPerPage = 8;
@@ -634,35 +662,74 @@
                     itemsToShow.forEach(item => item.style.display = 'block');
                 }
                 
-                updatePaginationButtons(page, items);
+                setupPagination(items, page);
             }
 
-            function setupPagination(items) {
+            function setupPagination(items, activePage) {
                 if (!paginationContainer) return;
                 paginationContainer.innerHTML = '';
                 const pageCount = Math.ceil(items.length / itemsPerPage);
                 if (pageCount <= 1) return;
 
-                for (let i = 1; i <= pageCount; i++) {
-                    const btn = document.createElement('button');
-                    btn.className = 'page-btn';
-                    btn.dataset.page = i;
-                    btn.textContent = i;
-                    btn.addEventListener('click', () => {
-                        currentPage = i;
-                        showPage(currentPage, items);
-                    });
-                    paginationContainer.appendChild(btn);
+                const maxButtons = 5;
+                let startPage, endPage;
+
+                if (pageCount <= maxButtons) {
+                    startPage = 1;
+                    endPage = pageCount;
+                } else {
+                    const maxPagesBeforeCurrent = Math.floor(maxButtons / 2);
+                    const maxPagesAfterCurrent = Math.ceil(maxButtons / 2) - 1;
+                    if (activePage <= maxPagesBeforeCurrent) {
+                        startPage = 1;
+                        endPage = maxButtons;
+                    } else if (activePage + maxPagesAfterCurrent >= pageCount) {
+                        startPage = pageCount - maxButtons + 1;
+                        endPage = pageCount;
+                    } else {
+                        startPage = activePage - maxPagesBeforeCurrent;
+                        endPage = activePage + maxPagesAfterCurrent;
+                    }
+                }
+                
+                if (startPage > 1) {
+                    paginationContainer.appendChild(createPageButton(1));
+                    if (startPage > 2) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.textContent = '...';
+                        ellipsis.className = 'ellipsis';
+                        paginationContainer.appendChild(ellipsis);
+                    }
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationContainer.appendChild(createPageButton(i, i === activePage));
+                }
+                
+                if (endPage < pageCount) {
+                     if (endPage < pageCount - 1) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.textContent = '...';
+                        ellipsis.className = 'ellipsis';
+                        paginationContainer.appendChild(ellipsis);
+                    }
+                    paginationContainer.appendChild(createPageButton(pageCount));
                 }
             }
-
-            function updatePaginationButtons(page) {
-                 document.querySelectorAll('.page-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                    if (parseInt(btn.dataset.page) === page) {
-                        btn.classList.add('active');
-                    }
+            
+            function createPageButton(page, isActive = false) {
+                const btn = document.createElement('button');
+                btn.className = 'page-btn';
+                if (isActive) {
+                    btn.classList.add('active');
+                }
+                btn.dataset.page = page;
+                btn.textContent = page;
+                btn.addEventListener('click', () => {
+                    currentPage = page;
+                    showPage(currentPage, filteredItems);
                 });
+                return btn;
             }
 
             function filterProjects() {
@@ -674,7 +741,6 @@
                     return title.includes(searchTerm) || category.includes(searchTerm) || description.includes(searchTerm);
                 });
                 currentPage = 1;
-                setupPagination(filteredItems);
                 showPage(currentPage, filteredItems);
             }
 
@@ -683,7 +749,6 @@
             }
             
             // Initial setup
-            setupPagination(filteredItems);
             showPage(currentPage, filteredItems);
         });
     </script>
