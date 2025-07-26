@@ -40,6 +40,8 @@
             transition: background-color 0.4s ease, color 0.4s ease;
             font-size: 1rem;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         body.light-mode {
@@ -117,6 +119,7 @@
 
         .section {
             padding: 8rem 5% 4rem;
+            flex-grow: 1;
         }
 
         .section-header {
@@ -375,6 +378,9 @@
             </div>
         </div>
         <div class="projects-grid">
+            <div id="no-results" style="display: none; text-align: center; grid-column: 1 / -1;">
+                <h3>No projects found.</h3>
+            </div>
             <!-- Projects 1-8 -->
             <div class="project-item">
                 <div class="project-image"><img src="https://placehold.co/600x400/8a2be2/ffffff?text=Project+1" alt="Project 1"></div>
@@ -462,6 +468,7 @@
             const projectItems = Array.from(document.querySelectorAll('.project-item'));
             const paginationContainer = document.getElementById('pagination');
             const searchInput = document.getElementById('searchInput');
+            const noResultsMessage = document.getElementById('no-results');
             const itemsPerPage = 8;
             let currentPage = 1;
             let filteredItems = projectItems;
@@ -471,7 +478,14 @@
                 const end = start + itemsPerPage;
 
                 projectItems.forEach(item => item.style.display = 'none');
-                items.slice(start, end).forEach(item => item.style.display = 'block');
+                
+                const itemsToShow = items.slice(start, end);
+                if(itemsToShow.length === 0) {
+                    noResultsMessage.style.display = 'block';
+                } else {
+                    noResultsMessage.style.display = 'none';
+                    itemsToShow.forEach(item => item.style.display = 'block');
+                }
                 
                 updatePaginationButtons(page, items);
             }
