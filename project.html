@@ -99,11 +99,18 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        
+        body.light-mode header {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
 
         .header-container {
             display: flex;
             justify-content: center;
             align-items: center;
+            gap: 1rem;
         }
         
         .logo {
@@ -111,10 +118,83 @@
             align-items: center;
             font-size: 1.8rem;
             font-weight: 700;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--primary);
             text-decoration: none;
+        }
+
+        .theme-selector {
+            position: relative;
+            display: inline-block;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, color 0.4s ease;
+        }
+
+        body.light-mode .theme-toggle {
+            color: var(--dark);
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(50deg);
+        }
+
+        .theme-dropdown {
+            position: absolute;
+            top: 2.5rem;
+            right: 0;
+            background: rgba(30, 30, 40, 0.9);
+            border: 1px solid rgba(0, 114, 255, 0.3);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0;
+            width: 7.5rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(-0.625rem);
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        body.light-mode .theme-dropdown {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 114, 255, 0.1);
+        }
+
+        .theme-dropdown.show {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+
+        .theme-option {
+            padding: 0.8rem 1rem;
+            color: var(--light);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        body.light-mode .theme-option {
+            color: var(--dark);
+        }
+
+        .theme-option:hover {
+            background: rgba(0, 114, 255, 0.2);
+        }
+
+        .theme-option.active {
+            background: rgba(0, 114, 255, 0.3);
+            font-weight: 600;
         }
 
         .section {
@@ -364,6 +444,22 @@
             <a href="index.html" class="logo">
                 <i class="fas fa-terminal"></i>
             </a>
+            <div class="theme-selector">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-sun"></i>
+                </button>
+                <div class="theme-dropdown" id="themeDropdown">
+                    <div class="theme-option" data-theme="light">
+                        <i class="fas fa-sun"></i> Light
+                    </div>
+                    <div class="theme-option" data-theme="dark">
+                        <i class="fas fa-moon"></i> Dark
+                    </div>
+                    <div class="theme-option" data-theme="system">
+                        <i class="fas fa-desktop"></i> System
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -461,9 +557,61 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-mode');
+            
+            function applyTheme(theme) {
+                const toggleIcon = document.getElementById('themeToggle')?.querySelector('i');
+                if (theme === 'light') {
+                    document.body.classList.add('light-mode');
+                    if (toggleIcon) toggleIcon.className = 'fas fa-sun';
+                } else {
+                    document.body.classList.remove('light-mode');
+                    if (toggleIcon) toggleIcon.className = 'fas fa-moon';
+                }
+                 if (theme === 'system') {
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.body.classList.toggle('light-mode', !prefersDark);
+                    if (toggleIcon) toggleIcon.className = prefersDark ? 'fas fa-moon' : 'fas fa-sun';
+                }
+                localStorage.setItem('theme', theme);
+                document.querySelectorAll('.theme-option').forEach(opt => {
+                    opt.classList.toggle('active', opt.dataset.theme === theme);
+                });
             }
+
+            function initThemeSelector() {
+                const themeToggle = document.getElementById('themeToggle');
+                const themeDropdown = document.getElementById('themeDropdown');
+                
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        const theme = e.currentTarget.dataset.theme;
+                        applyTheme(theme);
+                        if (themeDropdown) themeDropdown.classList.remove('show');
+                    });
+                });
+
+                if (themeToggle) {
+                    themeToggle.addEventListener('click', e => {
+                        e.stopPropagation();
+                        if (themeDropdown) themeDropdown.classList.toggle('show');
+                    });
+                }
+
+                document.addEventListener('click', e => {
+                    if (themeDropdown && !themeToggle.contains(e.target) && !themeDropdown.contains(e.target)) {
+                        themeDropdown.classList.remove('show');
+                    }
+                });
+                
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                    if (localStorage.getItem('theme') === 'system') {
+                        applyTheme('system');
+                    }
+                });
+            }
+            
+            applyTheme(savedTheme);
+            initThemeSelector();
 
             const projectItems = Array.from(document.querySelectorAll('.project-item'));
             const paginationContainer = document.getElementById('pagination');
