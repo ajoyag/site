@@ -563,11 +563,10 @@
                 if (theme === 'light') {
                     document.body.classList.add('light-mode');
                     if (toggleIcon) toggleIcon.className = 'fas fa-sun';
-                } else {
+                } else if (theme === 'dark') {
                     document.body.classList.remove('light-mode');
                     if (toggleIcon) toggleIcon.className = 'fas fa-moon';
-                }
-                 if (theme === 'system') {
+                } else { // System
                     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                     document.body.classList.toggle('light-mode', !prefersDark);
                     if (toggleIcon) toggleIcon.className = prefersDark ? 'fas fa-moon' : 'fas fa-sun';
@@ -598,7 +597,7 @@
                 }
 
                 document.addEventListener('click', e => {
-                    if (themeDropdown && !themeToggle.contains(e.target) && !themeDropdown.contains(e.target)) {
+                    if (themeDropdown && themeToggle && !themeToggle.contains(e.target) && !themeDropdown.contains(e.target)) {
                         themeDropdown.classList.remove('show');
                     }
                 });
@@ -629,9 +628,9 @@
                 
                 const itemsToShow = items.slice(start, end);
                 if(itemsToShow.length === 0) {
-                    noResultsMessage.style.display = 'block';
+                    if (noResultsMessage) noResultsMessage.style.display = 'block';
                 } else {
-                    noResultsMessage.style.display = 'none';
+                    if (noResultsMessage) noResultsMessage.style.display = 'none';
                     itemsToShow.forEach(item => item.style.display = 'block');
                 }
                 
@@ -639,6 +638,7 @@
             }
 
             function setupPagination(items) {
+                if (!paginationContainer) return;
                 paginationContainer.innerHTML = '';
                 const pageCount = Math.ceil(items.length / itemsPerPage);
                 if (pageCount <= 1) return;
@@ -656,7 +656,7 @@
                 }
             }
 
-            function updatePaginationButtons(page, items) {
+            function updatePaginationButtons(page) {
                  document.querySelectorAll('.page-btn').forEach(btn => {
                     btn.classList.remove('active');
                     if (parseInt(btn.dataset.page) === page) {
@@ -668,9 +668,9 @@
             function filterProjects() {
                 const searchTerm = searchInput.value.toLowerCase();
                 filteredItems = projectItems.filter(item => {
-                    const title = item.querySelector('.project-title').textContent.toLowerCase();
-                    const category = item.querySelector('.project-category').textContent.toLowerCase();
-                    const description = item.querySelector('.project-description').textContent.toLowerCase();
+                    const title = item.querySelector('.project-title')?.textContent.toLowerCase() || '';
+                    const category = item.querySelector('.project-category')?.textContent.toLowerCase() || '';
+                    const description = item.querySelector('.project-description')?.textContent.toLowerCase() || '';
                     return title.includes(searchTerm) || category.includes(searchTerm) || description.includes(searchTerm);
                 });
                 currentPage = 1;
@@ -678,7 +678,9 @@
                 showPage(currentPage, filteredItems);
             }
 
-            searchInput.addEventListener('input', filterProjects);
+            if(searchInput) {
+                searchInput.addEventListener('input', filterProjects);
+            }
             
             // Initial setup
             setupPagination(filteredItems);
