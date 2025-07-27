@@ -320,7 +320,7 @@
 
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(21.875rem, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 2rem;
             max-width: 1600px;
             margin: 0 auto;
@@ -535,13 +535,19 @@
 
         @media (max-width: 1200px) {
             .projects-grid {
-                grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
         @media (max-width: 992px) {
             .projects-grid {
-                grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -741,9 +747,11 @@
             const projectsGrid = document.querySelector('.projects-grid');
             const noResultsMessage = document.getElementById('no-results');
             
-            projectsGrid.innerHTML = ''; // Clear existing items
-            projectsGrid.appendChild(noResultsMessage);
-            projectItems.forEach(item => projectsGrid.appendChild(item)); // Re-append in sorted order
+            if (projectsGrid && noResultsMessage) {
+                projectsGrid.innerHTML = ''; // Clear existing items
+                projectsGrid.appendChild(noResultsMessage);
+                projectItems.forEach(item => projectsGrid.appendChild(item)); // Re-append in sorted order
+            }
 
             const paginationContainer = document.querySelector('.pagination-container .page-numbers');
             const searchInput = document.getElementById('searchInput');
@@ -855,7 +863,12 @@
             }
 
             function setupFilterTags() {
+                if (!filterTagsContainer) return;
                 const categories = [...new Set(projectItems.map(item => item.dataset.category))];
+                if (categories.length === 0) {
+                    filterTagsContainer.style.display = 'none';
+                    return;
+                }
                 categories.sort();
                 
                 categories.forEach(category => {
