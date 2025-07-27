@@ -704,7 +704,9 @@
             applyTheme(savedTheme);
             initThemeSelector();
 
-            const blogItems = Array.from(document.querySelectorAll('.blog-item'));
+            const blogItems = Array.from(document.querySelectorAll('.blog-item'))
+                .sort((a, b) => new Date(b.dataset.date) - new Date(a.dataset.date));
+            
             const paginationContainer = document.querySelector('.pagination-container .page-numbers');
             const searchInput = document.getElementById('searchInput');
             const noResultsMessage = document.getElementById('no-results');
