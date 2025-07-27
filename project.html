@@ -320,7 +320,7 @@
 
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(21.875rem, 1fr));
             gap: 2rem;
             max-width: 1600px;
             margin: 0 auto;
@@ -405,6 +405,25 @@
 
         body.light-mode .project-description {
             color: var(--dark);
+        }
+        
+        .project-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            transition: color 0.4s ease;
+        }
+
+        body.light-mode .project-meta {
+            color: #777;
+        }
+
+        .project-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
         }
 
         .project-link {
@@ -577,70 +596,70 @@
                 <h3>No projects found.</h3>
             </div>
             <!-- Projects 1-8 -->
-            <div class="project-item" data-category="Active Directory Security">
+            <div class="project-item" data-category="Active Directory Security" data-date="2025-07-20">
                 <div class="project-image"><img src="https://placehold.co/600x400/8a2be2/ffffff?text=Project+1" alt="Project 1"></div>
-                <div class="project-content"><div class="project-category">Active Directory Security</div><h3 class="project-title">AD Lab Attack Simulation</h3><p class="project-description">Designed a lab to simulate AD attacks like Kerberoasting and Pass-the-Hash.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">Active Directory Security</div><h3 class="project-title">AD Lab Attack Simulation</h3><p class="project-description">Designed a lab to simulate AD attacks like Kerberoasting and Pass-the-Hash.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
-            <div class="project-item" data-category="OT/IT Security">
+            <div class="project-item" data-category="OT/IT Security" data-date="2025-07-15">
                 <div class="project-image"><img src="https://placehold.co/600x400/0072ff/ffffff?text=Project+2" alt="Project 2"></div>
-                <div class="project-content"><div class="project-category">OT/IT Security</div><h3 class="project-title">Automated Security Auditing</h3><p class="project-description">A system to automate security audits for OT and IT environments.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">OT/IT Security</div><h3 class="project-title">Automated Security Auditing</h3><p class="project-description">A system to automate security audits for OT and IT environments.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
-            <div class="project-item" data-category="Penetration Testing">
+            <div class="project-item" data-category="Penetration Testing" data-date="2025-07-10">
                 <div class="project-image"><img src="https://placehold.co/600x400/00c6ff/ffffff?text=Project+3" alt="Project 3"></div>
-                <div class="project-content"><div class="project-category">Penetration Testing</div><h3 class="project-title">Offensive HomeLab</h3><p class="project-description">A homelab for practicing advanced pentesting and exploit development.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">Penetration Testing</div><h3 class="project-title">Offensive HomeLab</h3><p class="project-description">A homelab for practicing advanced pentesting and exploit development.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
-            <div class="project-item" data-category="Malware Analysis">
+            <div class="project-item" data-category="Malware Analysis" data-date="2025-07-05">
                 <div class="project-image"><img src="https://placehold.co/600x400/ff6347/ffffff?text=Project+4" alt="Project 4"></div>
-                <div class="project-content"><div class="project-category">Malware Analysis</div><h3 class="project-title">Dynamic Malware Sandbox</h3><p class="project-description">A custom sandbox for analyzing malware behavior and network traffic.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">Malware Analysis</div><h3 class="project-title">Dynamic Malware Sandbox</h3><p class="project-description">A custom sandbox for analyzing malware behavior and network traffic.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
-            <div class="project-item" data-category="Cloud Security">
+            <div class="project-item" data-category="Cloud Security" data-date="2025-06-28">
                 <div class="project-image"><img src="https://placehold.co/600x400/32cd32/ffffff?text=Project+5" alt="Project 5"></div>
-                <div class="project-content"><div class="project-category">Cloud Security</div><h3 class="project-title">AWS Security Auditor</h3><p class="project-description">A script to audit AWS for common security misconfigurations.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">Cloud Security</div><h3 class="project-title">AWS Security Auditor</h3><p class="project-description">A script to audit AWS for common security misconfigurations.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
-            <div class="project-item" data-category="Forensics">
+            <div class="project-item" data-category="Forensics" data-date="2025-06-20">
                 <div class="project-image"><img src="https://placehold.co/600x400/ff4500/ffffff?text=Project+6" alt="Project 6"></div>
-                <div class="project-content"><div class="project-category">Forensics</div><h3 class="project-title">Memory Forensics Toolkit</h3><p class="project-description">Scripts to automate memory dump analysis using Volatility.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">Forensics</div><h3 class="project-title">Memory Forensics Toolkit</h3><p class="project-description">Scripts to automate memory dump analysis using Volatility.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
-            <div class="project-item" data-category="Automation">
+            <div class="project-item" data-category="Automation" data-date="2025-06-12">
                 <div class="project-image"><img src="https://placehold.co/600x400/e9967a/ffffff?text=Project+7" alt="Project 7"></div>
-                <div class="project-content"><div class="project-category">Automation</div><h3 class="project-title">Security Log Analyzer</h3><p class="project-description">A Python tool to parse and analyze logs for suspicious activities.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">Automation</div><h3 class="project-title">Security Log Analyzer</h3><p class="project-description">A Python tool to parse and analyze logs for suspicious activities.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
-            <div class="project-item" data-category="Web Security">
+            <div class="project-item" data-category="Web Security" data-date="2025-06-01">
                 <div class="project-image"><img src="https://placehold.co/600x400/dda0dd/ffffff?text=Project+8" alt="Project 8"></div>
-                <div class="project-content"><div class="project-category">Web Security</div><h3 class="project-title">Vulnerable Web App</h3><p class="project-description">A deliberately vulnerable web app to practice exploiting common flaws.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">Web Security</div><h3 class="project-title">Vulnerable Web App</h3><p class="project-description">A deliberately vulnerable web app to practice exploiting common flaws.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
             <!-- Projects 9-16 -->
-            <div class="project-item" data-category="Network Security">
+            <div class="project-item" data-category="Network Security" data-date="2025-05-25">
                 <div class="project-image"><img src="https://placehold.co/600x400/6a5acd/ffffff?text=Project+9" alt="Project 9"></div>
-                <div class="project-content"><div class="project-category">Network Security</div><h3 class="project-title">IDS/IPS Implementation</h3><p class="project-description">Deployed and configured Suricata for network intrusion detection and prevention.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">Network Security</div><h3 class="project-title">IDS/IPS Implementation</h3><p class="project-description">Deployed and configured Suricata for network intrusion detection and prevention.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
-            <div class="project-item" data-category="Cryptography">
+            <div class="project-item" data-category="Cryptography" data-date="2025-05-18">
                 <div class="project-image"><img src="https://placehold.co/600x400/f0e68c/000000?text=Project+10" alt="Project 10"></div>
-                <div class="project-content"><div class="project-category">Cryptography</div><h3 class="project-title">Custom Encryption Algorithm</h3><p class="project-description">Developed a simple symmetric encryption algorithm in Python for educational purposes.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">Cryptography</div><h3 class="project-title">Custom Encryption Algorithm</h3><p class="project-description">Developed a simple symmetric encryption algorithm in Python for educational purposes.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
-            <div class="project-item" data-category="OSINT">
+            <div class="project-item" data-category="OSINT" data-date="2025-05-10">
                 <div class="project-image"><img src="https://placehold.co/600x400/add8e6/000000?text=Project+11" alt="Project 11"></div>
-                <div class="project-content"><div class="project-category">OSINT</div><h3 class="project-title">Social Media Footprinting Tool</h3><p class="project-description">A tool to gather publicly available information from various social media platforms.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">OSINT</div><h3 class="project-title">Social Media Footprinting Tool</h3><p class="project-description">A tool to gather publicly available information from various social media platforms.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
-            <div class="project-item" data-category="Reverse Engineering">
+            <div class="project-item" data-category="Reverse Engineering" data-date="2025-05-02">
                 <div class="project-image"><img src="https://placehold.co/600x400/90ee90/000000?text=Project+12" alt="Project 12"></div>
-                <div class="project-content"><div class="project-category">Reverse Engineering</div><h3 class="project-title">CrackMe Challenge Write-up</h3><p class="project-description">Detailed analysis and solution for a reverse engineering challenge using Ghidra.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">Reverse Engineering</div><h3 class="project-title">CrackMe Challenge Write-up</h3><p class="project-description">Detailed analysis and solution for a reverse engineering challenge using Ghidra.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
-            <div class="project-item" data-category="Phishing">
+            <div class="project-item" data-category="Phishing" data-date="2025-04-24">
                 <div class="project-image"><img src="https://placehold.co/600x400/d3d3d3/000000?text=Project+13" alt="Project 13"></div>
-                <div class="project-content"><div class="project-category">Phishing</div><h3 class="project-title">Phishing Campaign Simulator</h3><p class="project-description">Created a controlled phishing campaign to test and improve security awareness.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">Phishing</div><h3 class="project-title">Phishing Campaign Simulator</h3><p class="project-description">Created a controlled phishing campaign to test and improve security awareness.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
-            <div class="project-item" data-category="IoT Security">
+            <div class="project-item" data-category="IoT Security" data-date="2025-04-15">
                 <div class="project-image"><img src="https://placehold.co/600x400/ffb6c1/000000?text=Project+14" alt="Project 14"></div>
-                <div class="project-content"><div class="project-category">IoT Security</div><h3 class="project-title">Smart Device Vulnerability Scan</h3><p class="project-description">Performed a security assessment of a popular IoT device, identifying several vulnerabilities.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">IoT Security</div><h3 class="project-title">Smart Device Vulnerability Scan</h3><p class="project-description">Performed a security assessment of a popular IoT device, identifying several vulnerabilities.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
-            <div class="project-item" data-category="Scripting">
+            <div class="project-item" data-category="Scripting" data-date="2025-04-07">
                 <div class="project-image"><img src="https://placehold.co/600x400/fafad2/000000?text=Project+15" alt="Project 15"></div>
-                <div class="project-content"><div class="project-category">Scripting</div><h3 class="project-title">Automated Reconnaissance Script</h3><p class="project-description">A Bash script to automate initial reconnaissance steps for bug bounty hunting.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">Scripting</div><h3 class="project-title">Automated Reconnaissance Script</h3><p class="project-description">A Bash script to automate initial reconnaissance steps for bug bounty hunting.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
-            <div class="project-item" data-category="Threat Intelligence">
+            <div class="project-item" data-category="Threat Intelligence" data-date="2025-03-30">
                 <div class="project-image"><img src="https://placehold.co/600x400/87ceeb/ffffff?text=Project+16" alt="Project 16"></div>
-                <div class="project-content"><div class="project-category">Threat Intelligence</div><h3 class="project-title">IoC Feed Aggregator</h3><p class="project-description">A tool to aggregate and de-duplicate Indicators of Compromise from multiple public feeds.</p><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
+                <div class="project-content"><div class="project-category">Threat Intelligence</div><h3 class="project-title">IoC Feed Aggregator</h3><p class="project-description">A tool to aggregate and de-duplicate Indicators of Compromise from multiple public feeds.</p><div class="project-meta"><span class="project-date"></span></div><a href="#" class="project-link">View Project <i class="fas fa-arrow-right"></i></a></div>
             </div>
         </div>
         <div class="pagination-container" id="pagination">
@@ -716,10 +735,18 @@
             applyTheme(savedTheme);
             initThemeSelector();
 
-            const projectItems = Array.from(document.querySelectorAll('.project-item'));
+            const projectItems = Array.from(document.querySelectorAll('.project-item'))
+                .sort((a, b) => new Date(b.dataset.date) - new Date(a.dataset.date));
+            
+            const projectsGrid = document.querySelector('.projects-grid');
+            const noResultsMessage = document.getElementById('no-results');
+            
+            projectsGrid.innerHTML = ''; // Clear existing items
+            projectsGrid.appendChild(noResultsMessage);
+            projectItems.forEach(item => projectsGrid.appendChild(item)); // Re-append in sorted order
+
             const paginationContainer = document.querySelector('.pagination-container .page-numbers');
             const searchInput = document.getElementById('searchInput');
-            const noResultsMessage = document.getElementById('no-results');
             const filterTagsContainer = document.getElementById('filterTags');
             const itemsPerPage = 8;
             let currentPage = 1;
@@ -839,6 +866,45 @@
                     filterTagsContainer.appendChild(btn);
                 });
             }
+            
+            function updatePostDates() {
+                const dateElements = document.querySelectorAll('.project-date');
+                const now = new Date();
+
+                dateElements.forEach(el => {
+                    const postDate = new Date(el.dataset.date);
+                    const diffSeconds = Math.floor((now - postDate) / 1000);
+                    const diffMinutes = Math.floor(diffSeconds / 60);
+                    const diffHours = Math.floor(diffMinutes / 60);
+                    const diffDays = Math.floor(diffHours / 24);
+                    const diffMonths = Math.floor(diffDays / 30.44);
+                    const diffYears = Math.floor(diffDays / 365.25);
+
+                    let timeAgo = '';
+                    if (diffYears > 1) {
+                        timeAgo = `${diffYears} years ago`;
+                    } else if (diffYears === 1) {
+                        timeAgo = `1 year ago`;
+                    } else if (diffMonths > 1) {
+                        timeAgo = `${diffMonths} months ago`;
+                    } else if (diffMonths === 1) {
+                        timeAgo = `1 month ago`;
+                    } else if (diffDays > 1) {
+                        timeAgo = `${diffDays} days ago`;
+                    } else if (diffDays === 1) {
+                        timeAgo = `1 day ago`;
+                    } else if (diffHours > 1) {
+                        timeAgo = `${diffHours} hours ago`;
+                    } else if (diffHours === 1) {
+                        timeAgo = `1 hour ago`;
+                    } else if (diffMinutes > 1) {
+                        timeAgo = `${diffMinutes} minutes ago`;
+                    } else {
+                        timeAgo = `Just now`;
+                    }
+                    el.innerHTML = `<i class="far fa-calendar-alt"></i> ${timeAgo}`;
+                });
+            }
 
             if(searchInput) {
                 searchInput.addEventListener('input', filterItems);
@@ -870,6 +936,7 @@
             });
 
             // Initial setup
+            updatePostDates();
             showPage(currentPage, filteredItems);
         });
     </script>
