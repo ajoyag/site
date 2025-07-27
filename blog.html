@@ -42,11 +42,30 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            animation: fadeInAnimation ease 0.5s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
         }
 
         body.light-mode {
             background-color: var(--light);
             color: var(--dark);
+        }
+        
+        body.fade-out {
+            animation: fadeOutAnimation ease 0.5s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes fadeInAnimation {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes fadeOutAnimation {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
         .background {
@@ -301,7 +320,7 @@
 
         .blog-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(21.875rem, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(21.875rem, 1fr));
             gap: 2rem;
             max-width: 1600px;
             margin: 0 auto;
@@ -314,7 +333,10 @@
             overflow: hidden;
             transition: all 0.3s ease, background-color 0.4s ease, border-color 0.4s ease;
             backdrop-filter: blur(10px);
-            display: none; /* Hidden by default for pagination */
+        }
+
+        .blog-item.hidden {
+            display: none;
         }
 
         body.light-mode .blog-item {
@@ -705,8 +727,12 @@
             initThemeSelector();
 
             const blogItems = Array.from(document.querySelectorAll('.blog-item'))
-                .sort((a, b) => new Date(b.dataset.date) - new Date(a.dataset.date));
+                .sort((a, b) => new Date(b.querySelector('.blog-date').dataset.date) - new Date(a.querySelector('.blog-date').dataset.date));
             
+            const blogGrid = document.querySelector('.blog-grid');
+            blogGrid.innerHTML = ''; // Clear existing items
+            blogItems.forEach(item => blogGrid.appendChild(item)); // Re-append in sorted order
+
             const paginationContainer = document.querySelector('.pagination-container .page-numbers');
             const searchInput = document.getElementById('searchInput');
             const noResultsMessage = document.getElementById('no-results');
