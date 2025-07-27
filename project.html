@@ -42,11 +42,30 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            animation: fadeInAnimation ease 0.5s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
         }
 
         body.light-mode {
             background-color: var(--light);
             color: var(--dark);
+        }
+        
+        body.fade-out {
+            animation: fadeOutAnimation ease 0.5s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes fadeInAnimation {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes fadeOutAnimation {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
         .background {
@@ -314,7 +333,10 @@
             overflow: hidden;
             transition: all 0.3s ease, background-color 0.4s ease, border-color 0.4s ease;
             backdrop-filter: blur(10px);
-            display: none; /* Hidden by default for pagination */
+        }
+        
+        .project-item.hidden {
+            display: none;
         }
 
         body.light-mode .project-item {
@@ -695,14 +717,17 @@
                 const start = (page - 1) * itemsPerPage;
                 const end = start + itemsPerPage;
 
-                projectItems.forEach(item => item.style.display = 'none');
+                projectItems.forEach(item => {
+                    item.classList.add('hidden');
+                    item.style.display = 'block'; // Keep it in the layout flow
+                });
                 
                 const itemsToShow = items.slice(start, end);
                 if(itemsToShow.length === 0) {
                     if (noResultsMessage) noResultsMessage.style.display = 'block';
                 } else {
                     if (noResultsMessage) noResultsMessage.style.display = 'none';
-                    itemsToShow.forEach(item => item.style.display = 'block');
+                    itemsToShow.forEach(item => item.classList.remove('hidden'));
                 }
                 
                 setupPagination(items, page);
@@ -775,7 +800,7 @@
                 return btn;
             }
 
-            function filterProjects() {
+            function filterItems() {
                 const searchTerm = searchInput.value.toLowerCase();
                 const activeFilter = document.querySelector('.tag-btn.active').dataset.filter;
 
@@ -802,17 +827,12 @@
                     btn.className = 'tag-btn';
                     btn.dataset.filter = category.toLowerCase();
                     btn.textContent = category;
-                    btn.addEventListener('click', () => {
-                        document.querySelector('.tag-btn.active').classList.remove('active');
-                        btn.classList.add('active');
-                        filterProjects();
-                    });
                     filterTagsContainer.appendChild(btn);
                 });
             }
 
             if(searchInput) {
-                searchInput.addEventListener('input', filterProjects);
+                searchInput.addEventListener('input', filterItems);
             }
             
             if(filterTagsContainer) {
@@ -821,11 +841,25 @@
                     if (e.target.tagName === 'BUTTON') {
                          document.querySelector('.tag-btn.active').classList.remove('active');
                          e.target.classList.add('active');
-                         filterProjects();
+                         filterItems();
                     }
                 });
             }
             
+            // Fade-out transition for links
+            document.querySelectorAll('a').forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && href.endsWith('.html')) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        document.body.classList.add('fade-out');
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 500);
+                    });
+                }
+            });
+
             // Initial setup
             showPage(currentPage, filteredItems);
         });
