@@ -837,9 +837,19 @@
                     const diffMinutes = Math.floor(diffSeconds / 60);
                     const diffHours = Math.floor(diffMinutes / 60);
                     const diffDays = Math.floor(diffHours / 24);
+                    const diffMonths = Math.floor(diffDays / 30.44);
+                    const diffYears = Math.floor(diffDays / 365.25);
 
                     let timeAgo = '';
-                    if (diffDays > 1) {
+                    if (diffYears > 1) {
+                        timeAgo = `${diffYears} years ago`;
+                    } else if (diffYears === 1) {
+                        timeAgo = `1 year ago`;
+                    } else if (diffMonths > 1) {
+                        timeAgo = `${diffMonths} months ago`;
+                    } else if (diffMonths === 1) {
+                        timeAgo = `1 month ago`;
+                    } else if (diffDays > 1) {
                         timeAgo = `${diffDays} days ago`;
                     } else if (diffDays === 1) {
                         timeAgo = `1 day ago`;
