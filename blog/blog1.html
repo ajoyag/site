@@ -297,6 +297,19 @@
             line-height: 1.8;
         }
         
+        .post-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            background-color: var(--dark-gray);
+        }
+
+        body.light-mode .post-content img {
+            background-color: var(--medium-gray);
+        }
+        
         .post-content h3 {
             font-size: 1.8rem;
             margin-top: 2.5rem;
@@ -407,14 +420,14 @@
     </div>
 
     <!-- Back Button -->
-    <a href="../blog.html" class="back-button" aria-label="Go back to projects">
+    <a href="project.html" class="back-button" aria-label="Go back to projects">
         <i class="fas fa-arrow-left"></i>
     </a>
 
     <!-- Header -->
     <header>
         <div class="header-container">
-            <a href="../index.html" class="logo">
+            <a href="index.html" class="logo">
                 <i class="fas fa-terminal"></i>
             </a>
             <div class="theme-selector">
@@ -449,7 +462,7 @@
             </div>
             <div class="post-content">
                 <p>A beginner’s first legal hack — step-by-step.</p>
-                <img src="assets/images/blog/blog1.png" alt="Offensive Security Intro Banner">
+                <img src="https://placehold.co/800x400/001122/00c6ff?text=Offensive+Security+Intro" alt="Offensive Security Intro Banner">
                 <h3>🧠 Overview</h3>
                 <p>Welcome to the “Offensive Security Intro” room from the Pre Security learning path on TryHackMe. This room introduces you to the world of ethical hacking and offensive security — showing how hackers think and operate, and how cybersecurity professionals use those same skills to defend systems.</p>
                 <p>In this room, you’ll:</p>
@@ -572,9 +585,42 @@
                     }
                 });
             }
+
+            function formatDate() {
+                const postDateElement = document.querySelector('.post-date');
+                if (!postDateElement) return;
+
+                const postDate = new Date(postDateElement.dataset.date);
+                const now = new Date();
+                
+                // Set time to 00:00:00 to compare dates only
+                postDate.setHours(0,0,0,0);
+                now.setHours(0,0,0,0);
+
+                const diffTime = now - postDate;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                let formattedDate;
+                if (diffDays === 0) {
+                    formattedDate = 'Today';
+                } else if (diffDays === 1) {
+                    formattedDate = 'Yesterday';
+                } else if (diffDays <= 7) {
+                    formattedDate = `${diffDays} days ago`;
+                } else {
+                    formattedDate = postDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                }
+                
+                postDateElement.innerHTML = `<i class="far fa-calendar-alt"></i> ${formattedDate}`;
+            }
             
             applyTheme(savedTheme);
             initThemeSelector();
+            formatDate();
 
             // Fade-out transition for links
             document.querySelectorAll('a').forEach(link => {
