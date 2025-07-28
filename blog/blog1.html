@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post Title - Ajoy A G | Cybersecurity Portfolio</title>
+    <title>TryHackMe: Offensive Security Intro - Ajoy A G | Cybersecurity Portfolio</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -25,6 +25,8 @@
             --light-gray: #f5f5f5;
             --medium-gray: #e0e0e0;
             --green-accent: #00ff9d;
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
         }
 
         html {
@@ -50,6 +52,8 @@
         body.light-mode {
             background-color: var(--light);
             color: var(--dark);
+            --code-bg: #f0f0f0;
+            --code-text: #333;
         }
         
         body.fade-out {
@@ -141,7 +145,6 @@
             text-decoration: none;
         }
         
-        /* Back Button Styles */
         .back-button {
             position: fixed;
             top: 1.4rem;
@@ -174,7 +177,6 @@
             color: var(--dark);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
-
 
         .theme-selector {
             position: relative;
@@ -278,6 +280,7 @@
         .post-meta {
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 1.5rem;
             color: var(--gray);
             font-size: 0.9rem;
@@ -300,8 +303,15 @@
             margin-bottom: 1rem;
             color: var(--primary);
         }
+
+        .post-content h4 {
+            font-size: 1.4rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
         
-        .post-content p {
+        .post-content p, .post-content li {
             margin-bottom: 1.5rem;
         }
 
@@ -315,6 +325,49 @@
         .post-content a:hover {
             color: var(--secondary);
             border-bottom-color: var(--secondary);
+        }
+
+        .post-content ul {
+            list-style-position: inside;
+            padding-left: 1rem;
+        }
+        
+        .post-content ol {
+            list-style-position: inside;
+            padding-left: 1rem;
+        }
+
+        .post-content blockquote {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+            border-left: 4px solid var(--primary);
+            font-style: italic;
+            color: var(--gray);
+        }
+
+        .post-content pre {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0 1.5rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+        }
+
+        .post-content code {
+           font-family: 'Courier New', Courier, monospace;
+           background-color: var(--code-bg);
+           color: var(--code-text);
+           padding: 0.2rem 0.4rem;
+           border-radius: 4px;
+        }
+        
+        .post-content pre code {
+            padding: 0;
+            background: none;
         }
 
         footer {
@@ -354,14 +407,14 @@
     </div>
 
     <!-- Back Button -->
-    <a href="../blog.html" class="back-button" aria-label="Go back to homepage">
+    <a href="project.html" class="back-button" aria-label="Go back to projects">
         <i class="fas fa-arrow-left"></i>
     </a>
 
     <!-- Header -->
     <header>
         <div class="header-container">
-            <a href="../index.html" class="logo">
+            <a href="index.html" class="logo">
                 <i class="fas fa-terminal"></i>
             </a>
             <div class="theme-selector">
@@ -387,22 +440,73 @@
     <section class="post-section">
         <div class="post-container">
             <div class="post-header">
-                <h1 class="post-title">Your Post Title Here</h1>
+                <h1 class="post-title">🛡️ TryHackMe: Offensive Security Intro — Pre Security Path</h1>
                 <div class="post-meta">
-                    <span class="post-date" data-date="2025-07-28"><i class="far fa-calendar-alt"></i> July 28, 2025</span>
-                    <span><i class="far fa-clock"></i> 5 min read</span>
-                    <span><i class="fas fa-tag"></i> Category</span>
+                    <span class="post-date" data-date="2025-07-20"><i class="far fa-calendar-alt"></i> July 20, 2025</span>
+                    <span><i class="far fa-clock"></i> 3 min read</span>
+                    <span><i class="fas fa-tag"></i> TryHackMe</span>
                 </div>
             </div>
             <div class="post-content">
-                <p>This is where your main content begins. You can write your detailed explanation for your project or blog post here. Use paragraphs to structure your thoughts and make the content easy to read.</p>
-                
-                <h3>Subheading for a New Section</h3>
-                <p>Introduce a new idea or section with a subheading. This helps break up the text and guide the reader through your write-up. You can add as many paragraphs as you need to elaborate on your points.</p>
-                <p>Feel free to include links to external resources, like this <a href="#">example link</a>, to provide more context or credit your sources.</p>
-
-                <h3>Another Subheading</h3>
-                <p>Continue to build on your topic, providing in-depth analysis, step-by-step guides, or personal insights. The clean layout ensures that your content remains the main focus for the reader.</p>
+                <p>A beginner’s first legal hack — step-by-step.</p>
+    
+                <h3>🧠 Overview</h3>
+                <p>Welcome to the “Offensive Security Intro” room from the Pre Security learning path on TryHackMe. This room introduces you to the world of ethical hacking and offensive security — showing how hackers think and operate, and how cybersecurity professionals use those same skills to defend systems.</p>
+                <p>In this room, you’ll:</p>
+                <ul>
+                    <li>Learn what offensive security means 🧨</li>
+                    <li>Hack your first fake bank in a legal, virtual environment 🏦</li>
+                    <li>Get a glimpse of real-world cybersecurity careers 👩‍💻👨‍💻</li>
+                </ul>
+                <p>Let’s break down the room task-by-task. 👇</p>
+            
+                <h3>📘 Task 1: What is Offensive Security?</h3>
+                <blockquote>“To outsmart a hacker, you need to think like one.”</blockquote>
+                <p>This task sets the stage for what Offensive Security means — using hacking techniques to find and fix vulnerabilities before cybercriminals can exploit them.</p>
+                <p>You’ll also be introduced to the learning journey ahead in this path.</p>
+                <p><strong>✅ Question:</strong><br>Which of the following options better represents the process where you simulate a hacker’s actions to find vulnerabilities in a system?</p>
+                <p><strong>Answer:</strong> Offensive Security</p>
+            
+                <h3>📘 Task 2: Hacking Your First Machine</h3>
+                <p>Now the fun begins! You’ll hack a simulated banking website called FakeBank using a command-line tool called <code>Gobuster</code> to find hidden pages.</p>
+                <h4>💻 Step-by-Step:</h4>
+                <ol>
+                    <li><strong>Step 1:</strong> Open the machine and click the terminal icon on the virtual desktop.</li>
+                    <li><strong>Step 2:</strong> Run Gobuster to brute-force hidden directories:
+                        <pre>gobuster -u http://fakebank.thm -w wordlist.txt dir</pre>
+                        This command scans the website for hidden pages by trying every word in the wordlist.
+                    </li>
+                    <li><strong>Step 3:</strong> Look for the <code>/bank-transfer</code> page in the output. It’ll look something like this:
+                         <pre>/images (Status: 301)
+/bank-transfer (Status: 200)</pre>
+                    </li>
+                    <li><strong>Step 4:</strong> Go to the <code>/bank-transfer</code> page and move $2000 from account <code>2276</code> to your account <code>8881</code>.</li>
+                </ol>
+                <p>💰 Once done, visit your account page and refresh. You’ll see a success message.</p>
+                <p><strong>✅ Question:</strong><br>Above your account balance, you should now see a message indicating the answer to this question. Can you find the answer you need?</p>
+                <p><strong>Answer:</strong> BANK-HACKED</p>
+            
+                <h3>📘 Task 3: Careers in Cyber Security</h3>
+                <p>This final task gives a sneak peek at real jobs in offensive security. It emphasizes learning by doing and building skills through hands-on practice.</p>
+                <p>Here are a few roles you’ll encounter:</p>
+                <ul>
+                    <li><strong>Penetration Tester</strong> — Finds vulnerabilities in systems.</li>
+                    <li><strong>Red Teamer</strong> — Simulates advanced adversary attacks.</li>
+                    <li><strong>Security Engineer</strong> — Builds and maintains secure systems.</li>
+                </ul>
+                <p>You’ll also find inspiring stories of people who broke into cybersecurity from non-technical backgrounds.</p>
+                <p><strong>✅ Question:</strong><br>No answer required — just read and continue.</p>
+            
+                <h3>🏁 Conclusion</h3>
+                <p>Congratulations! 🎉 You’ve just completed your first ethical hacking challenge and learned the foundation of Offensive Security.</p>
+                <p>🔓 You now understand:</p>
+                <ul>
+                    <li>What offensive security is</li>
+                    <li>How to find hidden web pages using tools like Gobuster</li>
+                    <li>How real-world attacks (like unauthorized transfers) might work</li>
+                    <li>That you can learn this, no matter your background</li>
+                </ul>
+                <p><strong>🛠️ Next up:</strong> Defensive Security Intro</p>
             </div>
         </div>
     </section>
