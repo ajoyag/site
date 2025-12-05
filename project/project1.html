@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post Title - Ajoy A G | Cybersecurity Portfolio</title>
+    <title>Active Directory Lab Attack Simulation - Ajoy A G | Cybersecurity</title>
+    <meta name="description" content="Detailed writeup of the Active Directory Lab Attack Simulation project, covering Kerberoasting, Pass-the-Hash, and mitigation strategies.">
     <link rel="icon" type="image/x-icon" href="assets/images/icon.ico">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -355,7 +357,7 @@
     </div>
 
     <!-- Back Button -->
-    <a href="../project.html" class="back-button" aria-label="Go back to homepage">
+    <a href="../project.html" class="back-button" aria-label="Go back to projects">
         <i class="fas fa-arrow-left"></i>
     </a>
 
@@ -388,22 +390,38 @@
     <section class="post-section">
         <div class="post-container">
             <div class="post-header">
-                <h1 class="post-title">Your Post Title Here</h1>
+                <h1 class="post-title">Active Directory Lab Attack Simulation</h1>
                 <div class="post-meta">
-                    <span class="post-date" data-date="2025-07-28"><i class="far fa-calendar-alt"></i> July 28, 2025</span>
+                    <span class="post-date" data-date="2025-07-20"><i class="far fa-calendar-alt"></i> July 20, 2025</span>
                     <span><i class="far fa-clock"></i> 5 min read</span>
-                    <span><i class="fas fa-tag"></i> Category</span>
+                    <span><i class="fas fa-tag"></i> Active Directory Security</span>
                 </div>
             </div>
             <div class="post-content">
-                <p>This is where your main content begins. You can write your detailed explanation for your project or blog post here. Use paragraphs to structure your thoughts and make the content easy to read.</p>
+                <p>This project involved designing and implementing a vulnerable Active Directory (AD) lab environment to practice and demonstrate common attack vectors used by red teams and malicious actors. The primary goal was to gain practical experience in exploitation, defense, and detection within a simulated enterprise network.</p>
                 
-                <h3>Subheading for a New Section</h3>
-                <p>Introduce a new idea or section with a subheading. This helps break up the text and guide the reader through your write-up. You can add as many paragraphs as you need to elaborate on your points.</p>
-                <p>Feel free to include links to external resources, like this <a href="#">example link</a>, to provide more context or credit your sources.</p>
+                <h3>Lab Setup and Configuration</h3>
+                <p>The lab comprised three virtual machines: a Domain Controller (Windows Server), a Domain Joined Client (Windows 10), and a Kali Linux attack machine. Key services like DNS, DHCP, and Kerberos were configured to mirror a realistic small business environment.</p>
 
-                <h3>Another Subheading</h3>
-                <p>Continue to build on your topic, providing in-depth analysis, step-by-step guides, or personal insights. The clean layout ensures that your content remains the main focus for the reader.</p>
+                <h3>Attack Scenarios Explored</h3>
+                <p>We successfully executed several key attack techniques:</p>
+                <ol>
+                    <li>**Kerberoasting:** Exploiting service principal names (SPNs) to harvest password hashes.</li>
+                    <li>**AS-REPRoasting:** Targeting user accounts configured not to require Kerberos preauthentication.</li>
+                    <li>**Pass-the-Hash (PtH):** Utilizing NTLM hashes extracted from memory to authenticate without cracking the password.</li>
+                    <li>**BloodHound Mapping:** Using BloodHound and SharpHound to map privilege escalation paths and identify vulnerable objects within the domain structure.</li>
+                </ol>
+
+                <h3>Mitigation Strategies</h3>
+                <p>For each attack vector, corresponding defensive measures were researched and implemented:</p>
+                <ul>
+                    <li>**Kerberoasting Mitigation:** Enforcing complex, long passwords for service accounts and ensuring sensitive service accounts are protected by Protected Users Security Group.</li>
+                    <li>**AS-REPRoasting Mitigation:** Disabling the "Do not require Kerberos preauthentication" option on all standard user accounts.</li>
+                    <li>**Detection:** Configuring Windows Event Logging (specifically event IDs 4768 and 4769) and utilizing a simulated SIEM (Splunk or ELK stack) to detect abnormal Kerberos requests and suspicious logon activity.</li>
+                </ul>
+
+                <h3>Conclusion and Key Takeaways</h3>
+                <p>This lab confirmed the significant security risks posed by common AD misconfigurations. The hands-on experience in both attacking and defending solidified the importance of proper privilege management, strong password policies, and continuous monitoring (Blue Team operations) for domain integrity. The knowledge gained is directly applicable to penetration testing and enterprise security roles.</p>
             </div>
         </div>
     </section>
@@ -469,9 +487,42 @@
                     }
                 });
             }
+
+            function formatDate() {
+                const postDateElement = document.querySelector('.post-date');
+                if (!postDateElement) return;
+
+                const postDate = new Date(postDateElement.dataset.date);
+                const now = new Date();
+                
+                // Set time to 00:00:00 to compare dates only
+                postDate.setHours(0,0,0,0);
+                now.setHours(0,0,0,0);
+
+                const diffTime = now - postDate;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                let formattedDate;
+                if (diffDays === 0) {
+                    formattedDate = 'Today';
+                } else if (diffDays === 1) {
+                    formattedDate = 'Yesterday';
+                } else if (diffDays <= 7) {
+                    formattedDate = `${diffDays} days ago`;
+                } else {
+                    formattedDate = postDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                }
+                
+                postDateElement.innerHTML = `<i class="far fa-calendar-alt"></i> ${formattedDate}`;
+            }
             
             applyTheme(savedTheme);
             initThemeSelector();
+            formatDate();
 
             // Fade-out transition for links
             document.querySelectorAll('a').forEach(link => {
