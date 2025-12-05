@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TryHackMe: Offensive Security Intro - Ajoy A G | Cybersecurity Portfolio</title>
+    <meta name="description" content="Full walkthrough and solutions for the TryHackMe 'Offensive Security Intro' room in the Pre Security learning path. Perfect for beginners!">
     <link rel="icon" type="image/x-icon" href="assets/images/icon.ico">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -421,14 +423,14 @@
     </div>
 
     <!-- Back Button -->
-    <a href="project.html" class="back-button" aria-label="Go back to projects">
+    <a href="../blog.html" class="back-button" aria-label="Go back to blog posts">
         <i class="fas fa-arrow-left"></i>
     </a>
 
     <!-- Header -->
     <header>
         <div class="header-container">
-            <a href="index.html" class="logo">
+            <a href="../index.html" class="logo">
                 <i class="fas fa-terminal"></i>
             </a>
             <div class="theme-selector">
@@ -463,7 +465,7 @@
             </div>
             <div class="post-content">
                 <p>A beginner’s first legal hack — step-by-step.</p>
-                <img src="https://github.com/ajoyag/site/blob/main/assets/images/blog/blog1.png" alt="Offensive Security Intro Banner">
+                <img src="../assets/images/blog/blog1.avif" alt="Offensive Security Intro Banner" loading="lazy">
                 <h3>🧠 Overview</h3>
                 <p>Welcome to the “Offensive Security Intro” room from the Pre Security learning path on TryHackMe. This room introduces you to the world of ethical hacking and offensive security — showing how hackers think and operate, and how cybersecurity professionals use those same skills to defend systems.</p>
                 <p>In this room, you’ll:</p>
@@ -487,12 +489,12 @@
                 <ol>
                     <li><strong>Step 1:</strong> Open the machine and click the terminal icon on the virtual desktop.</li>
                     <li><strong>Step 2:</strong> Run Gobuster to brute-force hidden directories:
-                        <pre>gobuster -u http://fakebank.thm -w wordlist.txt dir</pre>
+                        <pre><code>gobuster -u http://fakebank.thm -w wordlist.txt dir</code></pre>
                         This command scans the website for hidden pages by trying every word in the wordlist.
                     </li>
                     <li><strong>Step 3:</strong> Look for the <code>/bank-transfer</code> page in the output. It’ll look something like this:
-                         <pre>/images (Status: 301)
-/bank-transfer (Status: 200)</pre>
+                         <pre><code>/images (Status: 301)
+/bank-transfer (Status: 200)</code></pre>
                     </li>
                     <li><strong>Step 4:</strong> Go to the <code>/bank-transfer</code> page and move $2000 from account <code>2276</code> to your account <code>8881</code>.</li>
                 </ol>
