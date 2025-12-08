@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hack Windows with Discord C2 - Ajoy A G | Cybersecurity</title>
+    <meta name="description" content="Detailed breakdown of how Discord can be used as a Command-and-Control (C2) channel to remotely manage compromised Windows systems, for educational purposes.">
+    <link rel="icon" type="image/x-icon" href="../../../assets/images/icon.ico">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base styles from template */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #00c6ff;
+            --secondary: #0072ff;
+            --accent: #8a2be2;
+            --dark: #0a0a0a;
+            --darker: #000000;
+            --light: #ffffff;
+            --gray: #888888;
+            --dark-gray: #1a1a1a;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --green-accent: #00ff9d;
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
+        }
+
+        html {
+            font-size: clamp(14px, 0.25vw + 0.8rem, 16px);
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            font-size: 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            animation: fadeInAnimation ease 0.5s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        body.light-mode {
+            background-color: var(--light);
+            color: var(--dark);
+            --code-bg: #f0f0f0;
+            --code-text: #333;
+        }
+        
+        body.fade-out {
+            animation: fadeOutAnimation ease 0.5s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes fadeInAnimation {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes fadeOutAnimation {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--darker), #001122, var(--darker));
+            transition: background 0.4s ease;
+        }
+
+        body.light-mode .background {
+            background: linear-gradient(135deg, var(--light-gray), #e6f7ff, var(--light-gray));
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(0, 114, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 114, 255, 0.1) 1px, transparent 1px);
+            background-size: 1.875rem 1.875rem;
+            animation: grid-move 20s linear infinite;
+            transition: background 0.4s ease;
+        }
+
+        body.light-mode .grid-overlay {
+            background: 
+                linear-gradient(rgba(0, 114, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 114, 255, 0.05) 1px, transparent 1px);
+        }
+
+        header {
+            padding: 0.8rem 1.5rem;
+            position: fixed;
+            width: auto;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 10, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        body.light-mode header {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 1.4rem;
+            left: 1.5rem;
+            z-index: 1001;
+            background: rgba(10, 10, 10, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 2.8rem;
+            height: 2.8rem;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--light);
+            font-size: 1.1rem;
+            text-decoration: none;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 114, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        body.light-mode .back-button {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: var(--dark);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-selector {
+            position: relative;
+            display: inline-block;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, color 0.4s ease;
+        }
+
+        body.light-mode .theme-toggle {
+            color: var(--dark);
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(50deg);
+        }
+
+        .theme-dropdown {
+            position: absolute;
+            top: 2.5rem;
+            right: 0;
+            background: rgba(30, 30, 40, 0.9);
+            border: 1px solid rgba(0, 114, 255, 0.3);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0;
+            width: 7.5rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(-0.625rem);
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        body.light-mode .theme-dropdown {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 114, 255, 0.1);
+        }
+
+        .theme-dropdown.show {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+
+        .theme-option {
+            padding: 0.8rem 1rem;
+            color: var(--light);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        body.light-mode .theme-option {
+            color: var(--dark);
+        }
+
+        .theme-option:hover {
+            background: rgba(0, 114, 255, 0.2);
+        }
+
+        .theme-option.active {
+            background: rgba(0, 114, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .post-section {
+            padding: 8rem 5% 4rem;
+            flex-grow: 1;
+        }
+
+        .post-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .post-title {
+            font-size: clamp(2.2rem, 4vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .post-meta {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .post-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .post-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        
+        .post-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            background-color: var(--dark-gray);
+        }
+
+        body.light-mode .post-content img {
+            background-color: var(--medium-gray);
+        }
+        
+        .post-content h3 {
+            font-size: 1.8rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .post-content h4 {
+            font-size: 1.4rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        .post-content p, .post-content li {
+            margin-bottom: 1.5rem;
+        }
+
+        .post-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        .post-content th, .post-content td {
+            border: 1px solid var(--gray);
+            padding: 0.8rem;
+            text-align: left;
+        }
+        .post-content th {
+            background-color: var(--dark-gray);
+            color: var(--primary);
+        }
+        body.light-mode .post-content th {
+            background-color: var(--medium-gray);
+            color: var(--secondary);
+        }
+        
+
+        .post-content a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+            transition: color 0.3s ease;
+        }
+        
+        .post-content a:hover {
+            color: var(--secondary);
+            border-bottom-color: var(--secondary);
+        }
+
+        .post-content ul {
+            list-style-position: inside;
+            padding-left: 1rem;
+        }
+        
+        .post-content ol {
+            list-style-position: inside;
+            padding-left: 1rem;
+        }
+
+        .post-content blockquote {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+            border-left: 4px solid var(--primary);
+            font-style: italic;
+            color: var(--gray);
+        }
+
+        .post-content pre {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0 1.5rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+        }
+
+        .post-content code {
+           font-family: 'Courier New', Courier, monospace;
+           background-color: var(--code-bg);
+           color: var(--code-text);
+           padding: 0.2rem 0.4rem;
+           border-radius: 4px;
+        }
+        
+        .post-content pre code {
+            padding: 0;
+            background: none;
+        }
+
+        /* Image alignment for screenshots */
+        .post-content .screenshot-inline {
+            max-width: 60%; 
+            height: auto;
+            display: block;
+            margin: 1.5rem auto;
+            box-shadow: none; /* Reduce heavy shadow for small screenshots */
+        }
+        
+        footer {
+            background: rgba(10, 10, 10, 0.9);
+            border-top: 1px solid rgba(0, 114, 255, 0.1);
+            padding: 2rem 5%;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+        }
+
+        body.light-mode footer {
+            background: rgba(245, 245, 245, 0.9);
+            border-top: 1px solid rgba(0, 114, 255, 0.1);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            max-width: 1600px;
+            margin: 0 auto;
+            font-size: 1rem;
+            transition: color 0.4s ease;
+        }
+        
+        .footer-bottom p {
+            color: var(--light);
+            transition: color 0.4s ease;
+        }
+        
+        body.light-mode .footer-bottom p {
+            color: var(--dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="background">
+        <div class="grid-overlay"></div>
+    </div>
+
+    <!-- Back Button (Path set to the root project.html) -->
+    <a href="../../../project.html" class="back-button" aria-label="Go back to projects">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <!-- Logo (Path set to the root index.html) -->
+            <a href="../../../index.html" class="logo">
+                <i class="fas fa-terminal"></i>
+            </a>
+            <div class="theme-selector">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-sun"></i>
+                </button>
+                <div class="theme-dropdown" id="themeDropdown">
+                    <div class="theme-option" data-theme="light">
+                        <i class="fas fa-sun"></i> Light
+                    </div>
+                    <div class="theme-option" data-theme="dark">
+                        <i class="fas fa-moon"></i> Dark
+                    </div>
+                    <div class="theme-option" data-theme="system">
+                        <i class="fas fa-desktop"></i> System
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Post Section -->
+    <section class="post-section">
+        <div class="post-container">
+            <div class="post-header">
+                <h1 class="post-title">Hack Windows with Discord C2</h1>
+                <div class="post-meta">
+                    <span class="post-date" data-date="2025-07-10"><i class="far fa-calendar-alt"></i> July 10, 2025</span>
+                    <span><i class="far fa-clock"></i> 10 min read</span>
+                    <span><i class="fas fa-tag"></i> Penetration Testing</span>
+                </div>
+            </div>
+            <div class="post-content">
+                <p>This project is an <b>educational initiative</b> designed to demonstrate the risks and vulnerabilities of using trusted platforms, like Discord, for malicious purposes. It highlights how attackers can exploit Discord as a <b>Command-and-Control (C2) channel</b> to remotely control compromised Windows systems. The purpose of this project is to educate and raise awareness about cybersecurity threats.</p>
+                
+                <h3>Project Overview</h3>
+                <p>In this simulation, an attacker sets up a <b>covert communication channel</b> using a Discord bot to send and receive commands to/from a target machine. Discord, being a widely trusted platform, helps attackers evade <b>traditional detection mechanisms</b> such as firewalls and antivirus solutions.</p>
+                
+                <p>Key components of the project include:</p>
+                <ul>
+                    <li><b>Discord Bot Creation:</b> A bot is configured via Discord's developer tools to act as the intermediary for the attack.</li>
+                    <li><b>Payload Deployment:</b> A backdoor is created for Windows systems, enabling remote access.</li>
+                    <li><b>Command Execution:</b> Once the payload is active, various commands can be issued to the compromised system.</li>
+                </ul>
+
+                <h3>Key Features</h3>
+                <ul>
+                    <li><b>Leveraging Trusted Platforms:</b> Demonstrates how Discord’s infrastructure can be exploited for malicious activities while mimicking normal traffic.</li>
+                    <li><b>SSL-Enforced Encryption:</b> Ensures all communication between the attacker and the target is encrypted, making it challenging for security measures to detect malicious activities.</li>
+                    <li><b>Practical Demonstration:</b> Showcases step-by-step instructions for bot setup, payload deployment, and executing commands on the target system.</li>
+                    <li><b>Capabilities of Exploitation:</b> Commands demonstrated include:
+                        <ul>
+                            <li>Capturing <b>screenshots</b> from the compromised system.</li>
+                            <li>Accessing <b>saved browser credentials</b>.</li>
+                            <li>Activating and capturing images from the <b>webcam</b>.</li>
+                            <li>Uploading and downloading <b>files</b>.</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>Why Use Discord Over Traditional Hacking Methods?</h3>
+                
+                <h4>Traditional Hacking Methods</h4>
+                <p>Traditional <b>Command-and-Control (C2)</b> techniques often rely on infrastructure directly controlled by attackers, such as private servers, domains, or self-hosted systems. These methods involve setting up communication channels to interact with compromised machines. Examples include:</p>
+                <ul>
+                    <li><b>Port Forwarding and IP Hosting:</b> Attackers traditionally used open ports to send payloads and receive responses from compromised systems. They often set up IP addresses or domains to host the malware and C2 interface.</li>
+                    <li><b>Custom C2 Servers:</b> Dedicated servers are set up to handle the incoming and outgoing commands between the attacker and compromised systems.</li>
+                    <li><b>DNS Tunneling or Custom Channels:</b> Attackers create unique protocols or leverage DNS queries to bypass basic network security mechanisms.</li>
+                </ul>
+
+                <h4>Challenges of Traditional Methods</h4>
+                <ul>
+                    <li><b>Easily Flagged by Security Systems:</b> Firewalls, intrusion detection systems (IDS), and antivirus programs are highly adept at detecting and blocking unknown IPs, non-standard protocols, and suspicious domain activity.</li>
+                    <li><b>High Cost and Maintenance:</b> Maintaining private infrastructure (like servers) is resource-intensive. It requires constant monitoring, upkeep, and reinvention to avoid detection by security analysts.</li>
+                    <li><b>Traceability:</b> Attackers using custom domains or servers risk having their IP addresses tracked and shut down by law enforcement.</li>
+                </ul>
+
+                <h4>Why Replace Traditional Methods with Discord?</h4>
+                
+                <h4>Advantages of Discord-Based C2</h4>
+                <ul>
+                    <li><b>Trusted Infrastructure:</b> Discord is a widely used, legitimate platform with millions of users globally. Security solutions are designed to trust Discord's traffic, making it easier for attackers to <b>"hide in plain sight."</b></li>
+                    <li><b>Free and Low-Maintenance:</b> Attackers no longer need to maintain costly private servers. Discord provides all the infrastructure needed for communication at <b>no cost</b>.</li>
+                    <li><b>Encrypted Traffic:</b> All communication between the attacker and Discord's servers is <b>SSL-encrypted</b>, ensuring that security systems cannot easily inspect the content of the traffic.</li>
+                    <li><b>Ease of Setup:</b> Configuring a Discord bot is <b>simple</b> and requires minimal technical knowledge compared to setting up custom servers.</li>
+                    <li><b>Port-Free Operation:</b> With Discord, there’s no need for port forwarding or open ports on the attacker’s or victim’s side. Communication is entirely routed through Discord’s existing servers.</li>
+                    <li><b>Multi-Platform Integration:</b> Discord bots can integrate with other services, such as Telegram or GitHub, to expand their reach and capabilities.</li>
+                    <li><b>Obfuscation of Malicious Traffic:</b> Discord traffic mimics legitimate communication patterns, making it harder for detection tools to distinguish between genuine user activity and malicious payloads.</li>
+                </ul>
+
+                <h3>Comparison Table: Traditional C2 vs. Discord-Based C2</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Traditional C2</th>
+                            <th>Discord-Based C2</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Infrastructure</td>
+                            <td><b>Requires self-hosted servers</b></td>
+                            <td><b>Uses Discord’s trusted servers</b></td>
+                        </tr>
+                        <tr>
+                            <td>Cost</td>
+                            <td><b>High</b> (server hosting, domains)</td>
+                            <td><b>Free</b> (Discord’s infrastructure)</td>
+                        </tr>
+                        <tr>
+                            <td>Detection</td>
+                            <td>Easily flagged by IDS and firewalls</td>
+                            <td>Blends into <b>legitimate traffic</b></td>
+                        </tr>
+                        <tr>
+                            <td>Ease of Setup</td>
+                            <td>Complex (requires technical expertise)</td>
+                            <td><b>Simple</b> and beginner-friendly</td>
+                        </tr>
+                        <tr>
+                            <td>Encryption</td>
+                            <td>Custom encryption or none</td>
+                            <td><b>SSL-enforced</b> by Discord</td>
+                        </tr>
+                        <tr>
+                            <td>Maintenance</td>
+                            <td>Requires constant updates</td>
+                            <td><b>Minimal maintenance</b> required</td>
+                        </tr>
+                        <tr>
+                            <td>Scalability</td>
+                            <td>Limited by resources</td>
+                            <td><b>High scalability</b> with Discord</td>
+                        </tr>
+                        <tr>
+                            <td>Legal Risks</td>
+                            <td>High (directly associated with servers)</td>
+                            <td><b>Harder to trace</b> (Discord handles hosting)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Educational Objectives</h3>
+                <ul>
+                    <li>Understanding Exploitation Risks: Illustrates how attackers can misuse legitimate services like Discord for <b>malicious purposes</b>.</li>
+                    <li>Raising Awareness: Encourages individuals and organizations to better understand these threats and adopt <b>stronger cybersecurity measures</b>.</li>
+                    <li>Encouraging Ethical Hacking: Inspires ethical hackers to explore <b>innovative ways</b> of defending against such attack vectors.</li>
+                </ul>
+                
+                <hr>
+
+                <h2>Technical Deep Dive: Dystopia-C2</h2>
+                
+                <p>This section details the practical steps for setting up the Discord C2 mechanism using the Dystopia-C2 framework for <b>educational demonstration</b>.</p>
+
+                <h3>1. Installing Dystopia-C2 on Kali Linux</h3>
+                <p>Clone the Dystopia-C2 repository from GitHub:</p>
+                <pre><code>git clone https://github.com/3ct0s/dystopia-c2</code></pre>
+                <p>Navigate into the directory and prepare the environment for running Dystopia-C2:</p>
+                <pre><code>cd dystopia-c2</code></pre>
+                <!-- Image path needs correction: image.png is not in assets -->
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/image.png" alt="Dystopia C2 Git Clone Example" loading="lazy">
+                
+                <h3>2. Setting up a Discord Server</h3>
+                <ol>
+                    <li>Log in to your <b>Discord account</b>.</li>
+                    <li>Go to <b>Settings → Advanced Options</b> and enable <b>Developer Mode</b>.</li>
+                    <li>Create a <b>new server</b> with any preferred name (e.g., "server").</li>
+                </ol>
+                <!-- Image paths need correction -->
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/image-1.png" alt="Discord Login Screenshot" loading="lazy" class="screenshot-inline">
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/image-2.png" alt="Discord Developer Mode Setting" loading="lazy" class="screenshot-inline">
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/image-3.png" alt="Discord Server Creation" loading="lazy" class="screenshot-inline">
+
+                <h3>3. Creating a Discord Bot</h3>
+                <ol>
+                    <li>Visit the <a href="https://discord.com/developers/applications" target="_blank">Discord Developer Portal</a>.</li>
+                    <li>Click on <b>New Application</b> and name your bot.</li>
+                    <li>Navigate to the <b>Bot</b> section and scroll down to enable <b>Privileged Gateway Intents</b> (select all options and save changes).</li>
+                    <li>Go to <b>OAuth2 → URL Generator</b>, select <b>Bot</b>, and set its privileges to <b>Administrator</b>.</li>
+                    <li>Copy the generated URL, paste it into your browser, and select the server you created earlier to add the bot.</li>
+                </ol>
+                <!-- Image paths need correction -->
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/image-4.png" alt="Discord Developer Portal New Application" loading="lazy">
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/image-5.png" alt="Discord New Application Naming" loading="lazy">
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/image-6.png" alt="Discord Privileged Gateway Intents" loading="lazy">
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/image-7.png" alt="Discord OAuth2 URL Generator" loading="lazy">
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/image-8.png" alt="Adding Bot to Discord Server" loading="lazy">
+
+                <h3>4. Retrieving and Storing the Bot Token</h3>
+                <ol>
+                    <li>In the Developer Portal, go to the <b>Bot</b> section and click <b>Reset Token</b> to generate your bot token.</li>
+                    <li>Copy the <b>token</b> and paste it into the server's chat or store it securely for future use.</li>
+                </ol>
+                <!-- Image paths need correction -->
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/Screenshot 2025-03-29 174657.png" alt="Discord Bot Token Reset" loading="lazy">
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/Screenshot 2025-03-29 174727.png" alt="Discord Bot Token Copied" loading="lazy">
+
+                <h3>5. Creating a Webhook</h3>
+                <ol>
+                    <li>Navigate to Discord <b>Server Settings → Integrations → Webhooks</b>.</li>
+                    <li>Create a new webhook (default name: "Spidey Bot"), rename it to <b>Keylogger</b>, set the channel to "General," and save changes.</li>
+                </ol>
+                <!-- Image paths need correction -->
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/Screenshot 2025-03-29 174838.png" alt="Discord Server Settings Integrations" loading="lazy">
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/Screenshot 2025-03-29 174810.png" alt="Discord Webhook Configuration" loading="lazy">
+
+                <h3>6. Generating the Backdoor</h3>
+                <ol>
+                    <li>Open your Kali terminal and navigate to the <code>dystopia-c2</code> directory.</li>
+                    <li>Run the builder tool:
+                        <pre><code>sudo python3 builder.py</code></pre>
+                    </li>
+                    <li>Select the <b>Discord module</b>:
+                        <pre><code>use discord</code></pre>
+                    </li>
+                </ol>
+                <!-- Image paths need correction -->
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/image-9.png" alt="Running Dystopia Builder" loading="lazy">
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/image-10.png" alt="Selecting Discord Module" loading="lazy">
+
+                <h4>Configure the following settings for the backdoor:</h4>
+                <ul>
+                    <li><b>Name</b>: Set the backdoor name to <code>dystopia</code>.</li>
+                    <li><b>Guild ID</b>: Right-click the server name in Discord and select <b>Copy Server ID</b>.</li>
+                    <li><b>Bot Token</b>: Use the token generated earlier.</li>
+                    <li><b>Channel ID</b>: Right-click the "General" channel and select <b>Copy Channel ID</b>.</li>
+                    <li><b>Webhook URL</b>: Go to <b>Server Settings → Integrations → Webhooks</b>, click on "Keylogger," and copy the webhook URL.</li>
+                </ul>
+                <!-- Image path needs correction -->
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/image-11.png" alt="Configuring Backdoor Settings" loading="lazy">
+
+                <ol start="4">
+                    <li>Build the bot:
+                        <pre><code>build</code></pre>
+                        Confirm the build by typing <code>y</code> when prompted.
+                    </li>
+                    <li>The generated backdoor (<code>dystopia.exe</code>) will appear in the <code>dist</code> directory.</li>
+                </ol>
+                <!-- Image path needs correction -->
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/image-12.png" alt="Backdoor Build Successful" loading="lazy">
+
+                <h3>7. Sandbox Evasion</h3>
+                <ul>
+                    <li>The backdoor includes <b>sandbox evasion</b> by default.</li>
+                    <li>If the Windows host is a virtual machine (VM), the bot will terminate execution to prevent <b>dynamic analysis</b>.</li>
+                </ul>
+
+                <h3>8. Running the Backdoor</h3>
+                <ol>
+                    <li>Transfer the <code>dystopia.exe</code> file to a <b>Windows machine</b>.</li>
+                    <li>Run the executable.</li>
+                    <li>Once executed, the bot sends a message to the Discord server notifying the attacker of a <b>new agent online</b>.</li>
+                    <li>Multiple agents can be connected and managed simultaneously.</li>
+                </ol>
+                <!-- Image path needs correction -->
+                <img src="../../../assets/images/project/penetration-testing/hack-windows-with-discord/image-13.png" alt="New Agent Online Notification" loading="lazy">
+
+                <h3>Examples of Commands</h3>
+                <h4>1. Listing Active Agents</h4>
+                <pre><code>list agents</code></pre>
+                <p>Displays all connected agents in the system.</p>
+
+                <h4>2. Accessing the Webcam</h4>
+                <pre><code>webcam capture</code></pre>
+                <p>Takes a snapshot using the webcam of the compromised system.</p>
+
+                <h4>3. File Download</h4>
+                <pre><code>download &lt;file_path&gt;</code></pre>
+                <p>Downloads a specified file from the compromised system to the attacker's machine.</p>
+
+                <h4>4. Keylogging</h4>
+                <pre><code>start keylogger</code></pre>
+                <p>Starts capturing keystrokes from the victim’s system.</p>
+
+                <h4>5. Mass Command Execution</h4>
+                <pre><code>mass exec &lt;command&gt;</code></pre>
+                <p>Executes a command across all connected agents simultaneously.</p>
+
+                <hr>
+
+                <h3>Disclaimer</h3>
+                <p>This project is strictly for <b>educational purposes only</b>. It is intended to raise awareness about potential misuse of trusted platforms like Discord. Please use this knowledge <b>responsibly and ethically</b>.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Ajoy A G (0xprowl3r). All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            
+            function applyTheme(theme) {
+                const toggleIcon = document.getElementById('themeToggle')?.querySelector('i');
+                if (theme === 'light') {
+                    document.body.classList.add('light-mode');
+                    if (toggleIcon) toggleIcon.className = 'fas fa-sun';
+                } else if (theme === 'dark') {
+                    document.body.classList.remove('light-mode');
+                    if (toggleIcon) toggleIcon.className = 'fas fa-moon';
+                } else { // System
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.body.classList.toggle('light-mode', !prefersDark);
+                    if (toggleIcon) toggleIcon.className = prefersDark ? 'fas fa-moon' : 'fas fa-sun';
+                }
+                localStorage.setItem('theme', theme);
+                document.querySelectorAll('.theme-option').forEach(opt => {
+                    opt.classList.toggle('active', opt.dataset.theme === theme);
+                });
+            }
+
+            function initThemeSelector() {
+                const themeToggle = document.getElementById('themeToggle');
+                const themeDropdown = document.getElementById('themeDropdown');
+                
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        const theme = e.currentTarget.dataset.theme;
+                        applyTheme(theme);
+                        if (themeDropdown) themeDropdown.classList.remove('show');
+                    });
+                });
+
+                if (themeToggle) {
+                    themeToggle.addEventListener('click', e => {
+                        e.stopPropagation();
+                        if (themeDropdown) themeDropdown.classList.toggle('show');
+                    }
+                    );
+                }
+
+                document.addEventListener('click', e => {
+                    if (themeDropdown && themeToggle && !themeToggle.contains(e.target) && !themeDropdown.contains(e.target)) {
+                        themeDropdown.classList.remove('show');
+                    }
+                });
+                
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                    if (localStorage.getItem('theme') === 'system') {
+                        applyTheme('system');
+                    }
+                });
+            }
+
+            function formatDate() {
+                const postDateElement = document.querySelector('.post-date');
+                if (!postDateElement) return;
+
+                const postDate = new Date(postDateElement.dataset.date);
+                const now = new Date();
+                
+                // Set time to 00:00:00 to compare dates only
+                postDate.setHours(0,0,0,0);
+                now.setHours(0,0,0,0);
+
+                const diffTime = now - postDate;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                let formattedDate;
+                if (diffDays === 0) {
+                    formattedDate = 'Today';
+                } else if (diffDays === 1) {
+                    formattedDate = 'Yesterday';
+                } else if (diffDays <= 7) {
+                    formattedDate = `${diffDays} days ago`;
+                } else {
+                    formattedDate = postDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                }
+                
+                postDateElement.innerHTML = `<i class="far fa-calendar-alt"></i> ${formattedDate}`;
+            }
+            
+            applyTheme(savedTheme);
+            initThemeSelector();
+            formatDate();
+
+            // Fade-out transition for links
+            document.querySelectorAll('a').forEach(link => {
+                const href = link.getAttribute('href');
+                // Ensure the link is internal and not just a hash
+                if (href && href.includes('.html') && !href.startsWith('#')) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        document.body.classList.add('fade-out');
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 500);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

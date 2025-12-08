@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Blog &amp; Writeups - Ajoy A G | Cybersecurity Portfolio</title>
+<meta content="Read the latest cybersecurity blog posts, CTF writeups, and deep dives into ethical hacking and red teaming techniques by 0xprowl3r." name="description"/>
+<!-- CSP Meta Tag for Security (Allows inline styles and scripts, and external Font Awesome) -->
+<meta content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src https://cdnjs.cloudflare.com;" http-equiv="Content-Security-Policy"/>
+<link href="assets/images/icon.ico" rel="icon" type="image/x-icon"/>
+<link href="https://cdnjs.cloudflare.com" rel="preconnect"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #00c6ff;
+            --secondary: #0072ff;
+            --accent: #8a2be2;
+            --dark: #0a0a0a;
+            --darker: #000000;
+            --light: #ffffff;
+            --gray: #888888;
+            --dark-gray: #1a1a1a;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --green-accent: #00ff9d;
+        }
+
+        html {
+            font-size: clamp(14px, 0.25vw + 0.8rem, 16px);
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            font-size: 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            animation: fadeInAnimation ease 0.5s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        body.light-mode {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+        
+        body.fade-out {
+            animation: fadeOutAnimation ease 0.5s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes fadeInAnimation {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes fadeOutAnimation {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--darker), #001122, var(--darker));
+            transition: background 0.4s ease;
+        }
+
+        body.light-mode .background {
+            background: linear-gradient(135deg, var(--light-gray), #e6f7ff, var(--light-gray));
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(0, 114, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 114, 255, 0.1) 1px, transparent 1px);
+            background-size: 1.875rem 1.875rem;
+            animation: grid-move 20s linear infinite;
+            transition: background 0.4s ease;
+        }
+
+        body.light-mode .grid-overlay {
+            background: 
+                linear-gradient(rgba(0, 114, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 114, 255, 0.05) 1px, transparent 1px);
+        }
+
+        header {
+            padding: 0.8rem 1.5rem;
+            position: fixed;
+            width: auto;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 10, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        body.light-mode header {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .theme-selector {
+            position: relative;
+            display: inline-block;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, color 0.4s ease;
+        }
+
+        body.light-mode .theme-toggle {
+            color: var(--dark);
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(50deg);
+        }
+
+        .theme-dropdown {
+            position: absolute;
+            top: 2.5rem;
+            right: 0;
+            background: rgba(30, 30, 40, 0.9);
+            border: 1px solid rgba(0, 114, 255, 0.3);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0;
+            width: 7.5rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(-0.625rem);
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        body.light-mode .theme-dropdown {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 114, 255, 0.1);
+        }
+
+        .theme-dropdown.show {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+
+        .theme-option {
+            padding: 0.8rem 1rem;
+            color: var(--light);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        body.light-mode .theme-option {
+            color: var(--dark);
+        }
+
+        .theme-option:hover {
+            background: rgba(0, 114, 255, 0.2);
+        }
+
+        .theme-option.active {
+            background: rgba(0, 114, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .section {
+            padding: 8rem 5% 4rem;
+            flex-grow: 1;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 4rem;
+        }
+
+        .section-title {
+            font-size: clamp(2.2rem, 4vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            color: var(--light);
+            transition: color 0.4s ease;
+        }
+
+        body.light-mode .section-subtitle {
+            color: var(--dark);
+        }
+        
+        .search-container {
+            margin: 2rem auto;
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 3.5rem 1rem 1.5rem;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            background: rgba(30, 30, 40, 0.5);
+            color: var(--light);
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 198, 255, 0.3);
+        }
+        
+        body.light-mode .search-input {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: var(--dark);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .filter-tags {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .tag-btn {
+            background: transparent;
+            border: 1px solid var(--gray);
+            color: var(--gray);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tag-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .tag-btn.active {
+            background: var(--primary);
+            color: var(--darker);
+            border-color: var(--primary);
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(21.875rem, 1fr));
+            gap: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .blog-item {
+            background: rgba(30, 30, 40, 0.5);
+            border: 1px solid rgba(0, 114, 255, 0.2);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease, background-color 0.4s ease, border-color 0.4s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .blog-item.hidden {
+            display: none;
+        }
+
+        body.light-mode .blog-item {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 114, 255, 0.1);
+        }
+
+        .blog-item:hover {
+            transform: translateY(-0.9375rem) scale(1.02);
+            border-color: rgba(0, 114, 255, 0.5);
+            box-shadow: 0 1.5625rem 3.125rem rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-mode .blog-item:hover {
+            box-shadow: 0 1.5625rem 3.125rem rgba(0, 0, 0, 0.1);
+        }
+
+        .blog-image {
+            height: 12.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .blog-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .blog-content {
+            padding: 1.5rem;
+        }
+
+        .blog-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            transition: color 0.4s ease;
+        }
+
+        body.light-mode .blog-title {
+            color: var(--dark);
+        }
+        
+        .blog-category {
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+        
+        .blog-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            transition: color 0.4s ease;
+        }
+
+        body.light-mode .blog-meta {
+            color: #777;
+        }
+
+        .blog-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .blog-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .blog-link:hover {
+            gap: 0.8rem;
+            transform: translateX(0.3125rem);
+        }
+
+        .pagination-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 3rem;
+            gap: 0.5rem;
+        }
+        
+        .logo-pagination {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            color: var(--light);
+            display: flex;
+        }
+        body.light-mode .logo-pagination {
+            color: var(--dark);
+        }
+
+        .logo-pagination span:nth-child(1),
+        .logo-pagination span:nth-child(5) {
+            color: var(--primary);
+        }
+        
+        .page-numbers {
+            display: flex;
+            gap: 1.2em;
+            align-items: center;
+            justify-content: center;
+            margin-left: 0.5em;
+        }
+
+        .page-btn {
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0.2rem;
+            font-weight: bold;
+        }
+        body.light-mode .page-btn {
+            color: #777;
+        }
+
+        .page-btn:hover {
+            color: var(--primary);
+        }
+
+        .page-btn.active {
+            color: var(--primary);
+            transform: scale(1.2);
+        }
+        
+        .ellipsis {
+            color: var(--gray);
+            padding: 0 0.5rem;
+        }
+        
+        footer {
+            background: rgba(10, 10, 10, 0.9);
+            border-top: 1px solid rgba(0, 114, 255, 0.1);
+            padding: 2rem 5%;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+        }
+
+        body.light-mode footer {
+            background: rgba(245, 245, 245, 0.9);
+            border-top: 1px solid rgba(0, 114, 255, 0.1);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            max-width: 1600px;
+            margin: 0 auto;
+            font-size: 1rem;
+            transition: color 0.4s ease;
+        }
+        
+        .footer-bottom p {
+            color: var(--light);
+            transition: color 0.4s ease;
+        }
+        
+        body.light-mode .footer-bottom p {
+            color: var(--dark);
+        }
+    </style>
+</head>
+<body>
+<!-- Animated Background -->
+<div class="background">
+<div class="grid-overlay"></div>
+</div>
+<!-- Header -->
+<header>
+<div class="header-container">
+<a class="logo" href="index.html">
+<i class="fas fa-terminal"></i>
+</a>
+<div class="theme-selector">
+<button class="theme-toggle" id="themeToggle">
+<i class="fas fa-sun"></i>
+</button>
+<div class="theme-dropdown" id="themeDropdown">
+<div class="theme-option" data-theme="light">
+<i class="fas fa-sun"></i> Light
+                    </div>
+<div class="theme-option" data-theme="dark">
+<i class="fas fa-moon"></i> Dark
+                    </div>
+<div class="theme-option" data-theme="system">
+<i class="fas fa-desktop"></i> System
+                    </div>
+</div>
+</div>
+</div>
+</header>
+<!-- Blog Section -->
+<section class="section" id="blog">
+<div class="section-header">
+<h2 class="section-title">All Blog Posts</h2>
+<p class="section-subtitle">Insights and thoughts on cybersecurity</p>
+<div class="search-container">
+<input class="search-input" id="searchInput" placeholder="Search posts..." type="text"/>
+<button class="search-btn"><i class="fas fa-search"></i></button>
+</div>
+<div class="filter-tags" id="filterTags">
+<button class="tag-btn active" data-filter="all">All</button>
+<!-- Tags will be dynamically inserted here -->
+</div>
+</div>
+<div class="blog-grid">
+<div id="no-results" style="display: none; text-align: center; grid-column: 1 / -1;">
+<h3>No posts found.</h3>
+</div>
+<!-- Blog Posts -->
+<div class="blog-item" data-category="TryHackMe" data-date="2025-07-20">
+<div class="blog-image"><img alt="TryHackMe Offensive Security Intro Walkthrough" loading="lazy" src="assets/images/blog/blog1.avif"/></div>
+<div class="blog-content"><div class="blog-category">TryHackMe</div><h3 class="blog-title">🛡️ TryHackMe: Offensive Security Intro — Pre Security Path</h3><div class="blog-meta"><span class="blog-date" data-date="2025-07-20"></span><span><i class="far fa-clock"></i> 5 min read</span></div><a class="blog-link" href="blog/tryhackme/tryhackme-offensive-security-intro-pre-security-path/tryhackme-offensive-security-intro-pre-security-path.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="TryHackMe" data-date="2025-07-21">
+<div class="blog-image"><img alt="TryHackMe Defensive Security Role Walkthrough" loading="lazy" src="assets/images/blog/blog2.avif"/></div>
+<div class="blog-content"><div class="blog-category">TryHackMe</div><h3 class="blog-title">🛡️ TryHackMe “Defensive Security” Role — Walkthrough &amp; Solutions</h3><div class="blog-meta"><span class="blog-date" data-date="2025-07-21"></span><span><i class="far fa-clock"></i> 5 min read</span></div><a class="blog-link" href="blog/tryhackme/tryhackme-defensive-security-role-walkthrough-solutions/tryhackme-defensive-security-role-walkthrough-solutions.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="TryHackMe" data-date="2025-07-21">
+<div class="blog-image"><img alt="TryHackMe Search Skills Walkthrough" loading="lazy" src="assets/images/blog/blog3.avif"/></div>
+<div class="blog-content"><div class="blog-category">TryHackMe</div><h3 class="blog-title">🔍 TryHackMe “Search Skills” — Full Walkthrough &amp; Answers</h3><div class="blog-meta"><span class="blog-date" data-date="2025-07-21"></span><span><i class="far fa-clock"></i> 5 min read</span></div><a class="blog-link" href="blog/tryhackme/tryhackme-search-skills-full-walkthrough-answers/tryhackme-search-skills-full-walkthrough-answers.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Internship" data-date="2025-07-20">
+<div class="blog-image"><img alt="Information Security Internship Reflection" loading="lazy" src="https://placehold.co/600x400/8a2be2/ffffff?text=Blog+1"/></div>
+<div class="blog-content"><div class="blog-category">Internship</div><h3 class="blog-title">My First Information Security Internship</h3><div class="blog-meta"><span class="blog-date" data-date="2025-07-20"></span><span><i class="far fa-calendar-alt"></i> 5 min read</span></div><a class="blog-link" href="blog/internship/my-first-information-security-internship/my-first-information-security-internship.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Internship" data-date="2025-07-15">
+<div class="blog-image"><img alt="Phishing Simulation Project" loading="lazy" src="https://placehold.co/600x400/0072ff/ffffff?text=Blog+2"/></div>
+<div class="blog-content"><div class="blog-category">Internship</div><h3 class="blog-title">Small Tasks, Big Lessons: A Phishing Simulation Project</h3><div class="blog-meta"><span class="blog-date" data-date="2025-07-15"></span><span><i class="far fa-calendar-alt"></i> 7 min read</span></div><a class="blog-link" href="blog/internship/small-tasks-big-lessons-a-phishing-simulation-project/small-tasks-big-lessons-a-phishing-simulation-project.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<!--<div class="blog-item" data-category="Social Engineering" data-date="2025-07-10">
+<div class="blog-image"><img alt="Psychology of Social Engineering" loading="lazy" src="https://placehold.co/600x400/00c6ff/ffffff?text=Blog+3"/></div>
+<div class="blog-content"><div class="blog-category">Social Engineering</div><h3 class="blog-title">The Psychology of Social Engineering</h3><div class="blog-meta"><span class="blog-date" data-date="2025-07-10"></span><span><i class="far fa-calendar-alt"></i> 8 min read</span></div><a class="blog-link" href="blog/social-engineering/the-psychology-of-social-engineering/the-psychology-of-social-engineering.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Red Teaming" data-date="2025-07-05">
+<div class="blog-image"><img alt="Building a C2 Framework" loading="lazy" src="https://placehold.co/600x400/ff6347/ffffff?text=Blog+4"/></div>
+<div class="blog-content"><div class="blog-category">Red Teaming</div><h3 class="blog-title">Building a C2 Framework from Scratch</h3><div class="blog-meta"><span class="blog-date" data-date="2025-07-05"></span><span><i class="far fa-calendar-alt"></i> 12 min read</span></div><a class="blog-link" href="blog/red-teaming/building-a-c2-framework-from-scratch/building-a-c2-framework-from-scratch.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Web Security" data-date="2025-06-28">
+<div class="blog-image"><img alt="Anatomy of an XSS Attack" loading="lazy" src="https://placehold.co/600x400/32cd32/ffffff?text=Blog+5"/></div>
+<div class="blog-content"><div class="blog-category">Web Security</div><h3 class="blog-title">Anatomy of a Cross-Site Scripting (XSS) Attack</h3><div class="blog-meta"><span class="blog-date" data-date="2025-06-28"></span><span><i class="far fa-calendar-alt"></i> 6 min read</span></div><a class="blog-link" href="blog/web-security/anatomy-of-a-cross-site-scripting-xss-attack/anatomy-of-a-cross-site-scripting-xss-attack.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Bug Bounty" data-date="2025-06-20">
+<div class="blog-image"><img alt="My First Critical Bug Bounty Story" loading="lazy" src="https://placehold.co/600x400/ff4500/ffffff?text=Blog+6"/></div>
+<div class="blog-content"><div class="blog-category">Bug Bounty</div><h3 class="blog-title">My First Million: A Bug Bounty Story</h3><div class="blog-meta"><span class="blog-date" data-date="2025-06-20"></span><span><i class="far fa-calendar-alt"></i> 10 min read</span></div><a class="blog-link" href="blog/bug-bounty/my-first-million-a-bug-bounty-story/my-first-million-a-bug-bounty-story.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="CTF" data-date="2025-06-12">
+<div class="blog-image"><img alt="HackTheBox Lame Write-up" loading="lazy" src="https://placehold.co/600x400/e9967a/ffffff?text=Blog+7"/></div>
+<div class="blog-content"><div class="blog-category">CTF</div><h3 class="blog-title">HackTheBox - "Lame" Write-up</h3><div class="blog-meta"><span class="blog-date" data-date="2025-06-12"></span><span><i class="far fa-calendar-alt"></i> 4 min read</span></div><a class="blog-link" href="blog/ctf/hackthebox-lame-write-up/hackthebox-lame-write-up.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Career" data-date="2025-06-01">
+<div class="blog-image"><img alt="Cybersecurity Career Journey" loading="lazy" src="https://placehold.co/600x400/dda0dd/ffffff?text=Blog+8"/></div>
+<div class="blog-content"><div class="blog-category">Career</div><h3 class="blog-title">From Zero to Hero: My Cybersecurity Journey</h3><div class="blog-meta"><span class="blog-date" data-date="2025-06-01"></span><span><i class="far fa-calendar-alt"></i> 9 min read</span></div><a class="blog-link" href="blog/career/from-zero-to-hero-my-cybersecurity-journey/from-zero-to-hero-my-cybersecurity-journey.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Red Teaming" data-date="2025-05-25">
+<div class="blog-image"><img alt="Advanced Persistent Threats Explained" loading="lazy" src="https://placehold.co/600x400/6a5acd/ffffff?text=Blog+9"/></div>
+<div class="blog-content"><div class="blog-category">Red Teaming</div><h3 class="blog-title">Advanced Persistent Threats (APTs) Explained</h3><div class="blog-meta"><span class="blog-date" data-date="2025-05-25"></span><span><i class="far fa-calendar-alt"></i> 11 min read</span></div><a class="blog-link" href="blog/red-teaming/advanced-persistent-threats-apts-explained/advanced-persistent-threats-apts-explained.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Web Security" data-date="2025-05-18">
+<div class="blog-image"><img alt="Understanding SQL Injection" loading="lazy" src="https://placehold.co/600x400/f0e68c/000000?text=Blog+10"/></div>
+<div class="blog-content"><div class="blog-category">Web Security</div><h3 class="blog-title">Understanding SQL Injection</h3><div class="blog-meta"><span class="blog-date" data-date="2025-05-18"></span><span><i class="far fa-calendar-alt"></i> 7 min read</span></div><a class="blog-link" href="blog/web-security/understanding-sql-injection/understanding-sql-injection.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="CTF" data-date="2025-05-10">
+<div class="blog-image"><img alt="TryHackMe Blue Walkthrough" loading="lazy" src="https://placehold.co/600x400/add8e6/000000?text=Blog+11"/></div>
+<div class="blog-content"><div class="blog-category">CTF</div><h3 class="blog-title">TryHackMe - "Blue" Walkthrough</h3><div class="blog-meta"><span class="blog-date" data-date="2025-05-10"></span><span><i class="far fa-calendar-alt"></i> 5 min read</span></div><a class="blog-link" href="blog/ctf/tryhackme-blue-walkthrough/tryhackme-blue-walkthrough.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Career" data-date="2025-05-02">
+<div class="blog-image"><img alt="Top 5 Cybersecurity Certifications for Beginners" loading="lazy" src="https://placehold.co/600x400/90ee90/000000?text=Blog+12"/></div>
+<div class="blog-content"><div class="blog-category">Career</div><h3 class="blog-title">Top 5 Certifications for Cybersecurity Beginners</h3><div class="blog-meta"><span class="blog-date" data-date="2025-05-02"></span><span><i class="far fa-calendar-alt"></i> 8 min read</span></div><a class="blog-link" href="blog/career/top-5-certifications-for-cybersecurity-beginners/top-5-certifications-for-cybersecurity-beginners.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Social Engineering" data-date="2025-04-24">
+<div class="blog-image"><img alt="The Art of Pretexting in Social Engineering" loading="lazy" src="https://placehold.co/600x400/d3d3d3/000000?text=Blog+13"/></div>
+<div class="blog-content"><div class="blog-category">Social Engineering</div><h3 class="blog-title">The Art of Pretexting</h3><div class="blog-meta"><span class="blog-date" data-date="2025-04-24"></span><span><i class="far fa-calendar-alt"></i> 6 min read</span></div><a class="blog-link" href="blog/social-engineering/the-art-of-pretexting/the-art-of-pretexting.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Bug Bounty" data-date="2025-04-15">
+<div class="blog-image"><img alt="Finding My First Critical Vulnerability" loading="lazy" src="https://placehold.co/600x400/ffb6c1/000000?text=Blog+14"/></div>
+<div class="blog-content"><div class="blog-category">Bug Bounty</div><h3 class="blog-title">How I Found My First Critical Vulnerability</h3><div class="blog-meta"><span class="blog-date" data-date="2025-04-15"></span><span><i class="far fa-calendar-alt"></i> 10 min read</span></div><a class="blog-link" href="blog/bug-bounty/how-i-found-my-first-critical-vulnerability/how-i-found-my-first-critical-vulnerability.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Red Teaming" data-date="2025-04-07">
+<div class="blog-image"><img alt="Lateral Movement Techniques in Red Teaming" loading="lazy" src="https://placehold.co/600x400/fafad2/000000?text=Blog+15"/></div>
+<div class="blog-content"><div class="blog-category">Red Teaming</div><h3 class="blog-title">Lateral Movement Techniques</h3><div class="blog-meta"><span class="blog-date" data-date="2025-04-07"></span><span><i class="far fa-calendar-alt"></i> 12 min read</span></div><a class="blog-link" href="blog/red-teaming/lateral-movement-techniques/lateral-movement-techniques.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Web Security" data-date="2025-03-30">
+<div class="blog-image"><img alt="Server-Side Request Forgery Explained" loading="lazy" src="https://placehold.co/600x400/87ceeb/ffffff?text=Blog+16"/></div>
+<div class="blog-content"><div class="blog-category">Web Security</div><h3 class="blog-title">Server-Side Request Forgery (SSRF) Explained</h3><div class="blog-meta"><span class="blog-date" data-date="2025-03-30"></span><span><i class="far fa-calendar-alt"></i> 8 min read</span></div><a class="blog-link" href="blog/web-security/server-side-request-forgery-ssrf-explained/server-side-request-forgery-ssrf-explained.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Career" data-date="2025-03-22">
+<div class="blog-image"><img alt="Building a Personal Brand in Cybersecurity" loading="lazy" src="https://placehold.co/600x400/6a5acd/ffffff?text=Blog+17"/></div>
+<div class="blog-content"><div class="blog-category">Career</div><h3 class="blog-title">Building a Personal Brand in Cybersecurity</h3><div class="blog-meta"><span class="blog-date" data-date="2025-03-22"></span><span><i class="far fa-calendar-alt"></i> 7 min read</span></div><a class="blog-link" href="blog/career/building-a-personal-brand-in-cybersecurity/building-a-personal-brand-in-cybersecurity.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="CTF" data-date="2025-03-14">
+<div class="blog-image"><img alt="PicoCTF 2023 Favorite Challenges" loading="lazy" src="https://placehold.co/600x400/f0e68c/000000?text=Blog+18"/></div>
+<div class="blog-content"><div class="blog-category">CTF</div><h3 class="blog-title">PicoCTF 2023 - My Favorite Challenges</h3><div class="blog-meta"><span class="blog-date" data-date="2025-03-14"></span><span><i class="far fa-calendar-alt"></i> 9 min read</span></div><a class="blog-link" href="blog/ctf/picoctf-2023-my-favorite-challenges/picoctf-2023-my-favorite-challenges.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Bug Bounty" data-date="2025-03-05">
+<div class="blog-image"><img alt="Writing a Good Bug Bounty Report" loading="lazy" src="https://placehold.co/600x400/add8e6/000000?text=Blog+19"/></div>
+<div class="blog-content"><div class="blog-category">Bug Bounty</div><h3 class="blog-title">The Art of Writing a Good Bug Bounty Report</h3><div class="blog-meta"><span class="blog-date" data-date="2025-03-05"></span><span><i class="far fa-calendar-alt"></i> 6 min read</span></div><a class="blog-link" href="blog/bug-bounty/the-art-of-writing-a-good-bug-bounty-report/the-art-of-writing-a-good-bug-bounty-report.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<div class="blog-item" data-category="Red Teaming" data-date="2025-02-25">
+<div class="blog-image"><img alt="Domain Fronting Deep Dive" loading="lazy" src="https://placehold.co/600x400/90ee90/000000?text=Blog+20"/></div>
+<div class="blog-content"><div class="blog-category">Red Teaming</div><h3 class="blog-title">Domain Fronting: A Deep Dive</h3><div class="blog-meta"><span class="blog-date" data-date="2025-02-25"></span><span><i class="far fa-calendar-alt"></i> 14 min read</span></div><a class="blog-link" href="blog/red-teaming/domain-fronting-a-deep-dive/domain-fronting-a-deep-dive.html">Read More <i class="fas fa-arrow-right"></i></a></div>
+</div>-->
+</div>
+<div class="pagination-container" id="pagination">
+<div class="logo-pagination">
+<span>0</span><span>x</span><span>p</span><span>r</span><span>0</span><span>w</span><span>l</span><span>3</span><span>r</span>
+</div>
+<div class="page-numbers"></div>
+</div>
+</section>
+<!-- Footer -->
+<footer>
+<div class="footer-bottom">
+<p>© 2025 Ajoy A G (0xprowl3r). All rights reserved.</p>
+</div>
+</footer>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            
+            function applyTheme(theme) {
+                const toggleIcon = document.getElementById('themeToggle')?.querySelector('i');
+                if (theme === 'light') {
+                    document.body.classList.add('light-mode');
+                    if (toggleIcon) toggleIcon.className = 'fas fa-sun';
+                } else if (theme === 'dark') {
+                    document.body.classList.remove('light-mode');
+                    if (toggleIcon) toggleIcon.className = 'fas fa-moon';
+                } else { // System
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.body.classList.toggle('light-mode', !prefersDark);
+                    if (toggleIcon) toggleIcon.className = prefersDark ? 'fas fa-moon' : 'fas fa-sun';
+                }
+                localStorage.setItem('theme', theme);
+                document.querySelectorAll('.theme-option').forEach(opt => {
+                    opt.classList.toggle('active', opt.dataset.theme === theme);
+                });
+            }
+
+            function initThemeSelector() {
+                const themeToggle = document.getElementById('themeToggle');
+                const themeDropdown = document.getElementById('themeDropdown');
+                
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        const theme = e.currentTarget.dataset.theme;
+                        applyTheme(theme);
+                        if (themeDropdown) themeDropdown.classList.remove('show');
+                    });
+                });
+
+                if (themeToggle) {
+                    themeToggle.addEventListener('click', e => {
+                        e.stopPropagation();
+                        if (themeDropdown) themeDropdown.classList.toggle('show');
+                    });
+                }
+
+                document.addEventListener('click', e => {
+                    if (themeDropdown && themeToggle && !themeToggle.contains(e.target) && !themeDropdown.contains(e.target)) {
+                        themeDropdown.classList.remove('show');
+                    }
+                });
+                
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                    if (localStorage.getItem('theme') === 'system') {
+                        applyTheme('system');
+                    }
+                });
+            }
+            
+            applyTheme(savedTheme);
+            initThemeSelector();
+
+            const blogItems = Array.from(document.querySelectorAll('.blog-item'))
+                .sort((a, b) => new Date(b.querySelector('.blog-date').dataset.date) - new Date(a.querySelector('.blog-date').dataset.date));
+            
+            const blogGrid = document.querySelector('.blog-grid');
+            if (blogGrid) {
+                const noResults = document.getElementById('no-results');
+                blogGrid.innerHTML = ''; // Clear existing items
+                if(noResults) blogGrid.appendChild(noResults);
+                blogItems.forEach(item => blogGrid.appendChild(item)); // Re-append in sorted order
+            }
+
+
+            const paginationContainer = document.querySelector('.pagination-container .page-numbers');
+            const searchInput = document.getElementById('searchInput');
+            const noResultsMessage = document.getElementById('no-results');
+            const filterTagsContainer = document.getElementById('filterTags');
+            const itemsPerPage = 8;
+            let currentPage = 1;
+            let filteredItems = blogItems;
+
+            function showPage(page, items) {
+                const start = (page - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+
+                blogItems.forEach(item => item.classList.add('hidden'));
+                
+                const itemsToShow = items.slice(start, end);
+                if(itemsToShow.length === 0) {
+                    if (noResultsMessage) noResultsMessage.style.display = 'block';
+                } else {
+                    if (noResultsMessage) noResultsMessage.style.display = 'none';
+                    itemsToShow.forEach(item => item.classList.remove('hidden'));
+                }
+                
+                setupPagination(items, page);
+            }
+
+            function setupPagination(items, activePage) {
+                if (!paginationContainer) return;
+                paginationContainer.innerHTML = '';
+                const pageCount = Math.ceil(items.length / itemsPerPage);
+                if (pageCount <= 1) return;
+
+                const maxButtons = 5;
+                let startPage, endPage;
+
+                if (pageCount <= maxButtons) {
+                    startPage = 1;
+                    endPage = pageCount;
+                } else {
+                    const maxPagesBeforeCurrent = Math.floor(maxButtons / 2);
+                    const maxPagesAfterCurrent = Math.ceil(maxButtons / 2) - 1;
+                    if (activePage <= maxPagesBeforeCurrent) {
+                        startPage = 1;
+                        endPage = maxButtons;
+                    } else if (activePage + maxPagesAfterCurrent >= pageCount) {
+                        startPage = pageCount - maxButtons + 1;
+                        endPage = pageCount;
+                    } else {
+                        startPage = activePage - maxPagesBeforeCurrent;
+                        endPage = activePage + maxPagesAfterCurrent;
+                    }
+                }
+                
+                if (startPage > 1) {
+                    paginationContainer.appendChild(createPageButton(1));
+                    if (startPage > 2) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.textContent = '...';
+                        ellipsis.className = 'ellipsis';
+                        paginationContainer.appendChild(ellipsis);
+                    }
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationContainer.appendChild(createPageButton(i, i === activePage));
+                }
+                
+                if (endPage < pageCount) {
+                     if (endPage < pageCount - 1) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.textContent = '...';
+                        ellipsis.className = 'ellipsis';
+                        paginationContainer.appendChild(ellipsis);
+                    }
+                    paginationContainer.appendChild(createPageButton(pageCount));
+                }
+            }
+            
+            function createPageButton(page, isActive = false) {
+                const btn = document.createElement('button');
+                btn.className = 'page-btn';
+                if (isActive) {
+                    btn.classList.add('active');
+                }
+                btn.dataset.page = page;
+                btn.textContent = page;
+                btn.addEventListener('click', () => {
+                    currentPage = page;
+                    showPage(currentPage, filteredItems);
+                });
+                return btn;
+            }
+
+            function filterItems() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const activeFilter = document.querySelector('.tag-btn.active').dataset.filter;
+
+                filteredItems = blogItems.filter(item => {
+                    const title = item.querySelector('.blog-title')?.textContent.toLowerCase() || '';
+                    const category = item.dataset.category.toLowerCase();
+                    
+                    const matchesCategory = activeFilter === 'all' || category === activeFilter;
+                    const matchesSearch = title.includes(searchTerm) || category.includes(searchTerm);
+
+                    return matchesCategory && matchesSearch;
+                });
+                currentPage = 1;
+                showPage(currentPage, filteredItems);
+            }
+
+            function setupFilterTags() {
+                if (!filterTagsContainer) return;
+                const categories = [...new Set(blogItems.map(item => item.dataset.category))];
+                if (categories.length === 0) {
+                    filterTagsContainer.style.display = 'none';
+                    return;
+                }
+                categories.sort();
+                
+                categories.forEach(category => {
+                    const btn = document.createElement('button');
+                    btn.className = 'tag-btn';
+                    btn.dataset.filter = category.toLowerCase();
+                    btn.textContent = category;
+                    filterTagsContainer.appendChild(btn);
+                });
+            }
+            
+            function updatePostDates() {
+                const dateElements = document.querySelectorAll('.blog-date');
+                const now = new Date();
+
+                dateElements.forEach(el => {
+                    const postDate = new Date(el.dataset.date);
+                    const diffSeconds = Math.floor((now - postDate) / 1000);
+                    const diffMinutes = Math.floor(diffSeconds / 60);
+                    const diffHours = Math.floor(diffMinutes / 60);
+                    const diffDays = Math.floor(diffHours / 24);
+                    const diffMonths = Math.floor(diffDays / 30.44);
+                    const diffYears = Math.floor(diffDays / 365.25);
+
+                    let timeAgo = '';
+                    if (diffYears > 1) {
+                        timeAgo = `${diffYears} years ago`;
+                    } else if (diffYears === 1) {
+                        timeAgo = `1 year ago`;
+                    } else if (diffMonths > 1) {
+                        timeAgo = `${diffMonths} months ago`;
+                    } else if (diffMonths === 1) {
+                        timeAgo = `1 month ago`;
+                    } else if (diffDays > 1) {
+                        timeAgo = `${diffDays} days ago`;
+                    } else if (diffDays === 1) {
+                        timeAgo = `1 day ago`;
+                    } else if (diffHours > 1) {
+                        timeAgo = `${diffHours} hours ago`;
+                    } else if (diffHours === 1) {
+                        timeAgo = `1 hour ago`;
+                    } else if (diffMinutes > 1) {
+                        timeAgo = `${diffMinutes} minutes ago`;
+                    } else {
+                        timeAgo = `Just now`;
+                    }
+                    el.innerHTML = `<i class="far fa-calendar-alt"></i> ${timeAgo}`;
+                });
+            }
+
+            if(searchInput) {
+                searchInput.addEventListener('input', filterItems);
+            }
+            
+            if(filterTagsContainer) {
+                setupFilterTags();
+                filterTagsContainer.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'BUTTON') {
+                         document.querySelector('.tag-btn.active').classList.remove('active');
+                         e.target.classList.add('active');
+                         filterItems();
+                    }
+                });
+            }
+            
+            // Fade-out transition for links
+            document.querySelectorAll('a').forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && href.endsWith('.html')) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        document.body.classList.add('fade-out');
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 500);
+                    });
+                }
+            });
+
+            // Initial setup
+            updatePostDates();
+            showPage(currentPage, filteredItems);
+        });
+    </script>
+</body>
+</html>
