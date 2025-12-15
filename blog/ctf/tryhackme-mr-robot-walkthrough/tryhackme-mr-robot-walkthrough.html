@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTF Writeup: Mr. Robot CTF - Ajoy A G | Cybersecurity</title>
+    <meta name="description" content="A comprehensive walkthrough for the TryHackMe 'Mr. Robot CTF,' covering web exploitation, brute-forcing WordPress, shell access, privilege escalation via binary SUID, and finding all three keys.">
+    <link rel="icon" type="image/x-icon" href="../../../assets/images/icon.ico">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base styles from template */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #00c6ff;
+            --secondary: #0072ff;
+            --accent: #8a2be2;
+            --dark: #0a0a0a;
+            --darker: #000000;
+            --light: #ffffff;
+            --gray: #888888;
+            --dark-gray: #1a1a1a;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --green-accent: #00ff9d;
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
+        }
+
+        html {
+            font-size: clamp(14px, 0.25vw + 0.8rem, 16px);
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            font-size: 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            animation: fadeInAnimation ease 0.5s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        body.light-mode {
+            background-color: var(--light);
+            color: var(--dark);
+            --code-bg: #f0f0f0;
+            --code-text: #333;
+        }
+        
+        body.fade-out {
+            animation: fadeOutAnimation ease 0.5s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes fadeInAnimation {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes fadeOutAnimation {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--darker), #001122, var(--darker));
+            transition: background 0.4s ease;
+        }
+
+        body.light-mode .background {
+            background: linear-gradient(135deg, var(--light-gray), #e6f7ff, var(--light-gray));
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(0, 114, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 114, 255, 0.1) 1px, transparent 1px);
+            background-size: 1.875rem 1.875rem;
+            animation: grid-move 20s linear infinite;
+            transition: background 0.4s ease;
+        }
+
+        body.light-mode .grid-overlay {
+            background: 
+                linear-gradient(rgba(0, 114, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 114, 255, 0.05) 1px, transparent 1px);
+        }
+
+        header {
+            padding: 0.8rem 1.5rem;
+            position: fixed;
+            width: auto;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 10, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        body.light-mode header {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 1.4rem;
+            left: 1.5rem;
+            z-index: 1001;
+            background: rgba(10, 10, 10, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 2.8rem;
+            height: 2.8rem;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--light);
+            font-size: 1.1rem;
+            text-decoration: none;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 114, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        body.light-mode .back-button {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: var(--dark);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-selector {
+            position: relative;
+            display: inline-block;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, color 0.4s ease;
+        }
+
+        body.light-mode .theme-toggle {
+            color: var(--dark);
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(50deg);
+        }
+
+        .theme-dropdown {
+            position: absolute;
+            top: 2.5rem;
+            right: 0;
+            background: rgba(30, 30, 40, 0.9);
+            border: 1px solid rgba(0, 114, 255, 0.3);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0;
+            width: 7.5rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(-0.625rem);
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        body.light-mode .theme-dropdown {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 114, 255, 0.1);
+        }
+
+        .theme-dropdown.show {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+
+        .theme-option {
+            padding: 0.8rem 1rem;
+            color: var(--light);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        body.light-mode .theme-option {
+            color: var(--dark);
+        }
+
+        .theme-option:hover {
+            background: rgba(0, 114, 255, 0.2);
+        }
+
+        .theme-option.active {
+            background: rgba(0, 114, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .post-section {
+            padding: 8rem 5% 4rem;
+            flex-grow: 1;
+        }
+
+        .post-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .post-title {
+            font-size: clamp(2.2rem, 4vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .post-meta {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .post-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .post-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        
+        .post-content h3 {
+            font-size: 1.8rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .post-content h4 {
+            font-size: 1.4rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        .post-content p, .post-content li {
+            margin-bottom: 1.5rem;
+        }
+        
+        .post-content ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+        }
+        
+        .post-content ol {
+            list-style-type: decimal;
+            padding-left: 1.5rem;
+        }
+        
+        .post-content pre {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0 1.5rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+        }
+
+        .post-content code {
+           font-family: 'Courier New', Courier, monospace;
+           background-color: var(--code-bg);
+           color: var(--code-text);
+           padding: 0.2rem 0.4rem;
+           border-radius: 4px;
+        }
+        
+        .post-content a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+            transition: color 0.3s ease;
+        }
+        
+        .post-content a:hover {
+            color: var(--secondary);
+            border-bottom-color: var(--secondary);
+        }
+
+        .post-content blockquote {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+            border-left: 4px solid var(--primary);
+            font-style: italic;
+            color: var(--gray);
+        }
+
+        .post-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        .post-content th, .post-content td {
+            border: 1px solid var(--gray);
+            padding: 0.8rem;
+            text-align: left;
+        }
+        .post-content th {
+            background-color: var(--dark-gray);
+            color: var(--primary);
+        }
+        body.light-mode .post-content th {
+            background-color: var(--medium-gray);
+            color: var(--secondary);
+        }
+
+        .post-content .blog-image-center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        footer {
+            background: rgba(10, 10, 10, 0.9);
+            border-top: 1px solid rgba(0, 114, 255, 0.1);
+            padding: 2rem 5%;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+        }
+
+        body.light-mode footer {
+            background: rgba(245, 245, 245, 0.9);
+            border-top: 1px solid rgba(0, 114, 255, 0.1);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            max-width: 1600px;
+            margin: 0 auto;
+            font-size: 1rem;
+            transition: color 0.4s ease;
+        }
+        
+        .footer-bottom p {
+            color: var(--light);
+            transition: color 0.4s ease;
+        }
+        
+        body.light-mode .footer-bottom p {
+            color: var(--dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="background">
+        <div class="grid-overlay"></div>
+    </div>
+
+    <!-- Back Button (Path to blog.html) -->
+    <a href="../../../blog.html" class="back-button" aria-label="Go back to blog posts">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <!-- Logo (Path to index.html) -->
+            <a href="../../../index.html" class="logo">
+                <i class="fas fa-terminal"></i>
+            </a>
+            <div class="theme-selector">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-sun"></i>
+                </button>
+                <div class="theme-dropdown" id="themeDropdown">
+                    <div class="theme-option" data-theme="light">
+                        <i class="fas fa-sun"></i> Light
+                    </div>
+                    <div class="theme-option" data-theme="dark">
+                        <i class="fas fa-moon"></i> Dark
+                    </div>
+                    <div class="theme-option" data-theme="system">
+                        <i class="fas fa-desktop"></i> System
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Post Section -->
+    <section class="post-section">
+        <div class="post-container">
+            <div class="post-header">
+                <h1 class="post-title">Mr Robot CTF Writeup</h1>
+                <div class="post-meta">
+                    <span class="post-date" data-date="2024-12-15"><i class="far fa-calendar-alt"></i> August 5, 2024</span>
+                    <span><i class="far fa-clock"></i> 10 min read</span>
+                    <span><i class="fas fa-tag"></i> CTF | Web Exploitation</span>
+                </div>
+            </div>
+            <div class="post-content">
+                <img src="../../../assets/images/blog/ctf/tryhackme-mr-robot-walkthrough/tryhackme-mr-robot-walkthrough1.png" alt="Mr Robot CTF TryHackMe Banner" loading="lazy" class="blog-image-center">
+
+                <h2>Challenge Infomation</h2>
+                <p>Challenge Name: <b>Mr Robot CTF</b></p>
+                <p>Room URL: <a href="https://tryhackme.com/r/room/mrrobot" target="_blank">https://tryhackme.com/r/room/mrrobot</a></p>
+                <p>Difficulty Level: <b>Medium</b></p>
+                <p>Category: <b>Web Exploitation, Network Security</b></p>
+                <p>Author: Ben &amp; TryHackMe</p>
+                <p>Date Completed: <b>December 15, 2025</b></p>
+                <p>Description: Based on the Mr. Robot show, can you root this box?</p>
+
+                <h2>Introduction</h2>
+                <p>This is a custom CTF room inspired by the Mr. Robot TV show, requiring enumeration, brute-forcing, and privilege escalation.</p>
+
+                <h2>Prerequisites</h2>
+                <ul>
+                    <li>Nmap</li>
+                    <li>GoBuster</li>
+                    <li>Hydra</li>
+                </ul>
+
+                <h2>Steps To Solve The Challenge</h2>
+                <h3>1. Reconnaissance</h3>
+                
+                <h3>1.1: Intial Scan</h3>
+                <p>I used Nmap to scan the websites to find ports that are open</p>
+                <p>command: <code>nmap 10.10.159.27</code></p>
+
+                <h4>Findings:</h4>
+                <p>Found that services like <code>ssh</code> <code>http</code> <code>https</code> at port <code>22</code> <code>80</code> <code>443</code> respectively</p>
+
+                <img src="../../../assets/images/blog/ctf/tryhackme-mr-robot-walkthrough/tryhackme-mr-robot-walkthrough2.png" alt="Nmap scan result showing open ports 22, 80, 443" loading="lazy" class="blog-image-center">
+
+                <h3>Step 1.2: Detailed Service Enumeration</h3>
+                <p>I tried <code>/robot.txt</code> path and found 2 entries</p>
+
+                <h4>Findings:</h4>
+                <pre><code>User-agent: *
+fsocity.dic
+key-1-of-3.txt</code></pre>
+
+                <p>Found the key 1 of 3 after navigating inside <code>http://10.10.159.27/key-1-of-3.txt</code> path</p>
+                <p>***Key: <code>0*****************************9</code>***</p>
+
+                <p>futher i took a look insdie <code>fsocity.dic</code> file and apperared to list of usernames</p>
+
+                <img src="../../../assets/images/blog/ctf/tryhackme-mr-robot-walkthrough/tryhackme-mr-robot-walkthrough3.png" alt="Partial content of fsocity.dic dictionary file" loading="lazy" class="blog-image-center">
+
+                <p><b>HTTP Service:</b> Used <b>gobuster</b> to find directories.</p>
+                <p>Command: <code>gobuster dir -u 10.10.159.27 -w /usr/share/seclists/Discovery/Web-Content/common.txt -q -o gobuster-common.txt</code></p>
+
+                <img src="../../../assets/images/blog/ctf/tryhackme-mr-robot-walkthrough/tryhackme-mr-robot-walkthrough4.png" alt="GoBuster scan result showing discovered directories" loading="lazy" class="blog-image-center">
+
+                <p><b>Findings:</b> Discovered <code>/wp-login</code> directory.</p>
+
+                <p>I found that it is a <b>wordpress website</b> and using the <code>fsocity.dic</code> dictionary i tried brute forcing the login csredentials</p>
+
+                <h3>Step 1.3: Capturing Login Request</h3>
+                <p>I'm using <b>Burp Suite</b> to capture login request in the <code>/wp-login</code> page using a failed login.</p>
+
+                <h4>findings:</h4>
+                <img src="../../../assets/images/blog/ctf/tryhackme-mr-robot-walkthrough/tryhackme-mr-robot-walkthrough5.png" alt="Burp Suite capture of the failed WordPress login request" loading="lazy" class="blog-image-center">
+
+                <p>I need only the following line in the result for the acutal Brute Force.</p>
+                <p><code>log=admin&pwd=admin&wp-submit=Log+In&redirect_to=http%3A%2F%2F10.10.159.27%2Fwp-admin%2F&testcookie=1</code></p>
+                <p>this shows me how the username and passwords are transmitted to the server.</p>
+
+                <p>I also found some Error Box named <code>ERROR: Invalid username.</code> after entering admin for username and password.</p>
+                <p>These kind of Error is helpful in pentesting.</p>
+
+                <h3>2. Exploitation</h3>
+
+                <h3>Step 2.1: Brute Force</h3>
+                <p>Now to brute force this login i'm using <b>hydra</b></p>
+                <p>To start the brute force im using <code>fsocity.dic</code> for username and a static password <code>test</code> to find the username of the login page.</p>
+
+                <p><b>command:</b> <code>hydra -L fsocity.dic -p test 10.10.159.27 http-post-form "/wp-login.php:log=^USER^&pwd=^PWD^:Invalid username" -t 30</code></p>
+
+                <h4>Findings:</h4>
+                <img src="../../../assets/images/blog/ctf/tryhackme-mr-robot-walkthrough/tryhackme-mr-robot-walkthrough6.png" alt="Hydra result showing Elliot as a valid username" loading="lazy" class="blog-image-center">
+
+                <p>Now from the result i know that <code>Elliot</code> is the username of the login page.</p>
+
+                <p>Now coming to the login page and entering username as <code>Elliot</code>, i see a ERROR box named <code>ERROR: The password you entered for the username Elliot is incorrect.</code></p>
+                <p>with this result i found that i can u hydra again to find the password</p>
+
+                <p><b>command:</b> <code>hydra -l Elliot -P fsocity.dic 10.10.159.27 http-post-form "/wp-login.php:log=^USER^&pwd=^PWD^:The password you entered for the username" -t 30</code></p>
+
+                <h4>Findings:</h4>
+                <p>I found that the password of the login is <code>ER28-0652</code> . u know if u watch the mr.robot series its acutally elliots employee id at AllSafe.</p>
+
+                <p>After logining in in wordpress im inside wordpress dashboard under the user <b>Elliot Alderson</b></p>
+
+                <h3>3. Post-Exploitation</h3>
+
+                <h3>Step 3.1: PHP Reverse Shell</h3>
+                <p>now that i got access to the admin, I'm gonna the editor option under Appearance section</p>
+                <p>So, for the php reverse shell to work without too much traffics i'm using the Archive template for better result.</p>
+
+                <p>To get a connection from the target machine i started a listener at port <code>53</code></p>
+                <p><b>command:</b> <code>rlwrap nc -lvnp 53</code></p>
+
+                <img src="../../../assets/images/blog/ctf/tryhackme-mr-robot-walkthrough/tryhackme-mr-robot-walkthrough7.png" alt="Netcat listener command execution" loading="lazy" class="blog-image-center">
+
+                <p>I'm using <code>rlwrap</code> because it allows me to edit the upcoming connections.</p>
+                <p>while netcat is watiing for the connection to estabilish i'm sourcing PHP Reverse Shell Script from a github repository called pentestmonkey.</p>
+                <p><a href="https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php" target="_blank">PHP-Reverse-Shell-pentestmonkey</a></p>
+
+                <p>I copied the code and pasted it inside the <code>archive.php</code> template in which i changed the <code>host ip address</code> and the <code>port</code> i want to listen from.</p>
+
+                <p>To establish a connection with <code>netcat</code> im firing up <code>archive.php</code> site <code>http://10.10.159.27/wp-content/themes/twentyfifteen/archive.php</code></p>
+
+                <p>once i started the site, at my terminal my listener had estabished a connection to the server</p>
+
+                <img src="../../../assets/images/blog/ctf/tryhackme-mr-robot-walkthrough/tryhackme-mr-robot-walkthrough8.png" alt="Netcat listener connection established with rlwrap" loading="lazy" class="blog-image-center">
+
+                <p>After getting access to the target machine i browers thourgh the folders and found two entires <code>key-2-of-3.txt</code> and <code>password.raw-md5</code></p>
+
+                <p>i found the next <b>key</b> inside <code>/robot/key-2-of-3.txt</code>, but when tried to open <code>key-2-of-3.txt</code> using <code>cat</code> command i was denied from it.</p>
+
+                <p>To check why this happend, i used <code>ls -lsa</code> to check in which user the file is accessiable, and found it was under a user named <b>robot</b></p>
+
+                <img src="../../../assets/images/blog/ctf/tryhackme-mr-robot-walkthrough/tryhackme-mr-robot-walkthrough9.png" alt="ls -lsa output showing file ownership under user 'robot'" loading="lazy" class="blog-image-center">
+
+                <p>but i found <code>robot:c3fcd3d76192e4007dfb496cca67e13b</code> inside <code>password.raw-md5</code> which was some kind of password for <code>robot</code> user in <b>RAW-MD5</b> hash.</p>
+
+                <img src="../../../assets/images/blog/ctf/tryhackme-mr-robot-walkthrough/tryhackme-mr-robot-walkthrough10.png" alt="Content of password.raw-md5 file" loading="lazy" class="blog-image-center">
+
+                <p>Now to crack this hash i used a password cracking package call <b>john</b> or also know as <b>john the ripper</b> to crack the <b>RAW-MD5</b> hash.</p>
+
+                <h3>Step 3.1: Decrypting Hash</h3>
+                <p><b>Command:</b> <code>john md5.hash --wordlist=fsocity.dic --format=RAW-MD5</code></p>
+
+                <h4>Findings:</h4>
+                <img src="../../../assets/images/blog/ctf/tryhackme-mr-robot-walkthrough/tryhackme-mr-robot-walkthrough11.png" alt="John the Ripper output showing the cracked password" loading="lazy" class="blog-image-center">
+
+                <p>So i found that the password inside the <b>RAW-MD5</b> hash was <code>abcdefghijklmnopqrstuvwxyz</code></p>
+
+                <h3>4. Shell Upgrade</h3>
+
+                <h3>Step 4.1:</h3>
+                <p>Now i'm getting back to the terminal to switch to the <b>robot</b> user.</p>
+                <p>So to use su command the shell should be fully interactive, i'm using a python script to upgrade the dumby shell to interactive shell.</p>
+
+                <p><b>command:</b> <code>python3 -c 'import pty; pty.spawn("/bin/bash")'</code></p>
+                <pre><code>$ python3 -c 'import pty; pty.spawn("/bin/bash")'
+daemon@linux:/home/robot$
+</code></pre>
+
+                <h3>Step 4.2:</h3>
+                <p>Now i'm change from <code>daemon</code> to <code>robot</code> user with the password we found in the hash.</p>
+                <pre><code>daemon@linux:/home/robot$ su robot
+su robot
+Password: abcdefghijklmnopqrstuvwxyz
+
+robot@linux:~$ whoami
+whoami
+robot
+</code></pre>
+                <p>I found the next key <code>key-2-of-3</code> inside <code>/home/robot/key-2-of-3.txt</code></p>
+                <p>***Key: <code>8*****************************9</code>***</p>
+
+                <h3>5. Root Privilage Escalation</h3>
+
+                <h3>Step 5.1:</h3>
+                <p>To find the root user i'm searching for binary bin in order to spawn a shell</p>
+                <p><b>command:</b> <code>find / -perm +6000 2>/dev/null | grep '/bin/'</code></p>
+
+                <img src="../../../assets/images/blog/ctf/tryhackme-mr-robot-walkthrough/tryhackme-mr-robot-walkthrough12.png" alt="Find command output showing Nmap binary with SUID permissions" loading="lazy" class="blog-image-center">
+
+                <h3>Step 5.2:</h3>
+                <p>Now i can see a binary bin for <b>Nmap</b> which i can use to spawn a interactive shell.</p>
+                <p>To excute it im using <code>nmap</code> interactive method</p>
+
+                <p><b>command:</b> <code>/usr/local/bin/nmap --interactive</code></p>
+
+                <img src="../../../assets/images/blog/ctf/tryhackme-mr-robot-walkthrough/tryhackme-mr-robot-walkthrough13.png" alt="Nmap interactive mode used to gain root access" loading="lazy" class="blog-image-center">
+
+                <p>I found the final key <code>key-3-of-3</code> under <code>/root/key-3-of-3.txt</code></p>
+                <p>***Key: <code>0*****************************4</code>***</p>
+
+                <hr>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Ajoy A G (0xprowl3r). All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            
+            function applyTheme(theme) {
+                const toggleIcon = document.getElementById('themeToggle')?.querySelector('i');
+                if (theme === 'light') {
+                    document.body.classList.add('light-mode');
+                    if (toggleIcon) toggleIcon.className = 'fas fa-sun';
+                } else if (theme === 'dark') {
+                    document.body.classList.remove('light-mode');
+                    if (toggleIcon) toggleIcon.className = 'fas fa-moon';
+                } else { // System
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.body.classList.toggle('light-mode', !prefersDark);
+                    if (toggleIcon) toggleIcon.className = prefersDark ? 'fas fa-moon' : 'fas fa-sun';
+                }
+                localStorage.setItem('theme', theme);
+                document.querySelectorAll('.theme-option').forEach(opt => {
+                    opt.classList.toggle('active', opt.dataset.theme === theme);
+                });
+            }
+
+            function initThemeSelector() {
+                const themeToggle = document.getElementById('themeToggle');
+                const themeDropdown = document.getElementById('themeDropdown');
+                
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        const theme = e.currentTarget.dataset.theme;
+                        applyTheme(theme);
+                        if (themeDropdown) themeDropdown.classList.remove('show');
+                    });
+                });
+
+                if (themeToggle) {
+                    themeToggle.addEventListener('click', e => {
+                        e.stopPropagation();
+                        if (themeDropdown) themeDropdown.classList.toggle('show');
+                    }
+                    );
+                }
+
+                document.addEventListener('click', e => {
+                    if (themeDropdown && themeToggle && !themeToggle.contains(e.target) && !themeDropdown.contains(e.target)) {
+                        themeDropdown.classList.remove('show');
+                    }
+                });
+                
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                    if (localStorage.getItem('theme') === 'system') {
+                        applyTheme('system');
+                    }
+                });
+            }
+
+            function formatDate() {
+                const postDateElement = document.querySelector('.post-date');
+                if (!postDateElement) return;
+
+                const postDate = new Date(postDateElement.dataset.date);
+                const now = new Date();
+                
+                // Set time to 00:00:00 to compare dates only
+                postDate.setHours(0,0,0,0);
+                now.setHours(0,0,0,0);
+
+                const diffTime = now - postDate;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                let formattedDate;
+                if (diffDays === 0) {
+                    formattedDate = 'Today';
+                } else if (diffDays === 1) {
+                    formattedDate = 'Yesterday';
+                } else if (diffDays <= 7) {
+                    formattedDate = `${diffDays} days ago`;
+                } else {
+                    formattedDate = postDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                }
+                
+                postDateElement.innerHTML = `<i class="far fa-calendar-alt"></i> ${formattedDate}`;
+            }
+            
+            applyTheme(savedTheme);
+            initThemeSelector();
+            formatDate();
+
+            // Fade-out transition for links
+            document.querySelectorAll('a').forEach(link => {
+                const href = link.getAttribute('href');
+                // Ensure the link is internal and not just a hash
+                if (href && href.includes('.html') && !href.startsWith('#')) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        document.body.classList.add('fade-out');
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 500);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
