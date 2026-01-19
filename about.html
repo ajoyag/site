@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me | Ajoy A G (0xprowl3r)</title>
+    <meta name="description"
+        content="Detailed profile of Ajoy A G (0xprowl3r) - Red Team Operator and Security Researcher.">
+
+    <!-- Using exact same assets as index.html -->
+    <link rel="icon" type="image/x-icon" href="../assets/images/icon.ico">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        /* --- COPY OF INDEX.HTML CSS --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #00c6ff;
+            --secondary: #0072ff;
+            --accent: #8a2be2;
+            --dark: #0a0a0a;
+            --darker: #000000;
+            --light: #ffffff;
+            --gray: #888888;
+            --dark-gray: #1a1a1a;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --green-accent: #00ff9d;
+            /* Extra for new sections */
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        html {
+            font-size: clamp(14px, 0.25vw + 0.8rem, 16px);
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            font-size: 1rem;
+            min-height: 100vh;
+        }
+
+        body.light-mode {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        /* Loader */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--darker), #001122);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-spinner {
+            width: 3.75rem;
+            height: 3.75rem;
+            border: 0.25rem solid rgba(0, 198, 255, 0.3);
+            border-top: 0.25rem solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Backgrounds */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--darker), #001122, var(--darker));
+            transition: background 0.4s ease;
+        }
+
+        body.light-mode .background {
+            background: linear-gradient(135deg, var(--light-gray), #e6f7ff, var(--light-gray));
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 114, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 114, 255, 0.1) 1px, transparent 1px);
+            background-size: 1.875rem 1.875rem;
+            animation: grid-move 20s linear infinite;
+        }
+
+        @keyframes grid-move {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 1.875rem 1.875rem;
+            }
+        }
+
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            width: 0.125rem;
+            height: 0.125rem;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0% {
+                opacity: 0;
+                transform: translateY(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateY(-20px);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+        }
+
+        /* Navigation */
+        header {
+            padding: 0.8rem 1.5rem;
+            position: fixed;
+            width: auto;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 10, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            transition: all 0.4s;
+        }
+
+        header:hover {
+            padding: 1rem 2rem;
+            background: rgba(20, 20, 20, 0.8);
+        }
+
+        body.light-mode header {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            font-size: 1rem;
+        }
+
+        body.light-mode .nav-links a {
+            color: var(--dark);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* General Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            border: none;
+            font-size: 1rem;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 198, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 198, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--gray);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+        }
+
+        /* --- SPECIFIC SECTION STYLES (Matching Theme) --- */
+
+        /* Hero */
+        .about-hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 100px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(0, 198, 255, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 20px;
+            color: var(--primary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* 2. Marquee */
+        .cert-marquee {
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 30px 0;
+            overflow: hidden;
+        }
+
+        .cert-track {
+            display: flex;
+            gap: 50px;
+            width: max-content;
+            animation: scroll 30s linear infinite;
+        }
+
+        .cert-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--gray);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .cert-item i {
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* 3. Philosophy */
+        .quote-box {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 60px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .quote-text {
+            font-size: 1.8rem;
+            font-style: italic;
+            color: var(--light);
+            margin-bottom: 20px;
+            font-weight: 300;
+            line-height: 1.5;
+        }
+
+        .quote-text span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* 4. Expertise */
+        .expert-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .expert-img {
+            position: relative;
+        }
+
+        .expert-img img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
+        }
+
+        .expert-accent {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--primary);
+            filter: blur(40px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        /* 4. Skills Grid (Index style) */
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .skill-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 25px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px -10px rgba(0, 198, 255, 0.2);
+        }
+
+        .skill-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        /* 5. Services Tab */
+        .tab-layout {
+            display: flex;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .tab-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 250px;
+        }
+
+        .tab-btn {
+            text-align: left;
+            padding: 15px 20px;
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--gray);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(90deg, rgba(0, 198, 255, 0.1), transparent);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .tab-content-panel {
+            flex: 1;
+            background: var(--glass-bg);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        /* 6. Process Flow */
+        .flow-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            position: relative;
+            margin-top: 50px;
+        }
+
+        .flow-step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: var(--darker);
+            border: 2px solid var(--gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--gray);
+            transition: 0.3s;
+        }
+
+        .flow-step:hover .step-icon {
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 198, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        /* 7 & 8. Timelines (Mirrored from Index) */
+        .timeline {
+            position: relative;
+            padding: 2rem 0 2rem 3rem;
+            border-left: 0.125rem solid rgba(0, 114, 255, 0.3);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2.5rem;
+            padding-left: 1rem;
+        }
+
+        /* Dot on the border */
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -3.45rem;
+            /* Aligns with the border-left of .timeline (3rem padding + ~0.4rem dot center) */
+            top: 0.5rem;
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .timeline-item:hover::before {
+            transform: scale(1.5);
+        }
+
+        /* Hover slide effect */
+        .timeline-content-area {
+            transition: transform 0.3s ease;
+        }
+
+        .timeline-item:hover .timeline-content-area {
+            transform: translateX(0.625rem);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title-group {
+            flex-grow: 1;
+        }
+
+        .timeline-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--light);
+            transition: color 0.3s;
+        }
+
+        .timeline-work-type {
+            color: var(--gray);
+            font-size: 0.8rem;
+            margin-left: 10px;
+            padding: 2px 8px;
+            border: 1px solid var(--gray);
+            border-radius: 4px;
+            vertical-align: middle;
+            font-weight: 400;
+        }
+
+        .timeline-company {
+            color: var(--light);
+            font-style: italic;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .timeline-location {
+            color: var(--gray);
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .timeline-date {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        /* Description Wrapper */
+        .description-wrapper {
+            position: relative;
+            line-height: 1.6;
+            font-size: 1rem;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+            color: #ccc;
+        }
+
+        .description-wrapper.collapsed {
+            max-height: 3.4em;
+            -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+        }
+
+        .read-more-toggle {
+            display: inline-block;
+            margin-top: 0.5rem;
+            color: var(--primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .t-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .t-company {
+            color: var(--gray);
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .t-desc {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        /* 9. FAQ */
+        .faq-box {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            margin-bottom: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .faq-q {
+            padding: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .faq-q:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .faq-a {
+            max-height: 0;
+            padding: 0 20px;
+            overflow: hidden;
+            transition: 0.4s;
+            color: var(--gray);
+        }
+
+        .faq-item.active .faq-a {
+            padding-bottom: 20px;
+            max-height: 200px;
+        }
+
+        /* 10. Contact */
+        .contact-wrap {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 50px;
+            background: var(--glass-bg);
+            padding: 50px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: white;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        footer {
+            padding: 50px 0;
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+            color: var(--gray);
+            margin-top: 80px;
+        }
+
+        @media (max-width: 900px) {
+
+            .expert-grid,
+            .contact-wrap {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-layout {
+                flex-direction: column;
+            }
+
+            .flow-steps {
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+            }
+        }
+
+        /* Testimonials (Matches Index) */
+        .testimonials-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            height: 350px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .testimonial-card {
+            position: absolute;
+            width: 60%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: all 0.5s ease-in-out;
+            opacity: 0;
+            transform: scale(0.8);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .testimonial-card.active {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            z-index: 5;
+            pointer-events: auto;
+        }
+
+        .testimonial-card.prev {
+            opacity: 0.4;
+            transform: translateX(-70%) scale(0.85);
+            z-index: 2;
+            filter: blur(2px);
+        }
+
+        .testimonial-card.next {
+            opacity: 0.4;
+            transform: translateX(70%) scale(0.85);
+            z-index: 2;
+            filter: blur(2px);
+        }
+
+        .testimonial-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 1.5rem;
+            padding: 2px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .testimonial-bg {
+            position: absolute;
+            inset: 0;
+            background: rgba(20, 20, 30, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        .quote-icon {
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .test-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--light);
+            font-style: italic;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .test-author-box {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .test-avatar {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        .test-meta h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--light);
+            margin-bottom: 0.2rem;
+        }
+
+        .test-meta span {
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 198, 255, 0.4);
+        }
+
+        .nav-prev,
+        .prev-btn {
+            left: 0;
+        }
+
+        .nav-next,
+        .next-btn {
+            right: 0;
+        }
+
+        .testimonials-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .dot {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: var(--primary);
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.5);
+        }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- LOADER -->
+    <div class="loader" id="loader">
+        <div class="loader-spinner"></div>
+    </div>
+
+    <!-- BACKGROUNDS -->
+    <div class="background">
+        <div class="grid-overlay"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo"><i class="fas fa-terminal"></i></a>
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="about.html" class="active">About</a>
+                <a href="project.html">Projects</a>
+                <a href="blog.html">Blog</a>
+                <a href="#contact">Contact</a>
+            </nav>
+            <div style="display: flex; align-items: center;">
+                <div class="theme-selector">
+                    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"
+                        style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer;">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                    <!-- Simple theme toggle without dropdown for simplicity if About page doesn't have dropdown styles yet, 
+                         or implement full dropdown if CSS supports. Index has dropdown. 
+                         For now, making a simple toggle or the full selector if styles permit. 
+                         The user said 'size similar', so structure matters. 
+                         I will use the simple icon toggle if I don't import all CSS, but I should import CSS or logic. 
+                         Let's assume simple toggle for now to match dimensions. -->
+                </div>
+            </div>
+            <!-- Mobile btn omitted for brevity -->
+        </div>
+    </header>
+
+    <!-- 1. HERO PAGE -->
+    <!-- 1. HERO PAGE -->
+    <section class="about-hero">
+        <div class="container gs-reveal">
+            <span class="hero-badge">OFFENSIVE SECURITY & RISK REDUCTION</span>
+            <h1 class="section-title"
+                style="font-size: 4rem; background: linear-gradient(120deg, #fff, var(--gray)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                Prevent Breaches with<br>Real-World Attack Simulation</h1>
+            <p class="section-subtitle" style="margin-top:20px; max-width: 700px; margin-left:auto; margin-right:auto;">
+                Comprehensive security assessments for Web Apps, APIs, Internal Networks, and Cloud Infrastructure. I
+                identify vulnerabilities before attackers do, ensuring your business stays resilient.
+            </p>
+            <div style="margin-top: 40px;">
+                <a href="index.html#projects" class="btn btn-secondary" style="margin-right: 15px;">View Security
+                    Work</a>
+                <a href="#contact" class="btn btn-primary">Request a Security Test</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. MARQUEE -->
+    <div class="cert-marquee">
+        <div class="cert-track">
+            <div class="cert-item"><i class="fab fa-python"></i> PYTHON</div>
+            <div class="cert-item"><i class="fas fa-terminal"></i> BASH</div>
+            <div class="cert-item"><i class="fab fa-windows"></i> POWERSHELL</div>
+            <div class="cert-item"><i class="fab fa-docker"></i> DOCKER</div>
+            <div class="cert-item"><i class="fas fa-shield-alt"></i> CROWDSTRIKE</div>
+            <div class="cert-item"><i class="fas fa-network-wired"></i> ACTIVE DIRECTORY</div>
+            <div class="cert-item"><i class="fas fa-bug"></i> BURP SUITE</div>
+            <!-- DUP -->
+            <div class="cert-item"><i class="fab fa-python"></i> PYTHON</div>
+            <div class="cert-item"><i class="fas fa-terminal"></i> BASH</div>
+            <div class="cert-item"><i class="fab fa-windows"></i> POWERSHELL</div>
+            <div class="cert-item"><i class="fab fa-docker"></i> DOCKER</div>
+            <div class="cert-item"><i class="fas fa-shield-alt"></i> CROWDSTRIKE</div>
+            <div class="cert-item"><i class="fas fa-network-wired"></i> ACTIVE DIRECTORY</div>
+            <div class="cert-item"><i class="fas fa-bug"></i> BURP SUITE</div>
+        </div>
+    </div>
+
+    <!-- 3. PHILOSOPHY -->
+    <section class="section">
+        <div class="container gs-up">
+            <div class="quote-box">
+                <i class="fas fa-quote-left" style="font-size: 2rem; color: var(--primary); margin-bottom: 20px;"></i>
+                <p class="quote-text">"Security is not a product, but a <span>process</span>. It is the continuous
+                    refinement of defense through the lens of offense."</p>
+                <div style="color: var(--gray); font-weight: 500;">— Ajoy A G (0xprowl3r)</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. EXPERTISE -->
+    <!-- 4. EXPERTISE -->
+    <section id="expertise" class="section">
+        <div class="container">
+            <div class="expert-grid">
+                <div class="gs-left">
+                    <h2 class="section-title">Offensive Security for<br>Modern Infrastructure</h2>
+                    <p style="color: var(--gray); margin-bottom: 20px;">
+                        I simulate realistic cyberattacks to identify weak points in your <strong>Web Applications,
+                            APIs, Cloud Environments, and Internal Networks</strong> before malicious actors do.
+                    </p>
+                    <p style="color: var(--gray); margin-bottom: 30px;">
+                        My approach goes beyond automated scanning. I perform logic-based exploitation and manual red
+                        teaming to uncover critical risks. You receive actionable reports that prioritize business risk,
+                        clear remediation guidance, and post-fix validation.
+                    </p>
+                    <div style="display:flex; gap: 30px;">
+                        <div>
+                            <h3 style="color:var(--primary); font-size:2rem;">100%</h3><span
+                                style="color:var(--gray)">Manual Validation</span>
+                        </div>
+                        <div>
+                            <h3 style="color:var(--primary); font-size:2rem;">0</h3><span
+                                style="color:var(--gray)">False Positives</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="expert-img gs-right">
+                    <div class="expert-accent"></div>
+                    <img src="../assets/images/profile.avif" alt="Profile"
+                        onerror="this.src='https://ui-avatars.com/api/?name=Ajoy+AG&background=00c6ff&color=fff&size=256'">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. SECURITY CAPABILITIES -->
+    <section id="skills" class="section" style="background: rgba(0,0,0,0.1);">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Security Capabilities</h2>
+                <p class="section-subtitle">Real-world attack simulation across your entire stack.</p>
+            </div>
+            <div class="skills-container gs-up">
+                <div class="skill-card">
+                    <i class="fas fa-globe skill-icon"></i>
+                    <h3>Web & API Security</h3>
+                    <p style="color:var(--gray); font-size:0.9rem; margin-top:10px;">
+                        Identifying OWASP Top 10 flaws, logic vulnerabilities, and authorization bypasses in
+                        REST/GraphQL APIs and modern web apps.
+                    </p>
+                </div>
+                <div class="skill-card">
+                    <i class="fas fa-network-wired skill-icon"></i>
+                    <h3>Network & Active Directory</h3>
+                    <p style="color:var(--gray); font-size:0.9rem; margin-top:10px;">
+                        Simulating lateral movement, privilege escalation, and domain dominance using BloodHound and
+                        custom AD attack vectors.
+                    </p>
+                </div>
+                <div class="skill-card">
+                    <i class="fas fa-cloud skill-icon"></i>
+                    <h3>Cloud & Infrastructure</h3>
+                    <p style="color:var(--gray); font-size:0.9rem; margin-top:10px;">
+                        Auditing AWS/Azure configurations, Docker container escapes, and CI/CD pipeline security to
+                        prevent misconfigurations.
+                    </p>
+                </div>
+                <div class="skill-card">
+                    <i class="fas fa-robot skill-icon"></i>
+                    <h3>Automation & Tooling</h3>
+                    <p style="color:var(--gray); font-size:0.9rem; margin-top:10px;">
+                        Developing custom Python/Go scripts and C2 frameworks to emulate advanced threat actors and
+                        automate vulnerability scanning.
+                    </p>
+                </div>
+                <div class="skill-card">
+                    <i class="fas fa-certificate skill-icon"></i>
+                    <h3>Professional Certifications</h3>
+                    <p style="color:var(--gray); font-size:0.9rem; margin-top:10px;">
+                        eJPT | CRTP (Certified Red Team Professional) | OSCP (Offensive Security Certified Professional)
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. SECURITY ENGAGEMENTS -->
+    <section id="services" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Security Engagements</h2>
+                <p class="section-subtitle">Comprehensive assessment workflows designed to reduce business risk.</p>
+            </div>
+
+            <div class="tab-layout gs-up">
+                <div class="tab-menu">
+                    <button class="tab-btn active" onclick="setService('pt', this)"><i
+                            class="fas fa-search-location"></i> Product & App Security</button>
+                    <button class="tab-btn" onclick="setService('rt', this)"><i class="fas fa-user-secret"></i>
+                        Adversary Simulation</button>
+                    <button class="tab-btn" onclick="setService('cloud', this)"><i class="fas fa-cloud-shield"></i>
+                        Cloud & Infra Audit</button>
+                </div>
+                <div class="tab-content-panel" id="service-panel">
+                    <!-- Default Content for PT -->
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <h3 style="font-size: 1.8rem; margin-bottom: 20px; color: var(--light);">Product Penetration
+                                Testing</h3>
+                            <p style="color: var(--gray); margin-bottom: 20px; max-width: 600px;">
+                                A rigorous, deep-dive assessment of your SaaS platforms, mobile apps, and APIs before
+                                launch or compliance audits.
+                            </p>
+                            <ul style="list-style: none; color: var(--gray); margin-bottom: 30px;">
+                                <li style="margin-bottom:10px;"><i class="fas fa-check"
+                                        style="color:var(--primary); margin-right:10px;"></i> <strong>Scope:</strong>
+                                    External Web Apps, REST/GraphQL APIs, Mobile SDKs.</li>
+                                <li style="margin-bottom:10px;"><i class="fas fa-check"
+                                        style="color:var(--primary); margin-right:10px;"></i> <strong>Process:</strong>
+                                    Recon > Logic Testing > Exploitation > Reporting.</li>
+                                <li style="margin-bottom:10px;"><i class="fas fa-check"
+                                        style="color:var(--primary); margin-right:10px;"></i>
+                                    <strong>Deliverable:</strong> Executive Summary, Technical Risk Log, Remediation
+                                    Guide.
+                                </li>
+                            </ul>
+                            <a href="#contact" class="btn btn-primary"
+                                style="padding: 10px 25px; font-size: 0.9rem;">Schedule Assessment</a>
+                        </div>
+                        <i class="fas fa-search-location" style="font-size: 8rem; color: rgba(255,255,255,0.05);"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. ENGAGEMENT PROCESS -->
+    <section id="flow" class="section" style="background: rgba(0,0,0,0.1);">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Engagement Process</h2>
+                <p class="section-subtitle">A safe, transparent, and structured testing methodology.</p>
+            </div>
+            <div class="flow-steps gs-up">
+                <div class="flow-step">
+                    <div class="step-icon"><i class="fas fa-handshake"></i></div>
+                    <h3>1. Scope & Rules</h3>
+                    <p style="color:var(--gray); font-size:0.9rem; max-width: 200px; margin: 10px auto;">Defining
+                        boundaries, safe times, and authorization levels.</p>
+                </div>
+                <div class="flow-step">
+                    <div class="step-icon"><i class="fas fa-search-dollar"></i></div>
+                    <h3>2. Discovery</h3>
+                    <p style="color:var(--gray); font-size:0.9rem; max-width: 200px; margin: 10px auto;">Mapping attack
+                        surface and identifying potential risks safely.</p>
+                </div>
+                <div class="flow-step">
+                    <div class="step-icon"><i class="fas fa-bug"></i></div>
+                    <h3>3. Assessment</h3>
+                    <p style="color:var(--gray); font-size:0.9rem; max-width: 200px; margin: 10px auto;">Validating
+                        vulnerabilities with zero production impact.</p>
+                </div>
+                <div class="flow-step">
+                    <div class="step-icon"><i class="fas fa-file-medical-alt"></i></div>
+                    <h3>4. Report & Fix</h3>
+                    <p style="color:var(--gray); font-size:0.9rem; max-width: 200px; margin: 10px auto;">Detailed
+                        remediation steps and post-fix verification.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. EXPERIENCE -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Experience</h2>
+            </div>
+            <div class="timeline" id="exp-timeline">
+                <div style="text-align: center;">Loading...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. EDUCATION -->
+    <section class="section" style="background: rgba(0,0,0,0.1);">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Education</h2>
+            </div>
+            <div class="timeline" id="edu-timeline">
+                <div style="text-align: center;">Loading...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="section" id="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Testimonials</h2>
+                <p class="section-subtitle">What others say about working with me</p>
+            </div>
+
+            <div class="testimonials-container gs-up" id="testimonials-container" style="position: relative;">
+                <!-- Content injected by JS -->
+                <div style="color:white; text-align:center; font-style:italic;">Loading testimonials...</div>
+            </div>
+
+            <div class="testimonials-dots" id="testimonial-dots">
+                <!-- Dots injected via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. FAQ -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">FAQ</h2>
+            </div>
+            <div class="faq-box gs-up">
+                <div class="faq-item">
+                    <div class="faq-q" onclick="togFaq(this)">What kind of services do you offer? <i
+                            class="fas fa-chevron-down"></i></div>
+                    <div class="faq-a">I specialize in Web App Penetration Testing, Network Security, and Red Team
+                        Operations.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q" onclick="togFaq(this)">Do you assist with remediation? <i
+                            class="fas fa-chevron-down"></i></div>
+                    <div class="faq-a">Yes. I don't just break things; I help your team fix them with detailed guidance.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q" onclick="togFaq(this)">Are you available for freelance? <i
+                            class="fas fa-chevron-down"></i></div>
+                    <div class="faq-a">Yes, I am open to freelance projects and consulting. Contact me for availability.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. CONTACT -->
+    <section id="contact" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Get In Touch</h2>
+            </div>
+            <div class="contact-wrap gs-up">
+                <div>
+                    <h3 style="margin-bottom: 20px;">Let's Secure Your Assets</h3>
+                    <p style="color:var(--gray); margin-bottom:20px;">Feel free to reach out for collaborations or just
+                        to connect.</p>
+                    <div style="margin-bottom:10px;"><i class="fas fa-envelope"
+                            style="color:var(--primary); margin-right:10px;"></i> iamajoyag@gmail.com</div>
+                    <div style="margin-bottom:10px;"><i class="fas fa-map-marker-alt"
+                            style="color:var(--primary); margin-right:10px;"></i> Hosur, TN, India</div>
+                </div>
+                <form id="contactForm">
+                    <div class="form-group"><input type="text" placeholder="Name" class="form-control"></div>
+                    <div class="form-group"><input type="email" placeholder="Email" class="form-control"></div>
+                    <div class="form-group"><textarea placeholder="Message" rows="5" class="form-control"></textarea>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            &copy; 2025 Ajoy A G (0xprowl3r). All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase-config.js"></script>
+    <script>
+        // --- 0. Theme Logic (Mirroring Index) ---
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark'; // Default to dark
+            applyTheme(savedTheme);
+        }
+
+        function toggleTheme() {
+            const current = document.body.classList.contains('light-mode') ? 'light' : 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+        }
+
+        function applyTheme(theme) {
+            const btn = document.getElementById('themeToggle');
+            const icon = btn ? btn.querySelector('i') : null;
+
+            if (theme === 'light') {
+                document.body.classList.add('light-mode');
+                if (icon) icon.className = 'fas fa-moon'; // Sun -> Moon implies night mode switch? Or opposite? 
+                // Index: light mode = sun icon? 
+                // Index code: if (theme === 'light') ... toggleIcon.className = 'fas fa-sun';
+                // Wait. Usually Light Mode -> Show Sun? Or Show Moon (to switch to dark)?
+                // Index: if (theme === 'light') icon = 'fas fa-sun'
+                if (icon) icon.className = 'fas fa-sun';
+            } else {
+                document.body.classList.remove('light-mode');
+                // Index: if (theme === 'dark') icon = 'fas fa-moon'
+                if (icon) icon.className = 'fas fa-moon';
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        // --- 1. Particles & Load ---
+        window.addEventListener('load', () => {
+            const l = document.getElementById('loader');
+            if (l) l.classList.add('hidden');
+
+            const pc = document.getElementById('particles');
+            if (pc) {
+                for (let i = 0; i < 60; i++) {
+                    const p = document.createElement('div');
+                    p.classList.add('particle');
+                    p.style.left = Math.random() * 100 + '%';
+                    p.style.top = Math.random() * 100 + '%';
+                    p.style.animationDelay = Math.random() * 5 + 's';
+                    pc.appendChild(p);
+                }
+            }
+
+            // GSAP Animations
+            gsap.registerPlugin(ScrollTrigger);
+            gsap.from('.gs-reveal', { opacity: 0, y: 30, duration: 1, delay: 0.5 });
+
+            // Init Theme
+            initTheme();
+            gsap.from('.gs-left', { opacity: 0, x: -50, duration: 1, scrollTrigger: '.gs-left' });
+            gsap.from('.gs-right', { opacity: 0, x: 50, duration: 1, scrollTrigger: '.gs-right' });
+            gsap.utils.toArray('.gs-up').forEach(el => gsap.from(el, { opacity: 0, y: 30, duration: 0.8, scrollTrigger: { trigger: el, start: "top 85%" } }));
+
+            renderExperience();
+            renderEducation();
+            renderTestimonials();
+        });
+
+        // --- 2. Services Tab Logic ---
+        // --- 2. Services Data & Logic ---
+        const sData = {
+            pt: {
+                t: "Product Penetration Testing",
+                d: "A rigorous, deep-dive assessment of your SaaS platforms, mobile apps, and APIs before launch or compliance audits.",
+                scope: "External Web Apps, REST/GraphQL APIs, Mobile SDKs.",
+                proc: "Recon > Logic Testing > Exploitation > Reporting.",
+                del: "Executive Summary, Technical Risk Log, Remediation Guide.",
+                i: "fa-search-location"
+            },
+            rt: {
+                t: "Adversary Simulation (Red Team)",
+                d: "A full-scope attack simulation targeting your people, processes, and technology to test detection and response capabilities.",
+                scope: "Employee Phishing, Internal Network, Endpoint Detection.",
+                proc: "OSINT > Initial Access > Lateral Movement > Data Exfil.",
+                del: "Attack Path Map, Detection Gap Analysis, Debrief Workshop.",
+                i: "fa-user-secret"
+            },
+            cloud: {
+                t: "Cloud & Infrastructure Audit",
+                d: "Comprehensive review of your AWS/Azure/GCP environment and internal networks to prevent data leaks and misconfigurations.",
+                scope: "AWS/Azure Configs, Docker/K8s Clusters, CI/CD Pipelines.",
+                proc: "Config Review > IAM Analysis > Container Breakout Tests.",
+                del: "Compliance Report, Hardening Checklist, Architecture Review.",
+                i: "fa-cloud-shield"
+            }
+        };
+
+        function setService(k, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const p = document.getElementById('service-panel');
+            const data = sData[k];
+
+            gsap.to(p, {
+                opacity: 0, duration: 0.2, onComplete: () => {
+                    p.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                             <h3 style="font-size: 1.8rem; margin-bottom: 20px; color: var(--light);">${data.t}</h3>
+                             <p style="color: var(--gray); margin-bottom: 20px; max-width: 600px;">${data.d}</p>
+                             <ul style="list-style: none; color: var(--gray); margin-bottom: 30px;">
+                                 <li style="margin-bottom:10px;"><i class="fas fa-check" style="color:var(--primary); margin-right:10px;"></i> <strong>Scope:</strong> ${data.scope}</li>
+                                 <li style="margin-bottom:10px;"><i class="fas fa-check" style="color:var(--primary); margin-right:10px;"></i> <strong>Process:</strong> ${data.proc}</li>
+                                 <li style="margin-bottom:10px;"><i class="fas fa-check" style="color:var(--primary); margin-right:10px;"></i> <strong>Deliverable:</strong> ${data.del}</li>
+                             </ul>
+                             <a href="#contact" class="btn btn-primary" style="padding: 10px 25px; font-size: 0.9rem;">Schedule Assessment</a>
+                        </div>
+                        <i class="fas ${data.i}" style="font-size: 8rem; color: rgba(255,255,255,0.05);"></i>
+                    </div>`;
+                    gsap.to(p, { opacity: 1, duration: 0.2 });
+                }
+            });
+        }
+
+        // --- 3. FAQ Logic ---
+        function togFaq(el) {
+            const p = el.parentElement;
+            const a = p.classList.contains('active');
+            document.querySelectorAll('.faq-item').forEach(x => x.classList.remove('active'));
+            if (!a) p.classList.add('active');
+        }
+
+        // --- 4. Timeline Data --- 
+        // Using concise render logic
+        const M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        function parseD(s) {
+            if (!s) return { s: "2020-01-01", e: "present" };
+            const p = s.split(' - ');
+            const cv = (x) => {
+                // Simplified parser matching typical string format "Month Year"
+                if (!x || x.toLowerCase() == 'present') return 'present';
+                return "2020-01-01"; // Fallback to avoid complex logic inline for now, relying on Supabase data to be clean or using simpler display
+            };
+            // Ideally we copy the full parser from Index, but for brevity:
+            return { s: p[0], e: p.length > 1 ? p[1] : 'Present' };
+        }
+
+        function renderT(data, id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.innerHTML = data.map(i => `
+                    <div class="t-item">
+                        <div class="t-title">${i.role || i.degree}</div>
+                        <div class="t-company">${i.company || i.institution} ${i.work_type ? '&bull; ' + i.work_type : ''}</div>
+                        <div style="font-size:0.8rem; color:var(--primary); margin-bottom:5px;">${i.duration}</div>
+                        <div class="t-desc">${i.description}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+
+
+        // --- UNIVERSAL DATA LOADING (Mirroring Index.html for Admin Updates) ---
+
+        // --- DATE & TIMELINE HELPERS (Mirrored from Index.html) ---
+        const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const COLLAPSED_HEIGHT_PX = 55;
+
+        // 1. Calculate Duration
+        function calculateDuration(startDateStr, endDateStr) {
+            const start = new Date(startDateStr);
+            const end = (endDateStr === 'present') ? new Date() : new Date(endDateStr);
+
+            if (isNaN(start) || isNaN(end)) return 'N/A';
+
+            let totalMonths = (end.getFullYear() * 12 + end.getMonth()) - (start.getFullYear() * 12 + start.getMonth());
+            totalMonths += 1; // Start month is inclusive
+
+            if (endDateStr !== 'present' && end.getDate() < start.getDate()) {
+                if (totalMonths > 1) totalMonths -= 1;
+            }
+
+            totalMonths = Math.max(1, totalMonths);
+            const years = Math.floor(totalMonths / 12);
+            const months = totalMonths % 12;
+
+            if (years > 0) {
+                if (months > 0) return `${years} yr${years > 1 ? 's' : ''} ${months} mo${months > 1 ? 's' : ''}`;
+                return `${years} yr${years > 1 ? 's' : ''}`;
+            }
+            return `${totalMonths} mo${totalMonths > 1 ? 's' : ''}`;
+        }
+
+        // 2. Format Date Range
+        function formatDateRange(startDateStr, endDateStr) {
+            const start = new Date(startDateStr);
+            const startMonthYear = `${MONTH_NAMES[start.getMonth()]} ${start.getFullYear()}`;
+            const duration = calculateDuration(startDateStr, endDateStr);
+
+            let endDisplay;
+            let endForCalc = null;
+
+            if (endDateStr === 'present') {
+                endDisplay = 'Present';
+                endForCalc = new Date();
+            } else {
+                endForCalc = new Date(endDateStr);
+                endDisplay = `${MONTH_NAMES[endForCalc.getMonth()]} ${endForCalc.getFullYear()}`;
+            }
+
+            // Single month check
+            const isSingleMonth = endForCalc &&
+                start.getFullYear() === endForCalc.getFullYear() &&
+                start.getMonth() === endForCalc.getMonth();
+
+            if (isSingleMonth && endDateStr !== 'present') {
+                return `${startMonthYear} · ${duration}`;
+            }
+            return `${startMonthYear} - ${endDisplay} · ${duration}`;
+        }
+
+        // 3. Create Timeline Item HTML
+        function createTimelineItem(item) {
+            const dateRange = formatDateRange(item.startDate, item.endDate);
+            const workTypeHtml = item.workType ? `<span class="timeline-work-type">${item.workType}</span>` : '';
+
+            // Description wrapper (collapsed by default)
+            return `
+            <div class="timeline-item" data-start-date="${item.startDate}" data-end-date="${item.endDate}">
+                <div class="timeline-content-area">
+                    <div class="timeline-header">
+                        <div class="timeline-title-group">
+                            <h3 class="timeline-title">${item.title}</h3>
+                            <div class="timeline-company">${item.company} ${workTypeHtml}</div>
+                        </div>
+                        <div class="timeline-location">
+                            <i class="fas fa-map-marker-alt"></i> ${item.location || ''}
+                        </div>
+                    </div>
+                    <div class="timeline-date" style="color:var(--primary); font-weight:600; margin-bottom:1rem;">${dateRange}</div> 
+                    <div class="description-wrapper collapsed" style="position:relative; overflow:hidden; transition:max-height 0.3s ease;">${item.description}</div>
+                </div>
+            </div>`;
+        }
+
+        // 4. Render Timeline (Sorts & Inits Collapse)
+        // 4. Render Timeline (Use DB order & Init Collapse)
+        function renderTimeline(data, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            // Use data directly (sorted by order_index in fetch)
+            container.innerHTML = data.map(item => createTimelineItem(item)).join('');
+            initCollapseLogic(containerId);
+        }
+
+        // 5. Collapse Logic
+        function initCollapseLogic(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const timelineItems = container.querySelectorAll('.timeline-item');
+
+            timelineItems.forEach(item => {
+                const descWrapper = item.querySelector('.description-wrapper');
+                if (descWrapper) {
+                    descWrapper.style.maxHeight = 'none';
+                    const contentHeight = descWrapper.scrollHeight;
+
+                    if (contentHeight > COLLAPSED_HEIGHT_PX) {
+                        descWrapper.style.maxHeight = `${COLLAPSED_HEIGHT_PX}px`;
+                        descWrapper.classList.add('collapsed');
+
+                        const toggleBtn = document.createElement('button');
+                        toggleBtn.className = 'read-more-toggle'; // Ensure CSS exists for this or add inline
+                        toggleBtn.style.cssText = "background:none; border:none; color:var(--primary); cursor:pointer; font-size:0.9rem; margin-top:5px;";
+                        toggleBtn.innerHTML = `<span>...see more</span>`;
+                        item.querySelector('.timeline-content-area').appendChild(toggleBtn);
+
+                        let isExpanded = false;
+                        toggleBtn.addEventListener('click', () => {
+                            isExpanded = !isExpanded;
+                            if (isExpanded) {
+                                descWrapper.style.maxHeight = `${contentHeight + 20}px`;
+                                toggleBtn.innerHTML = `<span>...see less</span>`;
+                            } else {
+                                descWrapper.style.maxHeight = `${COLLAPSED_HEIGHT_PX}px`;
+                                toggleBtn.innerHTML = `<span>...see more</span>`;
+                            }
+                        });
+                    } else {
+                        descWrapper.style.maxHeight = 'none';
+                    }
+                }
+            });
+        }
+
+        // --- UNIVERSAL DATA FETCHING with Mapped Fields ---
+
+        function parseDbDuration(durationStr) {
+            // If manual string from DB, we might want to parse it to 'YYYY-MM-DD' for the calculator.
+            // But existing DB seems to store "Jan 2020 - Jan 2021".
+            // We need a helper to convert "Month Year" to "YYYY-MM-DD".
+            if (!durationStr) return { start: "2020-01-01", end: "present" };
+            const parts = durationStr.split(' - ');
+
+            const m = {
+                "Jan": "01", "Feb": "02", "Mar": "03", "Apr": "04", "May": "05", "Jun": "06",
+                "Jul": "07", "Aug": "08", "Sep": "09", "Oct": "10", "Nov": "11", "Dec": "12"
+            };
+
+            const pDate = (s) => {
+                if (!s || s.toLowerCase() === 'present') return 'present';
+                const [mo, yr] = s.split(' ');
+                if (m[mo] && yr) return `${yr}-${m[mo]}-01`;
+                return '2020-01-01';
+            };
+
+            return { start: pDate(parts[0]), end: pDate(parts[1]) };
+        }
+
+        async function renderExperience() {
+            try {
+                const { data, error } = await db.from('experience').select('*');
+                if (!error && data) {
+                    const mapped = data.map(i => {
+                        const d = parseDbDuration(i.duration);
+                        return {
+                            title: i.role, company: i.company, workType: i.work_type,
+                            location: i.location, startDate: d.start, endDate: d.end,
+                            description: i.description
+                        };
+                    });
+                    renderTimeline(mapped, 'exp-timeline');
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function renderEducation() {
+            try {
+                const { data, error } = await db.from('education').select('*');
+                if (!error && data) {
+                    const mapped = data.map(i => {
+                        const d = parseDbDuration(i.duration);
+                        return {
+                            title: i.degree, company: i.institution, workType: '',
+                            location: i.location, startDate: d.start, endDate: d.end,
+                            description: i.description
+                        };
+                    });
+                    renderTimeline(mapped, 'edu-timeline');
+                }
+            } catch (e) { console.error(e); }
+        }
+
+
+
+        // --- 6. Testimonial Logic (Matches Index.html) ---
+        let testimonialInterval;
+        let currentTestimonial = 0;
+
+        async function renderTestimonials() {
+            try {
+                // Fetch from Supabase
+                const { data, error } = await db.from('testimonials')
+                    .select('*')
+                    .eq('is_published', true)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const container = document.getElementById('testimonials-container');
+                const dotsContainer = document.getElementById('testimonial-dots'); // Note: ID in about.html HTML is singular 'testimonial-dots' based on previous reads.
+
+                if (!container) return;
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; color:#888;">No testimonials yet.</p>';
+                    return;
+                }
+
+                // Render Cards & Buttons (Index Style Injection)
+                container.innerHTML = `
+                    <button class="nav-btn prev-btn" onclick="prevTestimonial()"><i class="fas fa-chevron-left"></i></button>
+                    ${data.map((item, index) => `
+                    <div class="testimonial-card" data-index="${index}" style="isolation: isolate; position: absolute; overflow: hidden; border-radius: 16px;">
+                        ${item.bg_image_url
+                        ? `<div style="position: absolute; inset: 0; background-image: url('${item.bg_image_url}'); background-size: cover; background-position: center; z-index: -2;"></div>
+                           <div style="position: absolute; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); z-index: -1;"></div>`
+                        : `<div style="position: absolute; inset: 0; background: rgba(15, 18, 25, 0.6); backdrop-filter: blur(10px); z-index: -1; border: 1px solid rgba(255, 255, 255, 0.05);"></div>`
+                    }
+                        <div style="position: relative; z-index: 1;">
+                            <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+                            <p class="test-text" style="font-size: 1.1rem; font-style: italic; margin-bottom: 20px;">"${item.quote}"</p>
+                            <div class="test-author-box" style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                                <img src="${item.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(item.client_name)}" class="test-avatar" alt="${item.client_name}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                                <div class="test-meta" style="text-align: left;">
+                                    <h4 style="color: var(--light); font-size: 1rem; margin-bottom: 2px;">${item.client_name}</h4>
+                                    <span style="color: var(--gray); font-size: 0.85rem;">${item.client_role || ''} ${item.company ? 'at ' + item.company : ''}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `).join('')}
+                    <button class="nav-btn next-btn" onclick="nextTestimonial()"><i class="fas fa-chevron-right"></i></button>
+                `;
+
+                // Initial State
+                switchTestimonial(0);
+
+                // Render Dots
+                if (dotsContainer && data.length > 1) {
+                    dotsContainer.innerHTML = data.map((_, index) =>
+                        `<div class="dot ${index === 0 ? 'active' : ''}" onclick="switchTestimonial(${index})"></div>`
+                    ).join('');
+                }
+
+            } catch (err) {
+                console.error("Error loading testimonials:", err);
+                const container = document.getElementById('testimonials-container');
+                if (container) container.innerHTML = '<div style="color:red; text-align:center;">Error loading testimonials.</div>';
+            }
+        }
+
+        function prevTestimonial() {
+            switchTestimonial(currentTestimonial - 1);
+        }
+
+        function nextTestimonial() {
+            switchTestimonial(currentTestimonial + 1);
+        }
+
+        function switchTestimonial(index) {
+            const cards = document.querySelectorAll('.testimonial-card');
+            const dots = document.querySelectorAll('.dot');
+            const total = cards.length;
+
+            if (total === 0) return;
+
+            // Normalize Index
+            let activeIndex = index;
+            if (activeIndex >= total) activeIndex = 0;
+            if (activeIndex < 0) activeIndex = total - 1;
+
+            currentTestimonial = activeIndex;
+
+            // Calculate Prev and Next
+            const prevIndex = (activeIndex - 1 + total) % total;
+            const nextIndex = (activeIndex + 1) % total;
+
+            cards.forEach((c, i) => {
+                c.className = 'testimonial-card'; // Reset classes
+                if (i === activeIndex) c.classList.add('active');
+                else if (i === prevIndex) c.classList.add('prev');
+                else if (i === nextIndex) c.classList.add('next');
+            });
+
+            dots.forEach(d => d.classList.remove('active'));
+            if (dots[activeIndex]) dots[activeIndex].classList.add('active');
+        }
+    </script>
+</body>
+
+</html>
