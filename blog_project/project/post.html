@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading... | Ajoy A G</title>
+    <meta name="description" content="Detailed post by Ajoy A G (0xprowl3r).">
+
+    <!-- Assets -->
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/icon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/icon.ico">
+    <link rel="icon" type="image/x-icon" href="assets/images/icon.ico">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+
+    <style>
+        /* Core Variables & Website Theme Integration */
+        :root {
+            --primary: #00c6ff;
+            --secondary: #0072ff;
+            --accent: #8a2be2;
+            --dark: #0a0a0a;
+            --darker: #000000;
+            --light: #ffffff;
+            --gray: #888888;
+            --dark-gray: #1a1a1a;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --green-accent: #00ff9d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            font-size: 1rem;
+            min-height: 100vh;
+        }
+
+        body.light-mode {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        /* Background & Overlay */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--darker), #001122, var(--darker));
+            transition: background 0.4s ease;
+        }
+
+        body.light-mode .background {
+            background: linear-gradient(135deg, var(--light-gray), #e6f7ff, var(--light-gray));
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                linear-gradient(rgba(0, 114, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 114, 255, 0.1) 1px, transparent 1px);
+            background-size: 1.875rem 1.875rem;
+            transition: background 0.4s ease;
+        }
+
+        body.light-mode .grid-overlay {
+            background:
+                linear-gradient(rgba(0, 114, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 114, 255, 0.05) 1px, transparent 1px);
+        }
+
+        /* Loader */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Header & Navbar - Refined Selectors to avoid conflict */
+        .main-header {
+            padding: 0.8rem 1.5rem;
+            position: fixed;
+            width: auto;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 10, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .main-header:hover {
+            padding: 1rem 2rem;
+            background: rgba(20, 20, 20, 0.8);
+        }
+
+        body.light-mode .main-header {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            font-size: 1rem;
+        }
+
+        body.light-mode .nav-links a {
+            color: var(--dark);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -0.3125rem;
+            left: 0;
+            width: 0;
+            height: 0.125rem;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.4s ease;
+        }
+
+        body.light-mode .mobile-menu-btn {
+            color: var(--dark);
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 5.5rem;
+            left: 50%;
+            width: 90vw;
+            max-width: 20rem;
+            background: rgba(20, 20, 30, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 999;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(0, 114, 255, 0.3);
+            box-shadow: 0 1.25rem 2.5rem rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform-origin: top;
+            transform: translateX(-50%) translateY(-1.25rem) scaleY(0.9);
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.light-mode .mobile-menu {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(0, 114, 255, 0.1);
+        }
+
+        .mobile-menu.active {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0) scaleY(1);
+            visibility: visible;
+        }
+
+        .mobile-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+
+        .mobile-nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 500;
+            padding: 0.8rem 0;
+            transition: all 0.3s ease;
+            display: block;
+            text-align: center;
+        }
+
+        body.light-mode .mobile-nav-links a {
+            color: var(--dark);
+        }
+
+        /* Theme Selector */
+        .theme-selector {
+            position: relative;
+            display: inline-block;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-left: 1rem;
+            transition: transform 0.3s ease, color 0.4s ease;
+        }
+
+        body.light-mode .theme-toggle {
+            color: var(--dark);
+        }
+
+        .theme-dropdown {
+            position: absolute;
+            top: 2.5rem;
+            right: 0;
+            background: rgba(30, 30, 40, 0.9);
+            border: 1px solid rgba(0, 114, 255, 0.3);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0;
+            width: 7.5rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(-0.625rem);
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        body.light-mode .theme-dropdown {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 114, 255, 0.1);
+        }
+
+        .theme-dropdown.show {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+
+        .theme-option {
+            padding: 0.8rem 1rem;
+            color: var(--light);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        body.light-mode .theme-option {
+            color: var(--dark);
+        }
+
+        .theme-option:hover {
+            background: rgba(0, 114, 255, 0.2);
+        }
+
+        .theme-option.active {
+            background: rgba(0, 114, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .mobile-theme-selector {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-theme-title {
+            color: var(--light);
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        body.light-mode .mobile-theme-title {
+            color: var(--dark);
+        }
+
+        .mobile-theme-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .mobile-theme-option {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            padding: 0.8rem;
+            border-radius: 0.5rem;
+            color: var(--light);
+            cursor: pointer;
+        }
+
+        body.light-mode .mobile-theme-option {
+            color: var(--dark);
+        }
+
+        .mobile-theme-option.active {
+            background: rgba(0, 114, 255, 0.3);
+        }
+
+        /* Post Content Styles */
+        .post-section {
+            padding: 8rem 5% 4rem;
+            max-width: 900px;
+            margin: 0 auto;
+            min-height: 80vh;
+        }
+
+        .post-header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .post-category {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: rgba(0, 198, 255, 0.1);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .post-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .post-meta {
+            color: var(--gray);
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .post-image {
+            width: 100%;
+            height: auto;
+            max-height: 500px;
+            object-fit: cover;
+            border-radius: 20px;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .post-body {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #d0d0d0;
+        }
+
+        body.light-mode .post-body {
+            color: #333;
+        }
+
+        .post-body h2 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .post-body p {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Markdown Styling */
+        .post-body h1,
+        .post-body h2,
+        .post-body h3 {
+            color: var(--primary);
+            margin-top: 2.5rem;
+            margin-bottom: 1.2rem;
+            font-weight: 700;
+        }
+
+        .post-body h1 {
+            font-size: 2.2rem;
+        }
+
+        .post-body h2 {
+            font-size: 1.8rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        .post-body h3 {
+            font-size: 1.5rem;
+        }
+
+        .post-body ul,
+        .post-body ol {
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+        }
+
+        .post-body li {
+            margin-bottom: 0.8rem;
+        }
+
+        .post-body blockquote {
+            border-left: 4px solid var(--accent);
+            padding: 1rem 1.5rem;
+            background: rgba(138, 43, 226, 0.05);
+            margin-bottom: 1.5rem;
+            font-style: italic;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .post-body code {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .post-body pre {
+            background: #1e1e1e;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .post-body pre code {
+            background: none;
+            padding: 0;
+            border-radius: 0;
+            color: #e0e0e0;
+        }
+
+        .post-body img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+        }
+
+        .post-body a {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        .post-body hr {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 2.5rem 0;
+        }
+
+        body.light-mode .post-body h1,
+        body.light-mode .post-body h2,
+        body.light-mode .post-body h3 {
+            color: var(--secondary);
+        }
+
+        body.light-mode .post-body pre {
+            background: #f8f8f8;
+            border-color: #ddd;
+        }
+
+        body.light-mode .post-body pre code {
+            color: #333;
+        }
+
+        body.light-mode .post-body code {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(10, 10, 10, 0.9);
+            border-top: 1px solid rgba(0, 114, 255, 0.1);
+            padding: 2rem 5%;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+        }
+
+        body.light-mode footer {
+            background: rgba(245, 245, 245, 0.9);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            max-width: 1600px;
+            margin: 0 auto;
+            font-size: 1rem;
+        }
+
+        .footer-bottom p {
+            color: var(--light);
+        }
+
+        body.light-mode .footer-bottom p {
+            color: var(--dark);
+        }
+
+        @media (max-width: 992px) {
+
+            .nav-links,
+            .theme-selector {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .post-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        <div style="font-size:2rem; font-weight:bold; color:var(--primary);">Loading...</div>
+    </div>
+
+    <div class="background">
+        <div class="grid-overlay"></div>
+    </div>
+
+    <header class="main-header">
+        <div class="header-container">
+            <a href="../../index.html" class="logo">
+                <i class="fas fa-terminal"></i>
+            </a>
+            <nav class="nav-links">
+                <a href="../../index.html#about">About</a>
+                <a href="../../index.html#skills">Skills</a>
+                <a href="project.html">Projects</a>
+                <a href="../blog/blog.html">Blog</a>
+                <a href="../../index.html#contact">Contact</a>
+            </nav>
+            <div style="display: flex; align-items: center;">
+                <div class="theme-selector">
+                    <button class="theme-toggle" id="themeToggle">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                    <div class="theme-dropdown" id="themeDropdown">
+                        <div class="theme-option" data-theme="light">
+                            <i class="fas fa-sun"></i> Light
+                        </div>
+                        <div class="theme-option" data-theme="dark">
+                            <i class="fas fa-moon"></i> Dark
+                        </div>
+                        <div class="theme-option" data-theme="system">
+                            <i class="fas fa-desktop"></i> System
+                        </div>
+                    </div>
+                </div>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-nav-links">
+            <a href="../../index.html#about">About</a>
+            <a href="../../index.html#skills">Skills</a>
+            <a href="project.html">Projects</a>
+            <a href="../blog/blog.html">Blog</a>
+            <a href="../../index.html#contact">Contact</a>
+        </div>
+        <div class="mobile-theme-selector">
+            <div class="mobile-theme-title">Theme Mode</div>
+            <div class="mobile-theme-options">
+                <div class="mobile-theme-option" data-theme="light">
+                    <i class="fas fa-sun"></i> Light
+                </div>
+                <div class="mobile-theme-option" data-theme="dark">
+                    <i class="fas fa-moon"></i> Dark
+                </div>
+                <div class="mobile-theme-option" data-theme="system">
+                    <i class="fas fa-desktop"></i> System
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Content -->
+    <section class="post-section" id="post-content">
+        <!-- Dynamic Content Here -->
+    </section>
+
+    <footer>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Ajoy A G (0xprowl3r). All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get('slug');
+
+        function applyTheme(theme) {
+            const toggleIcon = document.getElementById('themeToggle')?.querySelector('i');
+            if (theme === 'light') {
+                document.body.classList.add('light-mode');
+                if (toggleIcon) toggleIcon.className = 'fas fa-sun';
+            } else if (theme === 'dark') {
+                document.body.classList.remove('light-mode');
+                if (toggleIcon) toggleIcon.className = 'fas fa-moon';
+            } else {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.body.classList.toggle('light-mode', !prefersDark);
+                if (toggleIcon) toggleIcon.className = prefersDark ? 'fas fa-moon' : 'fas fa-sun';
+            }
+            localStorage.setItem('theme', theme);
+            document.querySelectorAll('.theme-option, .mobile-theme-option').forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.theme === theme);
+            });
+        }
+
+        function initThemeSelector() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeDropdown = document.getElementById('themeDropdown');
+            document.querySelectorAll('.theme-option, .mobile-theme-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    const theme = e.currentTarget.dataset.theme;
+                    applyTheme(theme);
+                    if (themeDropdown) themeDropdown.classList.remove('show');
+                });
+            });
+            if (themeToggle) {
+                themeToggle.addEventListener('click', e => {
+                    e.stopPropagation();
+                    if (themeDropdown) themeDropdown.classList.toggle('show');
+                });
+            }
+            document.addEventListener('click', e => {
+                if (themeDropdown && themeToggle && !themeToggle.contains(e.target) && !themeDropdown.contains(e.target)) {
+                    themeDropdown.classList.remove('show');
+                }
+            });
+        }
+
+        function initMobileMenu() {
+            const btn = document.getElementById('mobileMenuBtn');
+            const menu = document.getElementById('mobileMenu');
+            const icon = btn?.querySelector('i');
+            if (!btn || !menu || !icon) return;
+            btn.addEventListener('click', e => {
+                e.stopPropagation();
+                const isActive = menu.classList.toggle('active');
+                icon.className = isActive ? 'fas fa-times' : 'fas fa-bars';
+            });
+            document.querySelectorAll('.mobile-nav-links a').forEach(link => {
+                link.addEventListener('click', () => {
+                    menu.classList.remove('active');
+                    icon.className = 'fas fa-bars';
+                });
+            });
+            document.addEventListener('click', e => {
+                if (menu.classList.contains('active') && !menu.contains(e.target) && !btn.contains(e.target)) {
+                    menu.classList.remove('active');
+                    icon.className = 'fas fa-bars';
+                }
+            });
+        }
+
+        async function fetchPost() {
+            if (!slug) {
+                document.getElementById('post-content').innerHTML = `
+                    <div class="error-msg">
+                        <h2>Invalid Post URL</h2>
+                        <a href="../../index.html" class="back-btn">Return Home</a>
+                    </div>`;
+                document.getElementById('loader').classList.add('hidden');
+                return;
+            }
+
+            const type = 'project';
+            const table = 'projects';
+
+            try {
+                const { data, error } = await db.from(table).select('*').eq('slug', slug).single();
+                if (error) throw error;
+                if (!data) throw new Error('Post not found');
+                renderPost(data, type);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('post-content').innerHTML = `
+                    <div class="error-msg">
+                        <h2>Post Not Found</h2>
+                        <p>${err.message}</p>
+                        <a href="project.html" class="back-btn">Back to Projects</a>
+                    </div>`;
+            } finally {
+                document.getElementById('loader').classList.add('hidden');
+            }
+        }
+
+        function renderPost(data, type) {
+            document.title = `${data.title} | Ajoy A G`;
+            const date = new Date(data.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            // Use marked to parse markdown content
+            let rawContent = data.content || data.body || data.description || data.summary || 'No content available.';
+            let bodyContent = marked.parse(rawContent);
+
+            const html = `
+                <a href="project.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Projects</a>
+                <header class="post-header">
+                    <span class="post-category">${data.category || type}</span>
+                    <h1 class="post-title">${data.title}</h1>
+                    <div class="post-meta">
+                        <span><i class="far fa-calendar"></i> ${date}</span>
+                        ${data.read_time ? `<span><i class="far fa-clock"></i> ${data.read_time}</span>` : ''}
+                    </div>
+                </header>
+                <img src="${data.image_url}" alt="${data.title}" class="post-image" onerror="this.src='assets/images/${type}/${type}1.avif'">
+                <article class="post-body">${bodyContent}</article>
+            `;
+            document.getElementById('post-content').innerHTML = html;
+
+            // Highlight code blocks
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            applyTheme(savedTheme);
+            initThemeSelector();
+            initMobileMenu();
+            fetchPost();
+        });
+    </script>
+</body>
+
+</html>
