@@ -26,7 +26,6 @@ This website showcases my professional journey, technical expertise, and researc
 ## 📂 Project Structure
 
 - `/hero`: The primary public-facing website files.
-- `/admin`: Private administration dashboard for content management.
 - `/assets`: Images, icons, and static resources.
 
 ## ⚖️ License & Copyright
@@ -36,3 +35,4 @@ This website showcases my professional journey, technical expertise, and researc
 The design, code, and content of this repository are proprietary. No part of this project may be reproduced, distributed, or transmitted in any form or by any means, including copying or modification, without the prior written permission of the author. 
 
 See the [LICENSE](LICENSE) file for more details.
+
