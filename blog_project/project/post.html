@@ -21,6 +21,12 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <style>
         /* Core Variables & Website Theme Integration */
         :root {
@@ -35,13 +41,29 @@
             --light-gray: #f5f5f5;
             --medium-gray: #e0e0e0;
             --green-accent: #00ff9d;
+            --bg-gradient: linear-gradient(135deg, #000000, #001122, #000000);
+        }
+
+        body.light-mode {
+            --primary: #4f46e5;
+            --secondary: #3730a3;
+            --accent: #7c3aed;
+            --dark: #0f172a;
+            --darker: #f8fafc;
+            --light: #ffffff;
+            --gray: #64748b;
+            --dark-gray: #e2e8f0;
+            --light-gray: #f1f5f9;
+            --medium-gray: #cbd5e1;
+            --green-accent: #059669;
+            --bg-gradient: linear-gradient(135deg, #f8fafc, #e2e8f0, #f8fafc);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Outfit', sans-serif;
         }
 
         body {
@@ -52,10 +74,12 @@
             transition: background-color 0.4s ease, color 0.4s ease;
             font-size: 1rem;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         body.light-mode {
-            background-color: var(--light);
+            background-color: var(--darker);
             color: var(--dark);
         }
 
@@ -67,12 +91,12 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: linear-gradient(135deg, var(--darker), #001122, var(--darker));
+            background: var(--bg-gradient);
             transition: background 0.4s ease;
         }
 
         body.light-mode .background {
-            background: linear-gradient(135deg, var(--light-gray), #e6f7ff, var(--light-gray));
+            background: var(--bg-gradient);
         }
 
         .grid-overlay {
@@ -90,8 +114,8 @@
 
         body.light-mode .grid-overlay {
             background:
-                linear-gradient(rgba(0, 114, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 114, 255, 0.05) 1px, transparent 1px);
+                linear-gradient(rgba(79, 70, 229, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
         }
 
         /* Loader */
@@ -380,10 +404,130 @@
 
         /* Post Content Styles */
         .post-section {
-            padding: 8rem 5% 4rem;
-            max-width: 900px;
+            padding: 8rem 2rem 4rem;
+            max-width: 1800px;
             margin: 0 auto;
             min-height: 80vh;
+            display: grid;
+            grid-template-columns: 280px minmax(0, 1fr) 300px;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        /* TOC Sidebar (Left) */
+        .toc-sidebar {
+            position: sticky;
+            top: 7rem;
+            max-height: calc(100vh - 9rem);
+            overflow-y: auto;
+            padding-right: 1.5rem;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toc-sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .toc-sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .toc-sidebar::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .toc-header {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--light);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode .toc-header {
+            color: var(--dark);
+            border-bottom-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .toc-sidebar {
+            border-right-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .toc-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .toc-link {
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            line-height: 1.4;
+            display: block;
+            border-left: 2px solid transparent;
+            padding-left: 1rem;
+        }
+
+        .toc-link:hover {
+            color: var(--primary);
+        }
+
+        .toc-link.active {
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .toc-link.h3 {
+            padding-left: 2rem;
+            font-size: 0.85rem;
+        }
+
+        /* Promo Sidebar (Right) */
+        .promo-sidebar {
+            position: sticky;
+            top: 7rem;
+            height: fit-content;
+            padding-left: 1.5rem;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode .promo-sidebar {
+            border-left-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .promo-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        body.light-mode .promo-box {
+            background: rgba(0, 0, 0, 0.03);
+            border-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .promo-text {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        /* Main Content Column */
+        .post-content-column {
+            min-width: 0;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         .post-header {
@@ -431,6 +575,7 @@
             margin-bottom: 3rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, var(--primary), var(--accent));
         }
 
         .post-body {
@@ -444,10 +589,13 @@
         }
 
         .post-body h2 {
-            margin-top: 2rem;
-            margin-bottom: 1rem;
+            margin-top: 3rem;
+            /* Increased spacing for scrolling offset */
+            margin-bottom: 1.5rem;
             color: var(--primary);
             font-size: 1.8rem;
+            scroll-margin-top: 6rem;
+            /* Scroll offset */
         }
 
         .post-body p {
@@ -456,12 +604,12 @@
 
         /* Markdown Styling */
         .post-body h1,
-        .post-body h2,
         .post-body h3 {
             color: var(--primary);
             margin-top: 2.5rem;
             margin-bottom: 1.2rem;
             font-weight: 700;
+            scroll-margin-top: 6rem;
         }
 
         .post-body h1 {
@@ -469,7 +617,6 @@
         }
 
         .post-body h2 {
-            font-size: 1.8rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding-bottom: 0.5rem;
         }
@@ -573,10 +720,13 @@
 
         /* Footer */
         footer {
+            margin-top: auto;
             background: rgba(10, 10, 10, 0.9);
             border-top: 1px solid rgba(0, 114, 255, 0.1);
             padding: 2rem 5%;
             transition: background-color 0.4s ease, border-color 0.4s ease;
+            position: relative;
+            z-index: 10;
         }
 
         body.light-mode footer {
@@ -598,7 +748,40 @@
             color: var(--dark);
         }
 
-        @media (max-width: 992px) {
+        @media (min-width: 1200px) {
+
+            .toc-sidebar,
+            .promo-sidebar {
+                display: block;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .post-section {
+                grid-template-columns: 240px 1fr;
+                padding: 6rem 2% 4rem;
+            }
+
+            .promo-sidebar {
+                display: none;
+            }
+
+            .toc-sidebar {
+                display: block;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .post-section {
+                grid-template-columns: 1fr;
+                display: block;
+                padding: 6rem 5% 4rem;
+            }
+
+            .toc-sidebar,
+            .promo-sidebar {
+                display: none;
+            }
 
             .nav-links,
             .theme-selector {
@@ -691,9 +874,42 @@
         </div>
     </div>
 
-    <!-- Post Content -->
-    <section class="post-section" id="post-content">
-        <!-- Dynamic Content Here -->
+    <!-- Post Content Structure -->
+    <section class="post-section">
+        <!-- Sidebar (Left): Table of Contents -->
+        <aside class="toc-sidebar">
+            <div class="toc-header">Table of Contents</div>
+            <nav id="toc-nav" class="toc-nav">
+                <!-- Links injected via JS -->
+            </nav>
+        </aside>
+
+        <!-- Main Content (Center) -->
+        <main class="post-content-column" id="post-content">
+            <!-- Dynamic Content Here -->
+        </main>
+
+        <!-- Sidebar (Right): Promotions -->
+        <aside class="promo-sidebar">
+            <div class="promo-box">
+                <p class="promo-text">Interested in Cybersecurity?</p>
+                <a href="../../index.html#contact" class="btn-primary"
+                    style="display:inline-block; padding:0.5rem 1rem; background:var(--primary); color:#fff; border-radius:4px; text-decoration:none;">Contact
+                    Me</a>
+            </div>
+            <div class="promo-box">
+                <p class="promo-text">Check out my projects</p>
+                <a href="project.html" style="color:var(--primary); font-weight:600;">View Portfolio &rarr;</a>
+            </div>
+
+            <!-- Ads Placeholder -->
+            <div class="promo-box ad-space"
+                style="border: 1px dashed var(--gray); min-height: 250px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                <p class="promo-text" style="font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;">
+                    Advertisement</p>
+                <div style="color: var(--gray); font-size: 0.9rem;">(Ad Space Available)</div>
+            </div>
+        </aside>
     </section>
 
     <footer>
@@ -791,10 +1007,14 @@
             const table = 'projects';
 
             try {
-                const { data, error } = await db.from(table).select('*').eq('slug', slug).single();
+                if (typeof db === 'undefined') throw new Error('Database client not initialized');
+
+                const { data: postData, error } = await db.from(table).select('*').eq('slug', slug).single();
+
                 if (error) throw error;
-                if (!data) throw new Error('Post not found');
-                renderPost(data, type);
+                if (!postData) throw new Error('Post not found');
+
+                renderPost(postData, type);
             } catch (err) {
                 console.error(err);
                 document.getElementById('post-content').innerHTML = `
@@ -808,25 +1028,31 @@
             }
         }
 
-        function renderPost(data, type) {
-            document.title = `${data.title} | Ajoy A G`;
-            const date = new Date(data.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        function renderPost(post, type) {
+            document.title = `${post.title} | Ajoy A G`;
+            const metaDescription = document.querySelector('meta[name="description"]');
+            if (metaDescription) {
+                metaDescription.setAttribute('content', post.excerpt || post.title);
+            }
+
+            const container = document.getElementById('post-content');
+            const date = new Date(post.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
             // Use marked to parse markdown content
-            let rawContent = data.content || data.body || data.description || data.summary || 'No content available.';
+            let rawContent = post.content || post.body || post.description || post.summary || 'No content available.';
             let bodyContent = marked.parse(rawContent);
 
             const html = `
                 <a href="project.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Projects</a>
                 <header class="post-header">
-                    <span class="post-category">${data.category || type}</span>
-                    <h1 class="post-title">${data.title}</h1>
+                    <span class="post-category">${post.category || type}</span>
+                    <h1 class="post-title">${post.title}</h1>
                     <div class="post-meta">
                         <span><i class="far fa-calendar"></i> ${date}</span>
-                        ${data.read_time ? `<span><i class="far fa-clock"></i> ${data.read_time}</span>` : ''}
+                        ${post.read_time ? `<span><i class="far fa-clock"></i> ${post.read_time}</span>` : ''}
                     </div>
                 </header>
-                <img src="${data.image_url}" alt="${data.title}" class="post-image" onerror="this.src='assets/images/${type}/${type}1.avif'">
+                <img src="${post.image_url}" alt="${post.title}" class="post-image" onerror="this.style.display='none'">
                 <article class="post-body">${bodyContent}</article>
             `;
             document.getElementById('post-content').innerHTML = html;
@@ -835,6 +1061,75 @@
             document.querySelectorAll('pre code').forEach((block) => {
                 hljs.highlightElement(block);
             });
+
+            // Generate Table of Contents
+            generateTOC();
+        }
+
+        function generateTOC() {
+            const tocNav = document.getElementById('toc-nav');
+            tocNav.innerHTML = '';
+
+            const headings = document.querySelectorAll('.post-body h2, .post-body h3');
+            if (headings.length === 0) {
+                document.querySelector('.toc-sidebar').style.display = 'none';
+                return;
+            }
+
+            headings.forEach((heading, index) => {
+                // Assign ID if missing
+                if (!heading.id) {
+                    const anchor = heading.textContent.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-');
+                    heading.id = anchor || `heading-${index}`;
+                }
+
+                const link = document.createElement('a');
+                link.href = `#${heading.id}`;
+                link.textContent = heading.textContent;
+                link.className = `toc-link ${heading.tagName.toLowerCase()}`;
+
+                // Smooth scroll click handler
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById(heading.id).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    // Update URL hash without jumping
+                    history.pushState(null, null, link.href);
+                });
+
+                tocNav.appendChild(link);
+            });
+
+            // Initialize ScrollSpy
+            initScrollSpy();
+        }
+
+        function initScrollSpy() {
+            const headings = document.querySelectorAll('.post-body h2, .post-body h3');
+            const tocLinks = document.querySelectorAll('.toc-link');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '-10% 0px -80% 0px', // Trigger when heading is near top
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Remove active from all
+                        tocLinks.forEach(link => link.classList.remove('active'));
+
+                        // Add active to current
+                        const id = entry.target.id;
+                        const activeLink = document.querySelector(`.toc-link[href="#${id}"]`);
+                        if (activeLink) activeLink.classList.add('active');
+                    }
+                });
+            }, observerOptions);
+
+            headings.forEach(heading => observer.observe(heading));
         }
 
         document.addEventListener('DOMContentLoaded', () => {

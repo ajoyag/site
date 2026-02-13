@@ -19,6 +19,13 @@
     <!-- Assets -->
     <link rel="icon" type="image/x-icon" href="assets/images/icon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
     <style>
@@ -31,13 +38,25 @@
             --darker: #000000;
             --light: #ffffff;
             --gray: #888888;
+            --bg-gradient: linear-gradient(135deg, #000000, #001122);
+        }
+
+        body.light-mode {
+            --primary: #4f46e5;
+            --secondary: #3730a3;
+            --accent: #7c3aed;
+            --dark: #0f172a;
+            --darker: #f8fafc;
+            --light: #ffffff;
+            --gray: #64748b;
+            --bg-gradient: linear-gradient(135deg, #f8fafc, #e2e8f0, #f8fafc);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Outfit', sans-serif;
         }
 
         body {
@@ -49,7 +68,7 @@
         }
 
         body.light-mode {
-            background-color: var(--light);
+            background-color: var(--darker);
             color: var(--dark);
         }
 
@@ -58,11 +77,11 @@
             position: fixed;
             inset: 0;
             z-index: -1;
-            background: linear-gradient(135deg, var(--darker), #001122);
+            background: var(--bg-gradient);
         }
 
         body.light-mode .background {
-            background: linear-gradient(135deg, #f5f5f5, #e6f7ff);
+            background: var(--bg-gradient);
         }
 
         .grid-overlay {
@@ -71,6 +90,11 @@
             background: linear-gradient(rgba(0, 114, 255, 0.1) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 114, 255, 0.1) 1px, transparent 1px);
             background-size: 30px 30px;
+        }
+
+        body.light-mode .grid-overlay {
+            background: linear-gradient(rgba(79, 70, 229, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
         }
 
         /* Header & Navbar */
@@ -495,9 +519,9 @@
         }
 
         body.light-mode .project-card {
-            background: rgba(255, 255, 255, 0.7);
-            border-color: rgba(0, 114, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            background: var(--light);
+            border-color: rgba(79, 70, 229, 0.1);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
         }
 
         .project-card:hover {
@@ -507,8 +531,8 @@
         }
 
         body.light-mode .project-card:hover {
-            border-color: rgba(0, 114, 255, 0.3);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: rgba(79, 70, 229, 0.3);
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
         }
 
         .card-image-wrapper {
@@ -907,7 +931,9 @@
 
         async function fetchProjects() {
             try {
-                const { data, error } = await db.from('projects')
+                if (typeof db === 'undefined') throw new Error('Database client not initialized');
+
+                const { data: projects, error } = await db.from('projects')
                     .select('*')
                     .eq('is_published', true)
                     .order('created_at', { ascending: false });
@@ -915,16 +941,16 @@
                 if (error) throw error;
 
                 const container = document.getElementById('projects-grid');
-                if (!data || data.length === 0) {
+                if (!projects || projects.length === 0) {
                     container.innerHTML = '<p class="loader-text">No projects found.</p>';
                     return;
                 }
 
-                allProjectsData = data;
+                allProjectsData = projects;
 
                 // 1. Extract Unique Categories & Normalize
                 const categories = new Set(['all']);
-                data.forEach(p => {
+                projects.forEach(p => {
                     if (p.category) categories.add(p.category);
                 });
 
@@ -943,7 +969,7 @@
                 });
 
                 // 3. Render All Projects Initially
-                renderGrid(data);
+                renderGrid(projects);
 
             } catch (err) {
                 console.error(err);
@@ -960,16 +986,16 @@
 
             container.innerHTML = projects.map(project => {
                 // Handle local asset paths vs remote
-                const imgUrl = project.image_url && project.image_url.startsWith('assets')
+                const imgUrl = project.image_url && !project.image_url.startsWith('assets')
                     ? project.image_url
-                    : (project.image_url || 'assets/images/project/project1.avif');
+                    : '';
 
                 const dateStr = new Date(project.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
                 return `
                 <a href="post.html?slug=${project.slug}" class="project-card fade-in">
                     <div class="card-image-wrapper">
-                        <img src="${imgUrl}" alt="${project.title}" class="card-img" onerror="this.src='assets/images/project/project1.avif'">
+                        <img src="${imgUrl}" alt="${project.title}" class="card-img" onerror="this.style.display='none'">
                     </div>
                     <div class="card-content">
                         <div class="card-meta">

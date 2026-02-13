@@ -19,6 +19,13 @@
     <!-- Assets -->
     <link rel="icon" type="image/x-icon" href="assets/images/icon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
     <style>
@@ -31,13 +38,25 @@
             --darker: #000000;
             --light: #ffffff;
             --gray: #888888;
+            --bg-gradient: linear-gradient(135deg, #000000, #001122);
+        }
+
+        body.light-mode {
+            --primary: #4f46e5;
+            --secondary: #3730a3;
+            --accent: #7c3aed;
+            --dark: #0f172a;
+            --darker: #f8fafc;
+            --light: #ffffff;
+            --gray: #64748b;
+            --bg-gradient: linear-gradient(135deg, #f8fafc, #e2e8f0, #f8fafc);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Outfit', sans-serif;
         }
 
         body {
@@ -49,7 +68,7 @@
         }
 
         body.light-mode {
-            background-color: var(--light);
+            background-color: var(--darker);
             color: var(--dark);
         }
 
@@ -58,11 +77,11 @@
             position: fixed;
             inset: 0;
             z-index: -1;
-            background: linear-gradient(135deg, var(--darker), #001122);
+            background: var(--bg-gradient);
         }
 
         body.light-mode .background {
-            background: linear-gradient(135deg, #f5f5f5, #e6f7ff);
+            background: var(--bg-gradient);
         }
 
         .grid-overlay {
@@ -71,6 +90,11 @@
             background: linear-gradient(rgba(0, 114, 255, 0.1) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 114, 255, 0.1) 1px, transparent 1px);
             background-size: 30px 30px;
+        }
+
+        body.light-mode .grid-overlay {
+            background: linear-gradient(rgba(79, 70, 229, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
         }
 
         /* Header & Navbar */
@@ -500,14 +524,14 @@
         }
 
         body.light-mode .blog-item {
-            background: rgba(255, 255, 255, 0.7);
-            border-color: rgba(0, 114, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            background: var(--light);
+            border-color: rgba(79, 70, 229, 0.1);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
         }
 
         body.light-mode .blog-item:hover {
-            border-color: rgba(0, 114, 255, 0.3);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: rgba(79, 70, 229, 0.3);
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
         }
 
         .blog-image {
@@ -872,14 +896,22 @@
 
         async function fetchBlogs() {
             try {
-                const { data, error } = await db.from('blogs')
+                if (typeof db === 'undefined') throw new Error('Database client not initialized');
+
+                const { data: blogs, error } = await db.from('blogs')
                     .select('*')
                     .eq('is_published', true)
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
-                allBlogsData = data;
-                renderGrid(data);
+                allBlogsData = blogs || [];
+
+                const container = document.getElementById('blog-grid');
+                if (!blogs || blogs.length === 0) {
+                    container.innerHTML = '<p class="loader-text">No posts match your search.</p>';
+                } else {
+                    renderGrid(blogs);
+                }
             } catch (err) {
                 console.error(err);
                 document.getElementById('blog-grid').innerHTML = '<p class="loader-text" style="color:#ff4444">Error loading posts.</p>';
@@ -893,13 +925,13 @@
                 return;
             }
             container.innerHTML = blogs.map(blog => {
-                const imgUrl = blog.image_url || 'assets/images/blog/blog1.avif';
+                const imgUrl = blog.image_url || '';
                 const date = new Date(blog.created_at);
                 const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                 return `
                     <div class="blog-item fade-in">
                         <div class="blog-image">
-                            <img src="${imgUrl}" alt="${blog.title}" onerror="this.src='assets/images/blog/blog1.avif'">
+                            <img src="${imgUrl}" alt="${blog.title}" onerror="this.style.display='none'">
                         </div>
                         <div class="blog-content">
                             <div class="blog-meta">

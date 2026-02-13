@@ -67,12 +67,19 @@
     <link rel="icon" type="image/x-icon" href="assets/images/icon.ico">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Outfit', sans-serif;
         }
 
         img,
@@ -94,6 +101,22 @@
             --light-gray: #f5f5f5;
             --medium-gray: #e0e0e0;
             --green-accent: #00ff9d;
+            --bg-gradient: linear-gradient(135deg, #000000, #001122, #000000);
+        }
+
+        body.light-mode {
+            --primary: #4f46e5;
+            --secondary: #3730a3;
+            --accent: #7c3aed;
+            --dark: #0f172a;
+            --darker: #f8fafc;
+            --light: #ffffff;
+            --gray: #64748b;
+            --dark-gray: #e2e8f0;
+            --light-gray: #f1f5f9;
+            --medium-gray: #cbd5e1;
+            --green-accent: #059669;
+            --bg-gradient: linear-gradient(135deg, #f8fafc, #e2e8f0, #f8fafc);
         }
 
         html {
@@ -104,7 +127,7 @@
 
         body {
             background-color: var(--darker);
-            color: var(--light);
+            color: var(--dark-mode-text, var(--light));
             overflow-x: hidden;
             line-height: 1.6;
             transition: background-color 0.4s ease, color 0.4s ease;
@@ -113,7 +136,7 @@
         }
 
         body.light-mode {
-            background-color: var(--light);
+            background-color: var(--darker);
             color: var(--dark);
         }
 
@@ -208,7 +231,7 @@
         }
 
         body.light-mode .background {
-            background: linear-gradient(135deg, var(--light-gray), #e6f7ff, var(--light-gray));
+            background: var(--bg-gradient);
         }
 
         .grid-overlay {
@@ -227,8 +250,8 @@
 
         body.light-mode .grid-overlay {
             background:
-                linear-gradient(rgba(0, 114, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 114, 255, 0.05) 1px, transparent 1px);
+                linear-gradient(rgba(79, 70, 229, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
         }
 
         .particles {
@@ -436,7 +459,7 @@
         }
 
         body.light-mode .mobile-theme-selector {
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .mobile-theme-title {
@@ -1170,10 +1193,22 @@
 
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
-            max-width: 1600px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            max-width: 1400px;
             margin: 0 auto;
+        }
+
+        @media (max-width: 1200px) {
+            .projects-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1193,9 +1228,9 @@
         }
 
         body.light-mode .project-item {
-            background: rgba(255, 255, 255, 0.7);
-            border-color: rgba(0, 114, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            background: var(--light);
+            border-color: rgba(79, 70, 229, 0.1);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
         }
 
         .project-item:hover {
@@ -1287,10 +1322,22 @@
 
         .blog-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
-            max-width: 1600px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            max-width: 1400px;
             margin: 0 auto;
+        }
+
+        @media (max-width: 1200px) {
+            .blog-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1309,9 +1356,9 @@
         }
 
         body.light-mode .blog-item {
-            background: rgba(255, 255, 255, 0.7);
-            border-color: rgba(0, 114, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            background: var(--light);
+            border-color: rgba(79, 70, 229, 0.1);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
         }
 
         .blog-item:hover {
@@ -2793,7 +2840,7 @@
                     .select('*')
                     .eq('is_published', true)
                     .order('created_at', { ascending: false })
-                    .limit(3); // Limit to 3 for Hero section
+                    .limit(4); // Limit to 4 for Hero section
 
                 if (error) throw error;
 
@@ -2809,13 +2856,12 @@
                     <div class="project-item">
                         <div class="project-image">
                             <img src="${project.image_url}" alt="${project.title}" loading="lazy" 
-                                 onerror="this.src='blog_project/project/assets/images/project/project1.avif'">
+                                 onerror="this.style.display='none'">
                         </div>
                         <div class="project-content">
                             <div class="project-category">${project.category || 'Project'}</div>
                             <h3 class="project-title">${project.title}</h3>
                             <p class="project-description">${project.summary || ''}</p>
-                            <!-- Note: Link assumes standard path structure -->
                             <a href="blog_project/project/post.html?slug=${project.slug}" class="project-link">
                                 View Project <i class="fas fa-arrow-right"></i>
                             </a>
@@ -2836,7 +2882,7 @@
                     .select('*')
                     .eq('is_published', true)
                     .order('created_at', { ascending: false })
-                    .limit(3); // Limit to 3 for Hero section
+                    .limit(4); // Limit to 4 for Hero section
 
                 if (error) throw error;
 
@@ -2852,7 +2898,7 @@
                     <div class="blog-item">
                         <div class="blog-image">
                             <img src="${blog.image_url}" alt="${blog.title}" loading="lazy"
-                                 onerror="this.src='blog_project/blog/assets/images/blog/blog1.avif'">
+                                 onerror="this.style.display='none'">
                         </div>
                         <div class="blog-content">
                             <h3 class="blog-title">${blog.title}</h3>

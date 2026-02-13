@@ -34,6 +34,13 @@
     <link rel="icon" type="image/x-icon" href="assets/images/icon.ico">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -44,7 +51,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Outfit', sans-serif;
         }
 
         img,
@@ -69,6 +76,24 @@
             /* Extra for new sections */
             --glass-bg: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.1);
+            --bg-gradient: linear-gradient(135deg, #000000, #001122, #000000);
+        }
+
+        body.light-mode {
+            --primary: #4f46e5;
+            --secondary: #3730a3;
+            --accent: #7c3aed;
+            --dark: #0f172a;
+            --darker: #f8fafc;
+            --light: #ffffff;
+            --gray: #64748b;
+            --dark-gray: #e2e8f0;
+            --light-gray: #f1f5f9;
+            --medium-gray: #cbd5e1;
+            --green-accent: #059669;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.05);
+            --bg-gradient: linear-gradient(135deg, #f8fafc, #e2e8f0, #f8fafc);
         }
 
         html {
@@ -87,7 +112,7 @@
         }
 
         body.light-mode {
-            background-color: var(--light);
+            background-color: var(--darker);
             color: var(--dark);
         }
 
@@ -144,7 +169,7 @@
         }
 
         body.light-mode .background {
-            background: linear-gradient(135deg, var(--light-gray), #e6f7ff, var(--light-gray));
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0, #f8fafc);
         }
 
         .grid-overlay {
