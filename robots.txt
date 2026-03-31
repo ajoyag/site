@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://ajoyag.in/sitemap.xml
