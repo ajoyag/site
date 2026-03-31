@@ -3029,20 +3029,21 @@
 
                 if (error) throw error;
 
+                const filtered = (data || []).filter(t => t.is_visible !== false);
+
                 const container = document.getElementById('testimonials-container');
                 const dotsContainer = document.getElementById('testimonials-dots');
                 if (!container) return;
 
-                if (!data || data.length === 0) {
+                if (filtered.length === 0) {
                     container.innerHTML = '<p style="text-align:center; color:#888;">No testimonials yet.</p>';
                     return;
                 }
 
                 // Render Cards
-                // Render Cards
                 container.innerHTML = `
                     <button class="nav-btn prev-btn" onclick="prevTestimonial()"><i class="fas fa-chevron-left"></i></button>
-                    ${data.map((item, index) => `
+                    ${filtered.map((item, index) => `
                     <div class="testimonial-card" data-index="${index}" style="isolation: isolate; position: absolute; overflow: hidden; border-radius: 16px;">
                         
                         ${item.bg_image_url
@@ -3127,7 +3128,18 @@
                     return;
                 }
 
-                container.innerHTML = data.map(item => `
+                // Apply Parent/Child Awareness (same logic as blogs/projects)
+                const filteredAwards = data.filter(a => {
+                    if (!a.parent_id) return a.is_visible !== false; // Parents: show unless explicitly hidden
+                    else return a.is_visible === true;             // Children: hide unless explicitly shown
+                }).slice(0, 3); // Preview grid shows top 3
+
+                if (filteredAwards.length === 0) {
+                   container.innerHTML = '<p>No awards to show.</p>';
+                   return;
+                }
+
+                container.innerHTML = filteredAwards.map(item => `
                     <div class="award-preview-card">
                         <div class="award-preview-title">${item.title}</div>
                         <div class="award-preview-issuer">${item.issuer}</div>

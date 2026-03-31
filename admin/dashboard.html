@@ -1512,9 +1512,19 @@
                     onclick="goToStep(1)">Previous</button>
 
                 <!-- Step 1 Controls -->
-                <div id="step1Controls" style="display:flex; gap:1rem;">
+                <div id="step1Controls" style="display:flex; align-items:center; gap:1rem;">
                     <button class="btn-nav btn-save" id="btnDraft" style="background:#333; border:1px solid #555;"
                         onclick="saveDraft()">Create & Close</button>
+                    <div class="form-group status-controls" id="commonStatusControls" style="margin:0; display:flex; align-items:center; gap:1rem; border-right:1px solid #444; padding-right:1rem;">
+                        <div style="display:flex; align-items:center; gap:0.4rem;">
+                           <input type="checkbox" id="itemVisible" checked>
+                           <label class="form-label" style="margin:0; color:white; font-size:0.85rem; cursor:pointer;" for="itemVisible">Show Card</label>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:0.4rem;">
+                           <input type="checkbox" id="itemPublished" checked>
+                           <label class="form-label" style="margin:0; color:white; font-size:0.85rem; cursor:pointer;" for="itemPublished">Publish</label>
+                        </div>
+                    </div>
                     <button class="btn-nav btn-next" id="btnNext" onclick="goToStep(2)">Next: Content</button>
                     <button class="btn-nav btn-save" id="btnSave" onclick="saveItem()"
                         style="display:none;">Save</button>
@@ -1522,15 +1532,6 @@
 
                 <!-- Step 2 Controls -->
                 <div id="step2Controls" style="display:none; align-items:center; gap:1rem;">
-                    <div class="form-group"
-                        style="margin:0; display:flex; align-items:center; gap:0.5rem; border-right:1px solid #444; padding-right:1rem;">
-                        <input type="checkbox" id="itemVisible" checked>
-                        <label class="form-label" style="margin:0; color:white;">Show Card</label>
-                    </div>
-                    <div class="form-group" style="margin:0; display:flex; align-items:center; gap:0.5rem;">
-                        <input type="checkbox" id="itemPublished" checked>
-                        <label class="form-label" style="margin:0; color:white;">Publish</label>
-                    </div>
                     <button class="btn-nav btn-save" onclick="saveItem()">Upload & Save</button>
                 </div>
             </div>
@@ -1678,9 +1679,8 @@
 
                     if (blogError) {
                         console.warn("parent_id column missing. Falling back...");
-                        // Fallback: Fetch without parent_id
-                        // Fallback: Fetch without parent_id and without is_visible
-                        const { data: fallbackData, error: fallbackError } = await db.from('blogs').select('id, title, slug, category, read_time, is_published, created_at').order('created_at', { ascending: false });
+                        // Fallback: Fetch without parent_id but include is_visible if possible
+                        const { data: fallbackData, error: fallbackError } = await db.from('blogs').select('id, title, slug, category, read_time, is_published, is_visible, created_at').order('created_at', { ascending: false });
                         query = { data: fallbackData, error: fallbackError };
 
                         if (fallbackError) throw fallbackError;
@@ -1739,8 +1739,8 @@
 
                     if (projError) {
                         console.warn("parent_id column missing in projects. Falling back...");
-                        // Fallback: Fetch without parent_id and without is_visible
-                        const { data: fallbackData, error: fallbackError } = await db.from('projects').select('id, title, slug, category, github_link, is_published, created_at').order('created_at', { ascending: false });
+                        // Fallback: Fetch without parent_id but include is_visible
+                        const { data: fallbackData, error: fallbackError } = await db.from('projects').select('id, title, slug, category, github_link, is_published, is_visible, created_at').order('created_at', { ascending: false });
                         query = { data: fallbackData, error: fallbackError };
 
                         if (fallbackError) throw fallbackError;
@@ -1792,14 +1792,14 @@
                     // Check for parent_id (similar fallback pattern if not migrated, but since migration script is manual step, we assume it might fail if user didn't run it yet, so let's handle gracefully)
                     // Wait, we just added the migration step, so user must run it.
                     // But to be consistent with others:
-                    let selectQuery = 'id, title, issuer, date, image_url, description, content, slug, is_published, created_at, parent_id';
+                    let selectQuery = 'id, title, issuer, date, image_url, description, content, slug, is_published, is_visible, created_at, parent_id';
 
                     let { data: awardData, error: awardError } = await db.from('awards').select(selectQuery).order('date', { ascending: false });
 
-                    // Graceful fallback if any error (missing columns, etc.)
+                    // Graceful fallback if any error
                     if (awardError) {
                         console.warn('New columns missing in awards, fallback to basic fetch.');
-                        const { data: fallback, error: fbError } = await db.from('awards').select('id, title, issuer, date, image_url, description, is_published').order('date', { ascending: false });
+                        const { data: fallback, error: fbError } = await db.from('awards').select('id, title, issuer, date, image_url, description, is_published, is_visible').order('date', { ascending: false });
                         if (fbError) throw fbError;
                         window.allAwards = fallback || [];
                         query = { data: fallback, error: null };
@@ -1916,7 +1916,11 @@
                             const titleDisplay = isChild ? `<i class="fas fa-level-up-alt fa-rotate-90" style="margin-right:5px; color:var(--gray);"></i> ${item.title}` : item.title;
                             const titleStyle = isChild ? 'padding-left: 2rem; border-left: 3px solid var(--accent);' : '';
 
-                            cols = `<td style="${titleStyle}">${titleDisplay}</td><td>${parentTitle}</td><td>${item.category || '-'}</td><td>${item.read_time || '-'}</td><td><span style="color:${item.is_published ? '#00ff9d' : '#777'}">${item.is_published ? 'Published' : 'Draft'}</span></td>`;
+                            const visState = item.is_visible !== false;
+                            const visHtml = visState ? '<i class="fas fa-eye" title="Visible in listings" style="color:#00c6ff; margin-right:8px;"></i>' : '<i class="fas fa-eye-slash" title="Hidden from listings" style="color:#777; margin-right:8px;"></i>';
+                            const pubHtml = `<span style="color:${item.is_published ? '#00ff9d' : '#777'}">${item.is_published ? 'Published' : 'Draft'}</span>`;
+
+                            cols = `<td style="${titleStyle}">${titleDisplay}</td><td>${parentTitle}</td><td>${item.category || '-'}</td><td>${item.read_time || '-'}</td><td><div style="display:flex; align-items:center;">${visHtml} ${pubHtml}</div></td>`;
                         } else if (originalType === 'projects') {
                             const isChild = item.is_child;
                             const parentTitle = item.parent_title || '-';
@@ -1929,7 +1933,11 @@
                             const titleDisplay = isChild ? `<i class="fas fa-level-up-alt fa-rotate-90" style="margin-right:5px; color:var(--gray);"></i> ${item.title}` : item.title;
                             const titleStyle = isChild ? 'padding-left: 2rem; border-left: 3px solid var(--accent);' : '';
 
-                            cols = `<td style="${titleStyle}">${titleDisplay}</td><td>${parentTitle}</td><td>${item.category || '-'}</td><td>${item.github_link ? '<a href="' + item.github_link + '" target="_blank">Repo</a>' : '-'}</td><td><span style="color:${item.is_published ? '#00ff9d' : '#777'}">${item.is_published ? 'Published' : 'Draft'}</span></td>`;
+                            const visState = item.is_visible !== false;
+                            const visHtml = visState ? '<i class="fas fa-eye" title="Visible in listings" style="color:#00c6ff; margin-right:8px;"></i>' : '<i class="fas fa-eye-slash" title="Hidden from listings" style="color:#777; margin-right:8px;"></i>';
+                            const pubHtml = `<span style="color:${item.is_published ? '#00ff9d' : '#777'}">${item.is_published ? 'Published' : 'Draft'}</span>`;
+
+                            cols = `<td style="${titleStyle}">${titleDisplay}</td><td>${parentTitle}</td><td>${item.category || '-'}</td><td>${item.github_link ? '<a href="' + item.github_link + '" target="_blank">Repo</a>' : '-'}</td><td><div style="display:flex; align-items:center;">${visHtml} ${pubHtml}</div></td>`;
                         } else if (originalType === 'experience') {
                             tr.setAttribute('draggable', 'true');
                             tr.setAttribute('data-id', item.id);
@@ -1965,7 +1973,10 @@
                             cols = `<td>${item.name}</td><td>${item.category}</td><td>${item.proficiency || 0}%</td>`;
                         } else if (originalType === 'awards') {
                             const dateStr = item.date ? new Date(item.date).toLocaleDateString() : '-';
-                            cols = `<td>${item.title}</td><td>${item.issuer || '-'}</td><td>${dateStr}</td><td><span style="color:${item.is_published ? '#00ff9d' : '#777'}">${item.is_published ? 'Published' : 'Draft'}</span></td>`;
+                            const visState = item.is_visible !== false;
+                            const visHtml = visState ? '<i class="fas fa-eye" title="Visible in listings" style="color:#00c6ff; margin-right:8px;"></i>' : '<i class="fas fa-eye-slash" title="Hidden from listings" style="color:#777; margin-right:8px;"></i>';
+                            const pubHtml = `<span style="color:${item.is_published ? '#00ff9d' : '#777'}">${item.is_published ? 'Published' : 'Draft'}</span>`;
+                            cols = `<td>${item.title}</td><td>${item.issuer || '-'}</td><td>${dateStr}</td><td><div style="display:flex; align-items:center;">${visHtml} ${pubHtml}</div></td>`;
                         } else if (originalType === 'testimonials') {
                             cols = `<td>${item.client_name}</td><td>${item.client_role}</td><td><div style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.quote}</div></td>`;
                         }
@@ -1979,6 +1990,8 @@
                         }
 
                         const isPub = item.is_published;
+                        const isVis = item.is_visible !== false;
+                        menuItems += `<div onclick="toggleVisibility('${originalType}', '${item.id}', ${isVis})">${isVis ? 'Hide from Web' : 'Show on Web'}</div>`;
                         menuItems += `<div onclick="togglePublish('${originalType}', '${item.id}', ${isPub})">${isPub ? 'Unpublish' : 'Publish'}</div>`;
                         menuItems += `<div onclick="deleteItem('${originalType}', '${item.id}')" style="color:#ff6b6b;">Delete</div>`;
 
@@ -2125,6 +2138,7 @@
                 document.getElementById('cardForm').reset();
                 document.getElementById('itemContent').value = '';
                 document.getElementById('itemPublished').checked = true;
+                document.getElementById('itemVisible').checked = true;
                 if (type === 'blog') document.getElementById('readTimeUnit').value = 'min read';
                 updatePreview();
                 updateMarkdownPreview();
@@ -2558,11 +2572,17 @@
 
         // --- SAVE LOGIC ---
         function getPayload() {
+            const isPub = document.getElementById('itemPublished').checked;
+            const isVis = document.getElementById('itemVisible').checked;
             const payload = {
                 // Common
-                is_published: document.getElementById('itemPublished').checked,
-                is_visible: document.getElementById('itemVisible').checked
+                is_published: isPub
             };
+
+            // Only include is_visible for types that definitely support/need it (per requirements)
+            if (currentType === 'blog' || currentType === 'project' || currentType === 'award') {
+                payload.is_visible = isVis;
+            }
 
             if (currentType === 'blog' || currentType === 'project') {
                 payload.title = document.getElementById('itemTitle').value;
@@ -2831,7 +2851,10 @@
                     document.getElementById('testBgImage').value = data.bg_image_url || '';
                 }
 
-                document.getElementById('itemPublished').checked = data.is_published;
+                // Global Status Fields
+                document.getElementById('itemPublished').checked = data.is_published !== false;
+                // is_visible defaults to true if missing (null/undefined)
+                document.getElementById('itemVisible').checked = data.is_visible !== false;
 
                 if (typeof updatePreview === 'function') updatePreview();
                 if (typeof updateMarkdownPreview === 'function') updateMarkdownPreview();
@@ -2865,13 +2888,34 @@
         });
 
         async function togglePublish(table, id, currentStatus) {
-            try {
-                const { error } = await db.from(table).update({ is_published: !currentStatus }).eq('id', id);
-                if (error) throw error;
-                fetchAll(); // Refresh list
-            } catch (err) {
-                alert('Error updating status: ' + err.message);
+            // Normalize Table
+            let realTable = table;
+            if (table === 'blog') realTable = 'blogs';
+            if (table === 'project') realTable = 'projects';
+
+            const { error } = await db.from(realTable).update({ is_published: !currentStatus }).eq('id', id);
+            if (error) {
+                alert("Failed to toggle status: " + error.message);
+                return;
             }
+            showToast('Item Status Updated');
+            fetchList(table);
+        }
+
+        async function toggleVisibility(table, id, currentStatus) {
+            let realTable = table;
+            if (table === 'blog') realTable = 'blogs';
+            if (table === 'project') realTable = 'projects';
+
+            // Toggle logic: if true -> false, if false/null -> true
+            // is_visible true means "Show Card" checked
+            const { error } = await db.from(realTable).update({ is_visible: !currentStatus }).eq('id', id);
+            if (error) {
+                alert("Failed to toggle visibility: " + error.message);
+                return;
+            }
+            showToast('Item Visibility Updated');
+            fetchList(table);
         }
 
         async function deleteItem(type, id) {
