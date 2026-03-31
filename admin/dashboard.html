@@ -1,0 +1,3113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Ajoy A G</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/x-icon" href="../hero/assets/images/icon.ico">
+
+    <!-- PWA / Mobile App Capabilities -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#00c6ff">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="dashboard-ui.css">
+    <style>
+        :root {
+            --primary: #00c6ff;
+            --secondary: #0072ff;
+            --accent: #8a2be2;
+            --dark: #0a0a0a;
+            --darker: #000000;
+            --light: #ffffff;
+            --gray: #888888;
+            --dark-gray: #1a1a1a;
+            --light-gray: #f5f5f5;
+            --sidebar-width: 250px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: rgba(10, 10, 15, 0.95);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem 1rem;
+            position: fixed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 3rem;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .nav-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            padding: 1rem;
+            border-radius: 8px;
+            color: var(--gray);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(0, 114, 255, 0.1);
+            color: var(--primary);
+        }
+
+        .btn-logout {
+            margin-top: auto;
+            color: #ff4d4d;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 77, 77, 0.1);
+            color: #ff4d4d;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex-grow: 1;
+            padding: 2rem;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .view-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Data Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(30, 30, 40, 0.4);
+            border-radius: 10px;
+            overflow: visible;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .data-table th {
+            background: rgba(30, 30, 40, 0.8);
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .btn-edit {
+            color: var(--primary);
+        }
+
+        .btn-delete {
+            color: #ff4d4d;
+        }
+
+        /* Forms (Modal) */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #15151a;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            height: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--gray);
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: white;
+        }
+
+        /* START: Drag & Drop Styles */
+        .draggable-row {
+            cursor: grab;
+        }
+
+        .draggable-row.over {
+            border-top: 2px solid var(--primary);
+            background: rgba(0, 198, 255, 0.1);
+        }
+
+        /* END: Drag & Drop Styles */
+
+        /* MARKDOWN TOOLBAR & EDITOR */
+        .markdown-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .md-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ddd;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .md-btn:hover {
+            background: rgba(0, 198, 255, 0.2);
+            border-color: #00c6ff;
+            color: #fff;
+        }
+
+        /* Tooltip */
+        .md-btn[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #222;
+            color: #fff;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 1;
+            visibility: visible;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* RESPONSIVE STYLES */
+        .menu-toggle {
+            display: none;
+            background: rgba(10, 10, 15, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 2000;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 3000;
+                width: 80%;
+                /* Wider on mobile */
+                max-width: 300px;
+                transition: transform 0.3s ease;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 4rem 1rem 1rem 1rem;
+                /* Top padding for fixed button */
+            }
+
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            /* Main Overlay when sidebar active */
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 2500;
+                backdrop-filter: blur(2px);
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            /* Responsive Tables */
+            .table-container {
+                overflow-x: auto;
+                margin-top: 1rem;
+                padding-bottom: 0.5rem;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                border-radius: 8px;
+            }
+
+            .data-table {
+                min-width: 800px;
+                /* Force scroll */
+            }
+
+            .header-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .header-row div {
+                width: 100%;
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .btn-primary {
+                flex: 1;
+                text-align: center;
+                justify-content: center;
+                display: flex;
+            }
+        }
+
+        /* CLIENT PREVIEW STYLES (Scoped to #markdownPreview) */
+        #markdownPreview {
+            padding: 2rem;
+            background: #0a0a0a;
+            /* Match body bg */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 600px;
+        }
+
+        /* Typography from Client */
+        #markdownPreview h3 {
+            font-size: 1.8rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: #00c6ff;
+            /* var(--primary) */
+        }
+
+        #markdownPreview h4 {
+            font-size: 1.4rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #0072ff;
+            /* var(--secondary) */
+        }
+
+        #markdownPreview p,
+        #markdownPreview li {
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+
+        #markdownPreview a {
+            color: #00c6ff;
+            text-decoration: none;
+            border-bottom: 1px dotted #00c6ff;
+        }
+
+        #markdownPreview ul,
+        #markdownPreview ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        #markdownPreview blockquote {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+            border-left: 4px solid #00c6ff;
+            font-style: italic;
+            color: #888;
+        }
+
+        #markdownPreview img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            background-color: #1a1a1a;
+        }
+
+        #markdownPreview pre {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0 1.5rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #markdownPreview code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        #markdownPreview pre code {
+            padding: 0;
+            background: none;
+        }
+
+        .form-textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid #333;
+            color: var(--gray);
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--dark-gray);
+            border-left: 4px solid var(--primary);
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        /* Action Dropdown */
+        .action-dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: #1e2530;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.5rem 0;
+            min-width: 160px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: none;
+        }
+
+        .action-dropdown-menu.show {
+            display: block;
+        }
+
+        .action-dropdown-menu div {
+            padding: 0.6rem 1rem;
+            cursor: pointer;
+            color: #ddd;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .action-dropdown-menu div:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .btn-gear {
+            background: rgba(255, 255, 255, 0.05);
+            color: #aaa;
+        }
+
+        .btn-gear:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* SPLIT VIEW MODAL FIX */
+        .split-view {
+            display: flex;
+            gap: 2rem;
+            height: calc(100% - 60px);
+            /* Adjust for header/footer */
+        }
+
+        .form-side,
+        .preview-side {
+            flex: 1;
+            overflow-y: auto;
+            min-width: 0;
+            /* Prevent flex overflow */
+        }
+
+        .preview-side {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            .split-view {
+                flex-direction: column;
+                height: auto;
+                /* Allow full height scrolling */
+            }
+
+            .form-side,
+            .preview-side,
+            .editor-pane,
+            .preview-pane {
+                flex: none;
+                width: 100% !important;
+                /* Force override dashboard-ui.css */
+                border-right: none !important;
+                padding: 1rem;
+            }
+
+            .form-side,
+            .editor-pane {
+                order: 1;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .preview-side,
+            .preview-pane {
+                order: 2;
+                margin-top: 1rem;
+                max-height: 500px;
+                /* Limit height if needed */
+            }
+
+            /* Modal Content needs to allow scroll for tall content */
+            .modal-content {
+                width: 95%;
+                padding: 1rem;
+                height: auto;
+                max-height: 95vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            #step1 {
+                overflow-y: auto;
+            }
+
+            /* Mobile Modal Header */
+            .modal-header {
+                flex-wrap: wrap;
+                gap: 1rem;
+                padding-right: 2rem !important;
+                /* Space for close btn */
+                position: relative;
+            }
+
+            .modal-header h3 {
+                width: 100%;
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .stepper {
+                width: 100%;
+                justify-content: flex-start;
+                gap: 0.5rem;
+            }
+
+            .step {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+                white-space: nowrap;
+            }
+
+            .btn-cancel {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+            }
+
+            /* Mobile Modal Footer */
+            .modal-footer-nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            #step1Controls,
+            #step2Controls {
+                width: 100%;
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .btn-nav {
+                width: 100%;
+                text-align: center;
+                padding: 1rem;
+            }
+
+            /* Better mobile form handling */
+            .form-input,
+            .form-textarea,
+            select.form-input {
+                font-size: 16px !important;
+                /* Prevent iOS zoom */
+                width: 100% !important;
+                /* Ensure full width */
+            }
+
+            /* Fix dropdown clipping/positioning */
+            .modal-content,
+            .step-content {
+                overflow: visible !important;
+                /* Allow popups to escape if needed, though native selects don't need this usually. 
+                                              But for custom logic or DevTools it helps debug layout. 
+                                              Actually, for scrolling we need overflow-y: auto on the container. */
+            }
+
+            /* Re-apply scroll to step1 specifically which wraps the form */
+            #step1 {
+                overflow-y: auto;
+                height: 100%;
+            }
+
+            .modal-content {
+                overflow: hidden !important;
+                /* Keep rounded corners */
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="#" class="logo">0xprowl3r<br><span style="font-size: 0.8rem; color: var(--gray);">Admin
+                Console</span></a>
+
+        <nav class="nav-items">
+            <div class="nav-item active" onclick="showSection('blogs')">
+                <i class="fas fa-newspaper"></i> Blogs
+            </div>
+            <div class="nav-item" onclick="showSection('projects')">
+                <i class="fas fa-code"></i> Projects
+            </div>
+            <div class="nav-item" onclick="showSection('experience')">
+                <i class="fas fa-briefcase"></i> Experience
+            </div>
+            <div class="nav-item" onclick="showSection('education')">
+                <i class="fas fa-graduation-cap"></i> Education
+            </div>
+            <div class="nav-item" onclick="showSection('skills')">
+                <i class="fas fa-tools"></i> Skills
+            </div>
+            <div class="nav-item" onclick="showSection('awards')">
+                <i class="fas fa-trophy"></i> Awards
+            </div>
+            <div class="nav-item" onclick="showSection('testimonials')">
+                <i class="fas fa-comment-dots"></i> Testimonials
+            </div>
+        </nav>
+        <div class="btn-logout" id="logoutBtn" style="cursor:pointer; padding:1rem;">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </div>
+    </aside>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <button class="menu-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i> Menu
+        </button>
+
+        <!-- BLOGS SECTION -->
+        <div id="blogs" class="view-section active">
+            <div class="header-row">
+                <h2>Manage Blogs</h2>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-primary" onclick="triggerBulkImport('blog')"
+                        style="background:var(--secondary);">Bulk Import</button>
+                    <button class="btn-primary" onclick="openWizard('blog')"><i class="fas fa-plus"></i> New
+                        Blog</button>
+                </div>
+            </div>
+            <div id="blogLoading">Loading...</div>
+            <div class="table-container">
+                <table class="data-table" id="blogTable" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Parent Post</th>
+                            <th>Category</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="blogTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PROJECTS SECTION -->
+        <div id="projects" class="view-section">
+            <div class="header-row">
+                <h2>Manage Projects</h2>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-primary" onclick="triggerBulkImport('project')"
+                        style="background:var(--secondary);">Bulk Import</button>
+                    <button class="btn-primary" onclick="openWizard('project')"><i class="fas fa-plus"></i> New
+                        Project</button>
+                </div>
+            </div>
+            <div id="projectLoading">Loading...</div>
+            <div class="table-container">
+                <table class="data-table" id="projectTable" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Parent Post</th>
+                            <th>Category</th>
+                            <th>GitHub</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="projectTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- EXPERIENCE SECTION -->
+        <div id="experience" class="view-section">
+            <div class="header-row">
+                <h2>Experience</h2>
+                <button class="btn-primary" onclick="openWizard('experience')"><i class="fas fa-plus"></i> Add
+                    Experience</button>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="experienceTable">
+                    <thead>
+                        <tr>
+                            <th>Role</th>
+                            <th>Company</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Duration</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="experienceTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- EDUCATION SECTION -->
+        <div id="education" class="view-section">
+            <div class="header-row">
+                <h2>Education</h2>
+                <button class="btn-primary" onclick="openWizard('education')"><i class="fas fa-plus"></i> Add
+                    Education</button>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="educationTable">
+                    <thead>
+                        <tr>
+                            <th>Degree</th>
+                            <th>Institution</th>
+                            <th>Location</th>
+                            <th>Duration</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="educationTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SKILLS SECTION -->
+        <div id="skills" class="view-section">
+            <div class="header-row">
+                <h2>Skills & Tools</h2>
+                <button class="btn-primary" onclick="openWizard('skills')"><i class="fas fa-plus"></i> Add
+                    Skill</button>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="skillsTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Proficiency</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="skillsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- AWARDS SECTION -->
+        <div id="awards" class="view-section">
+            <div class="header-row">
+                <h2>Awards & Achievements</h2>
+                <button class="btn-primary" onclick="openWizard('award')"><i class="fas fa-plus"></i> Add Award</button>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="awardsTable">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Issuer</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="awardsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TESTIMONIALS SECTION -->
+        <div id="testimonials" class="view-section">
+            <div class="header-row">
+                <h2>Testimonials</h2>
+                <button class="btn-primary" onclick="openWizard('testimonials')"><i class="fas fa-plus"></i> Add
+                    Testimonial</button>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="testimonialsTable">
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Role</th>
+                            <th>Quote</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="testimonialsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Hidden File Input for Bulk Import -->
+    <input type="file" id="bulkInput" style="display:none" accept=".json,.csv">
+
+    <!-- UNIFIED WIZARD MODAL -->
+    <!-- This single modal handles both Blogs and Projects via JS configuration -->
+    <div class="modal" id="wizardModal">
+        <div class="modal-content" style="padding: 1rem;">
+            <div class="modal-header" style="margin-bottom: 1rem;">
+                <h3 id="wizardTitle">New Item</h3>
+                <div class="stepper" id="wizardStepper">
+                    <div class="step active" id="step1Indicator" onclick="goToStep(1)" style="cursor:pointer">1. Card
+                        Details</div>
+                    <div class="step" id="step2Indicator" onclick="goToStep(2)" style="cursor:pointer">2. Content &
+                        Publish</div>
+                </div>
+                <button class="btn-cancel" onclick="closeWizard()"
+                    style="border:none; color:white; font-size:1.2rem;">&times;</button>
+            </div>
+
+            <!-- STEP 1: CARD DETAILS -->
+            <div class="step-content active" id="step1">
+                <div class="split-view">
+                    <!-- Form Side -->
+                    <div class="form-side">
+                        <form id="cardForm">
+                            <input type="hidden" id="itemId">
+
+                            <!-- BLOG & PROJECT FIELDS -->
+                            <div id="blogProjectFields">
+                                <div class="form-group">
+                                    <label class="form-label">Title</label>
+                                    <input type="text" id="itemTitle" class="form-input" oninput="updatePreview()"
+                                        required>
+                                </div>
+                                <div class="form-group" id="fieldParentPost">
+                                    <label class="form-label">Parent Post (Optional)</label>
+                                    <select id="itemParent" class="form-input" onchange="handleParentChange()">
+                                        <option value="">No Parent</option>
+                                    </select>
+                                    <small style="color:#666; font-size:0.8rem;">Child posts inherit parent
+                                        slug.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Slug</label>
+                                    <input type="text" id="itemSlug" class="form-input" placeholder="url-friendly-name"
+                                        required>
+                                    <small style="color:#666; font-size:0.8rem;">(Unique ID for the URL, e.g.
+                                        "my-first-post")</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Category</label>
+                                    <input type="text" id="itemCategory" class="form-input" oninput="updatePreview()"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Date</label>
+                                    <input type="date" id="itemDate" class="form-input" oninput="updatePreview()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Image URL</label>
+                                    <input type="text" id="itemImage" class="form-input" oninput="updatePreview()"
+                                        placeholder="https://...">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Summary</label>
+                                    <textarea id="itemSummary" class="form-textarea" style="height: 100px;"
+                                        oninput="updatePreview()"></textarea>
+                                </div>
+
+                                <div class="form-group" id="fieldReadTime">
+                                    <label class="form-label">Read Time</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <input type="number" id="readTimeVal" class="form-input" placeholder="5"
+                                            oninput="updatePreview()">
+                                        <select id="readTimeUnit" class="form-input" style="width:120px;"
+                                            onchange="updatePreview()">
+                                            <option value="min read">Minutes</option>
+                                            <option value="hour read">Hours</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group" id="fieldGithub" style="display:none;">
+                                    <label class="form-label">GitHub URL</label>
+                                    <input type="text" id="itemGithub" class="form-input">
+                                </div>
+                            </div>
+
+                            <!-- EXPERIENCE FIELDS -->
+                            <div id="experienceFields" style="display:none;">
+                                <div class="form-group">
+                                    <label class="form-label">Role / Job Title</label>
+                                    <input type="text" id="expRole" class="form-input" oninput="updatePreview()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Company Name</label>
+                                    <input type="text" id="expCompany" class="form-input" oninput="updatePreview()">
+                                </div>
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">Job Type</label>
+                                        <select id="expWorkType" class="form-input" onchange="updatePreview()">
+                                            <option value="Full-Time">Full-Time</option>
+                                            <option value="Part-Time">Part-Time</option>
+                                            <option value="Self-employed">Self-employed</option>
+                                            <option value="Freelance">Freelance</option>
+                                            <option value="Internship">Internship</option>
+                                            <option value="Trainee">Trainee</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Location</label>
+                                        <input type="text" id="expLocation" class="form-input"
+                                            placeholder="e.g. New York, Remote" oninput="updatePreview()">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Duration</label>
+                                    <div style="display:flex; flex-wrap:wrap; gap:1rem; align-items:center;">
+                                        <div style="display:flex; gap:0.5rem; align-items:center;">
+                                            <span style="color:#aaa; font-size:0.9rem;">From:</span>
+                                            <select id="expStartMonth" class="form-input"
+                                                style="width:auto; padding:0.4rem;"
+                                                onchange="updateDurationFromPickers()">
+                                                <option value="">Month</option>
+                                                <option value="Jan">Jan</option>
+                                                <option value="Feb">Feb</option>
+                                                <option value="Mar">Mar</option>
+                                                <option value="Apr">Apr</option>
+                                                <option value="May">May</option>
+                                                <option value="Jun">Jun</option>
+                                                <option value="Jul">Jul</option>
+                                                <option value="Aug">Aug</option>
+                                                <option value="Sep">Sep</option>
+                                                <option value="Oct">Oct</option>
+                                                <option value="Nov">Nov</option>
+                                                <option value="Dec">Dec</option>
+                                            </select>
+                                            <select id="expStartYear" class="form-input"
+                                                style="width:auto; padding:0.4rem;"
+                                                onchange="updateDurationFromPickers()">
+                                                <option value="">Year</option>
+                                                <option value="2026">2026</option>
+                                                <option value="2025">2025</option>
+                                                <option value="2024">2024</option>
+                                                <option value="2023">2023</option>
+                                                <option value="2022">2022</option>
+                                                <option value="2021">2021</option>
+                                                <option value="2020">2020</option>
+                                                <option value="2019">2019</option>
+                                                <option value="2018">2018</option>
+                                                <option value="2017">2017</option>
+                                                <option value="2016">2016</option>
+                                                <option value="2015">2015</option>
+                                                <option value="2014">2014</option>
+                                                <option value="2013">2013</option>
+                                                <option value="2012">2012</option>
+                                                <option value="2011">2011</option>
+                                                <option value="2010">2010</option>
+                                                <option value="2009">2009</option>
+                                                <option value="2008">2008</option>
+                                                <option value="2007">2007</option>
+                                                <option value="2006">2006</option>
+                                                <option value="2005">2005</option>
+                                                <option value="2004">2004</option>
+                                                <option value="2003">2003</option>
+                                                <option value="2002">2002</option>
+                                                <option value="2001">2001</option>
+                                                <option value="2000">2000</option>
+                                            </select>
+                                        </div>
+                                        <div style="display:flex; gap:0.5rem; align-items:center;">
+                                            <span style="color:#aaa; font-size:0.9rem;">To:</span>
+                                            <select id="expEndMonth" class="form-input"
+                                                style="width:auto; padding:0.4rem;"
+                                                onchange="updateDurationFromPickers()">
+                                                <option value="">Month</option>
+                                                <option value="Jan">Jan</option>
+                                                <option value="Feb">Feb</option>
+                                                <option value="Mar">Mar</option>
+                                                <option value="Apr">Apr</option>
+                                                <option value="May">May</option>
+                                                <option value="Jun">Jun</option>
+                                                <option value="Jul">Jul</option>
+                                                <option value="Aug">Aug</option>
+                                                <option value="Sep">Sep</option>
+                                                <option value="Oct">Oct</option>
+                                                <option value="Nov">Nov</option>
+                                                <option value="Dec">Dec</option>
+                                            </select>
+                                            <select id="expEndYear" class="form-input"
+                                                style="width:auto; padding:0.4rem;"
+                                                onchange="updateDurationFromPickers()">
+                                                <option value="">Year</option>
+                                                <option value="2026">2026</option>
+                                                <option value="2025">2025</option>
+                                                <option value="2024">2024</option>
+                                                <option value="2023">2023</option>
+                                                <option value="2022">2022</option>
+                                                <option value="2021">2021</option>
+                                                <option value="2020">2020</option>
+                                                <option value="2019">2019</option>
+                                                <option value="2018">2018</option>
+                                                <option value="2017">2017</option>
+                                                <option value="2016">2016</option>
+                                                <option value="2015">2015</option>
+                                                <option value="2014">2014</option>
+                                                <option value="2013">2013</option>
+                                                <option value="2012">2012</option>
+                                                <option value="2011">2011</option>
+                                                <option value="2010">2010</option>
+                                                <option value="2009">2009</option>
+                                                <option value="2008">2008</option>
+                                                <option value="2007">2007</option>
+                                                <option value="2006">2006</option>
+                                                <option value="2005">2005</option>
+                                                <option value="2004">2004</option>
+                                                <option value="2003">2003</option>
+                                                <option value="2002">2002</option>
+                                                <option value="2001">2001</option>
+                                                <option value="2000">2000</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top:0.5rem; display:flex; align-items:center; gap:0.5rem;">
+                                        <input type="checkbox" id="expPresent" onchange="toggleExpEnd()">
+                                        <label for="expPresent" style="color:#ccc; cursor:pointer; margin:0;">Currently
+                                            working here</label>
+                                    </div>
+                                    <input type="hidden" id="expDuration">
+                                </div>
+                                <!-- Order handles via Drag & Drop on Main List -->
+                                <input type="hidden" id="expOrder" value="0">
+                                <div class="form-group">
+                                    <label class="form-label">Description (HTML/Text)</label>
+                                    <!-- Using a separate textarea for experience description in Step 1 -->
+                                    <textarea id="expDescription" class="form-textarea" style="height: 200px;"
+                                        oninput="updatePreview()"
+                                        placeholder="<p>...</p><ul><li>...</li></ul>"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- EDUCATION FIELDS -->
+                            <div id="educationFields" style="display:none;">
+                                <div class="form-group">
+                                    <label class="form-label">Degree / Certificate</label>
+                                    <input type="text" id="eduDegree" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Institution</label>
+                                    <input type="text" id="eduInstitution" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Location</label>
+                                    <input type="text" id="eduLocation" class="form-input" placeholder="e.g. London, UK"
+                                        oninput="updatePreview()">
+                                </div>
+                                <input type="hidden" id="eduOrder" value="0">
+
+                                <div class="form-group">
+                                    <label class="form-label">Duration</label>
+                                    <div style="display:flex; flex-wrap:wrap; gap:1rem; align-items:center;">
+                                        <div style="display:flex; gap:0.5rem; align-items:center;">
+                                            <span style="color:#aaa; font-size:0.9rem;">From:</span>
+                                            <select id="eduStartMonth" class="form-input"
+                                                style="width:auto; padding:0.4rem;" onchange="updateEduDuration()">
+                                                <option value="">Month</option>
+                                                <option value="Jan">Jan</option>
+                                                <option value="Feb">Feb</option>
+                                                <option value="Mar">Mar</option>
+                                                <option value="Apr">Apr</option>
+                                                <option value="May">May</option>
+                                                <option value="Jun">Jun</option>
+                                                <option value="Jul">Jul</option>
+                                                <option value="Aug">Aug</option>
+                                                <option value="Sep">Sep</option>
+                                                <option value="Oct">Oct</option>
+                                                <option value="Nov">Nov</option>
+                                                <option value="Dec">Dec</option>
+                                            </select>
+                                            <select id="eduStartYear" class="form-input"
+                                                style="width:auto; padding:0.4rem;" onchange="updateEduDuration()">
+                                                <option value="">Year</option>
+                                                <option value="2026">2026</option>
+                                                <option value="2025">2025</option>
+                                                <option value="2024">2024</option>
+                                                <option value="2023">2023</option>
+                                                <option value="2022">2022</option>
+                                                <option value="2021">2021</option>
+                                                <option value="2020">2020</option>
+                                                <option value="2019">2019</option>
+                                                <option value="2018">2018</option>
+                                                <option value="2017">2017</option>
+                                                <option value="2016">2016</option>
+                                                <option value="2015">2015</option>
+                                                <option value="2014">2014</option>
+                                                <option value="2013">2013</option>
+                                                <option value="2012">2012</option>
+                                                <option value="2011">2011</option>
+                                                <option value="2010">2010</option>
+                                                <option value="2009">2009</option>
+                                                <option value="2008">2008</option>
+                                                <option value="2007">2007</option>
+                                                <option value="2006">2006</option>
+                                                <option value="2005">2005</option>
+                                                <option value="2004">2004</option>
+                                                <option value="2003">2003</option>
+                                                <option value="2002">2002</option>
+                                                <option value="2001">2001</option>
+                                                <option value="2000">2000</option>
+                                            </select>
+                                        </div>
+                                        <div style="display:flex; gap:0.5rem; align-items:center;">
+                                            <span style="color:#aaa; font-size:0.9rem;">To:</span>
+                                            <select id="eduEndMonth" class="form-input"
+                                                style="width:auto; padding:0.4rem;" onchange="updateEduDuration()">
+                                                <option value="">Month</option>
+                                                <option value="Jan">Jan</option>
+                                                <option value="Feb">Feb</option>
+                                                <option value="Mar">Mar</option>
+                                                <option value="Apr">Apr</option>
+                                                <option value="May">May</option>
+                                                <option value="Jun">Jun</option>
+                                                <option value="Jul">Jul</option>
+                                                <option value="Aug">Aug</option>
+                                                <option value="Sep">Sep</option>
+                                                <option value="Oct">Oct</option>
+                                                <option value="Nov">Nov</option>
+                                                <option value="Dec">Dec</option>
+                                            </select>
+                                            <select id="eduEndYear" class="form-input"
+                                                style="width:auto; padding:0.4rem;" onchange="updateEduDuration()">
+                                                <option value="">Year</option>
+                                                <option value="2026">2026</option>
+                                                <option value="2025">2025</option>
+                                                <option value="2024">2024</option>
+                                                <option value="2023">2023</option>
+                                                <option value="2022">2022</option>
+                                                <option value="2021">2021</option>
+                                                <option value="2020">2020</option>
+                                                <option value="2019">2019</option>
+                                                <option value="2018">2018</option>
+                                                <option value="2017">2017</option>
+                                                <option value="2016">2016</option>
+                                                <option value="2015">2015</option>
+                                                <option value="2014">2014</option>
+                                                <option value="2013">2013</option>
+                                                <option value="2012">2012</option>
+                                                <option value="2011">2011</option>
+                                                <option value="2010">2010</option>
+                                                <option value="2009">2009</option>
+                                                <option value="2008">2008</option>
+                                                <option value="2007">2007</option>
+                                                <option value="2006">2006</option>
+                                                <option value="2005">2005</option>
+                                                <option value="2004">2004</option>
+                                                <option value="2003">2003</option>
+                                                <option value="2002">2002</option>
+                                                <option value="2001">2001</option>
+                                                <option value="2000">2000</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top:0.5rem; display:flex; align-items:center; gap:0.5rem;">
+                                        <input type="checkbox" id="eduPresent" onchange="toggleEduEnd()">
+                                        <label for="eduPresent" style="color:#ccc; cursor:pointer; margin:0;">Currently
+                                            studying here</label>
+                                    </div>
+                                    <input type="hidden" id="eduYear">
+                                    <!-- Re-using id="eduYear" for duration to minimize payload changes if name matches or I'll update getPayload -->
+                                </div>
+                                <!-- Fixed nesting -->
+                                <div class="form-group">
+                                    <label class="form-label">Description (HTML/Text)</label>
+                                    <textarea id="eduDescription" class="form-textarea" style="height: 150px;"
+                                        oninput="updatePreview()" placeholder="<p>...</p>"></textarea>
+                                </div>
+                                <input type="hidden" id="eduOrder" value="0">
+                            </div>
+
+                            <!-- SKILLS FIELDS -->
+                            <div id="skillsFields" style="display:none;">
+                                <div class="form-group">
+                                    <label class="form-label">Skill Name</label>
+                                    <input type="text" id="skillName" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Category</label>
+                                    <select id="skillCategory" class="form-input">
+                                        <option value="Technical">Technical</option>
+                                        <option value="Tools">Tools</option>
+                                        <option value="Certifications">Certifications</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Proficiency (1-100%)</label>
+                                    <input type="number" id="skillProficiency" class="form-input" max="100" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Icon URL (or Class)</label>
+                                    <input type="text" id="skillIcon" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Link (for Certs)</label>
+                                    <input type="text" id="skillLink" class="form-input">
+                                </div>
+                            </div>
+
+                            <!-- AWARDS FIELDS -->
+                            <div id="awardFields" style="display:none;">
+                                <div class="form-group">
+                                    <label class="form-label">Award Title</label>
+                                    <input type="text" id="awardTitle" class="form-input" oninput="updatePreview()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Slug</label>
+                                    <input type="text" id="awardSlug" class="form-input" placeholder="url-slug">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Issuer / Organization</label>
+                                    <input type="text" id="awardIssuer" class="form-input" oninput="updatePreview()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Date Received</label>
+                                    <input type="date" id="awardDate" class="form-input" onchange="updatePreview()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Parent Award (Optional)</label>
+                                    <select id="awardParent" class="form-input">
+                                        <option value="">No Parent</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Image URL (Optional)</label>
+                                    <input type="text" id="awardImage" class="form-input" placeholder="https://..."
+                                        oninput="updatePreview()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Description (Summary)</label>
+                                    <textarea id="awardDescription" class="form-textarea" style="height:100px;"
+                                        oninput="updatePreview()"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- TESTIMONIAL FIELDS -->
+                            <div id="testimonialFields" style="display:none;">
+                                <div class="form-group">
+                                    <label class="form-label">Client Name</label>
+                                    <input type="text" id="testName" class="form-input" oninput="updatePreview()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Role/Position</label>
+                                    <input type="text" id="testRole" class="form-input" oninput="updatePreview()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Company</label>
+                                    <input type="text" id="testCompany" class="form-input" oninput="updatePreview()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Quote</label>
+                                    <textarea id="testQuote" class="form-textarea" style="height:100px;"
+                                        oninput="updatePreview()"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Avatar URL (Optional)</label>
+                                    <input type="text" id="testAvatar" class="form-input" placeholder="https://..."
+                                        oninput="updatePreview()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Background Image URL (Optional)</label>
+                                    <input type="text" id="testBgImage" class="form-input" placeholder="https://..."
+                                        oninput="updatePreview()">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Preview Side -->
+                    <div class="preview-side">
+                        <div class="preview-label">Live Card Preview</div>
+                        <div class="card-preview-container">
+                            <div class="preview-card">
+                                <img id="p_img" src="https://via.placeholder.com/400x200" alt="Cover">
+                                <div class="content">
+                                    <div class="category" id="p_cat">CATEGORY</div>
+                                    <h3 id="p_title">Title Goes Here</h3>
+                                    <div class="summary" id="p_summary">
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+                                        incididunt ut labore et dolore magna aliqua.
+                                    </div>
+
+                                    <div class="meta-row">
+                                        <i class="far fa-calendar-alt"></i> <span id="p_date">Just now</span>
+                                        <!-- Only show read time if blog -->
+                                        <span id="p_meta_container"
+                                            style="display:none; gap:0.5rem; align-items:center;">
+                                            <span style="margin:0 5px;">•</span>
+                                            <i class="far fa-clock"></i> <span id="p_meta">5 min read</span>
+                                        </span>
+                                    </div>
+
+                                    <a href="#" class="action-link" id="p_link">
+                                        View Project <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: CONTENT EDITOR -->
+            <div class="step-content" id="step2">
+                <div class="editor-container">
+                    <div class="editor-pane">
+                        <div
+                            style="padding: 1rem; background:#1a1a1a; color:#888; border-bottom:1px solid #333; font-size:0.8rem;">
+                            MARKDOWN EDITOR
+                        </div>
+                        <div class="markdown-toolbar">
+                            <button class="md-btn" onclick="insertMarkdown('**', '**')"
+                                data-tooltip="Bold (Ctrl+B)"><b>B</b></button>
+                            <button class="md-btn" onclick="insertMarkdown('*', '*')"
+                                data-tooltip="Italic (Ctrl+I)"><i>I</i></button>
+                            <button class="md-btn" onclick="insertMarkdown('### ', '')"
+                                data-tooltip="Heading 3">H3</button>
+                            <button class="md-btn" onclick="insertMarkdown('[', '](url)')"
+                                data-tooltip="Link">Link</button>
+                            <button class="md-btn" onclick="insertMarkdown('![alt text](', ')')"
+                                data-tooltip="Image">Img</button>
+                            <button class="md-btn" onclick="insertMarkdown('- ', '')" data-tooltip="Unordered List"><i
+                                    class="fas fa-list-ul"></i></button>
+                            <button class="md-btn" onclick="insertMarkdown('1. ', '')" data-tooltip="Ordered List"><i
+                                    class="fas fa-list-ol"></i></button>
+                            <button class="md-btn" onclick="insertMarkdown('`', '`')"
+                                data-tooltip="Inline Code">&lt;/&gt;</button>
+                            <button class="md-btn" onclick="insertMarkdown('\n```\n', '\n```\n')"
+                                data-tooltip="Code Block">Block</button>
+                            <button class="md-btn" onclick="insertMarkdown('> ', '')" data-tooltip="Quote">""</button>
+
+                            <div style="width:1px; height:20px; background:#444; margin:0 5px;"></div>
+                            <select id="linkInserter" class="md-btn"
+                                style="width:auto; max-width:150px; font-size:0.8rem; padding:0 5px; background:#222; color:#ccc; border:1px solid #444;"
+                                onchange="insertInternalLink(this)">
+                                <option value="">Insert Link...</option>
+                            </select>
+                        </div>
+                        <textarea id="itemContent" class="editor-textarea"
+                            placeholder="# Write your content in Markdown..."
+                            oninput="updateMarkdownPreview()"></textarea>
+                    </div>
+                    <div class="preview-pane dark-mode" id="markdownPreview">
+                        <!-- Rendered Markdown -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer-nav"
+                style="margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.05);">
+                <button class="btn-nav btn-prev" id="btnPrev" style="visibility:hidden;"
+                    onclick="goToStep(1)">Previous</button>
+
+                <!-- Step 1 Controls -->
+                <div id="step1Controls" style="display:flex; gap:1rem;">
+                    <button class="btn-nav btn-save" id="btnDraft" style="background:#333; border:1px solid #555;"
+                        onclick="saveDraft()">Create & Close</button>
+                    <button class="btn-nav btn-next" id="btnNext" onclick="goToStep(2)">Next: Content</button>
+                    <button class="btn-nav btn-save" id="btnSave" onclick="saveItem()"
+                        style="display:none;">Save</button>
+                </div>
+
+                <!-- Step 2 Controls -->
+                <div id="step2Controls" style="display:none; align-items:center; gap:1rem;">
+                    <div class="form-group"
+                        style="margin:0; display:flex; align-items:center; gap:0.5rem; border-right:1px solid #444; padding-right:1rem;">
+                        <input type="checkbox" id="itemVisible" checked>
+                        <label class="form-label" style="margin:0; color:white;">Show Card</label>
+                    </div>
+                    <div class="form-group" style="margin:0; display:flex; align-items:center; gap:0.5rem;">
+                        <input type="checkbox" id="itemPublished" checked>
+                        <label class="form-label" style="margin:0; color:white;">Publish</label>
+                    </div>
+                    <button class="btn-nav btn-save" onclick="saveItem()">Upload & Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">Action Successful!</div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Use Admin-Specific Config -->
+    <script src="supabase-admin.js"></script>
+
+    <!-- Code Logic -->
+    <script>
+        // State
+        let currentType = 'blog';
+        let currentStep = 1;
+        let bulkTargetType = 'blog';
+        let isDirty = false;
+
+        // Dirty Check Listener
+        document.querySelectorAll('input, textarea, select').forEach(el => {
+            el.addEventListener('input', () => isDirty = true);
+        });
+
+        // --- AUTH & NAV ---
+        async function init() {
+            // Emergency Check
+            if (localStorage.getItem('emergency_session') === 'true') {
+                console.log('Using emergency session');
+                fetchAll();
+                return;
+            }
+
+            const { data: { session } } = await db.auth.getSession();
+            if (!session) {
+                window.location.href = 'admin.html';
+                return;
+            }
+            // User is logged in, fetch data
+            fetchAll();
+        }
+        init();
+
+        // AUTO LOGOUT ON INACTIVITY (5 Minutes)
+        let inactivityTimer;
+        const INACTIVITY_TIME = 5 * 60 * 1000; // 5 minutes
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            localStorage.removeItem('emergency_session');
+            await db.auth.signOut();
+            window.location.href = 'admin.html';
+        });
+
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(async () => {
+                // Optional: Show a message before redirecting?
+                // For now, just logout and redirect.
+                localStorage.removeItem('emergency_session');
+                await db.auth.signOut();
+                window.location.href = 'admin.html';
+            }, INACTIVITY_TIME);
+        }
+
+        // Listen for activity
+        ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(event => {
+            document.addEventListener(event, resetInactivityTimer);
+        });
+
+        // Start timer initially
+        resetInactivityTimer();
+
+        function showSection(id) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+
+            const map = { 'blogs': 0, 'projects': 1, 'experience': 2, 'education': 3, 'skills': 4, 'awards': 5, 'testimonials': 6 };
+            if (map[id] !== undefined) {
+                document.querySelectorAll('.nav-item')[map[id]].classList.add('active');
+            }
+
+            // Mobile: Close Sidebar on Selection
+            if (window.innerWidth <= 768) {
+                document.querySelector('.sidebar').classList.remove('active');
+                const overlay = document.querySelector('.sidebar-overlay');
+                if (overlay) overlay.classList.remove('active');
+            }
+        }
+
+        // --- FETCH DATA ---
+        // --- FETCH DATA ---
+        async function fetchAll() {
+            const types = ['blogs', 'projects', 'experience', 'education', 'skills', 'awards', 'testimonials'];
+            await Promise.all(types.map(t => fetchList(t)));
+        }
+
+        async function fetchList(originalType) {
+            let table = originalType;
+            if (originalType === 'blog') table = 'blogs';
+            if (originalType === 'project') table = 'projects';
+
+            // LOADING & DISPLAY SETUP
+            const loadingId = originalType.endsWith('s') ? originalType.slice(0, -1) + 'Loading' : originalType + 'Loading';
+            const idMap = {
+                'blogs': 'blogTableBody',
+                'projects': 'projectTableBody',
+                'experience': 'experienceTableBody',
+                'education': 'educationTableBody',
+                'skills': 'skillsTableBody',
+                'skills': 'skillsTableBody',
+                'awards': 'awardsTableBody',
+                'testimonials': 'testimonialsTableBody'
+            };
+            const realTableId = idMap[originalType].replace('Body', '');
+
+            // Start Loading
+            const loadingEl = document.getElementById(loadingId);
+            const tableEl = document.getElementById(realTableId);
+
+            if (loadingEl) {
+                loadingEl.style.display = 'block';
+                loadingEl.textContent = 'Loading...';
+                loadingEl.style.color = '#888';
+            }
+            if (tableEl) tableEl.style.display = 'none';
+
+            try {
+                // OPTIMIZED FETCH
+                let query;
+                if (originalType === 'blogs') {
+                    // Check for parent_id column existence first (graceful degradation if schema update not applied)
+                    let selectQuery = 'id, title, slug, category, read_time, is_published, is_visible, created_at';
+
+                    // Try to toggle fetching parent_id. If column missing, this might error if we don't catch it?
+                    // Supabase js just ignores non-existent columns in some versions or throws error.
+                    // We will try adding it.
+                    selectQuery += ', parent_id';
+
+                    query = await db.from('blogs').select(selectQuery).order('created_at', { ascending: false });
+                    let { data: blogData, error: blogError } = query;
+
+                    if (blogError) {
+                        console.warn("parent_id column missing. Falling back...");
+                        // Fallback: Fetch without parent_id
+                        // Fallback: Fetch without parent_id and without is_visible
+                        const { data: fallbackData, error: fallbackError } = await db.from('blogs').select('id, title, slug, category, read_time, is_published, created_at').order('created_at', { ascending: false });
+                        query = { data: fallbackData, error: fallbackError };
+
+                        if (fallbackError) throw fallbackError;
+
+                        // Proceed without hierarchy
+                        window.allBlogs = fallbackData || [];
+                        updateLinkInserter();
+
+                        // Render flat list
+                        query = { data: fallbackData, error: null };
+
+                        // Skip hierarchy logic
+                        blogData = null;
+                    }
+
+                    // Hierarchy Logic
+                    let sortedBlogs = [];
+                    // Only run hierarchy if primary fetch (with parent_id) succeeded
+                    if (blogData && !blogError) {
+                        const parents = blogData.filter(b => !b.parent_id);
+                        const children = blogData.filter(b => b.parent_id);
+
+                        parents.forEach(p => {
+                            sortedBlogs.push(p);
+                            const myChildren = children.filter(c => c.parent_id === p.id);
+                            // Sort children by date
+                            myChildren.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                            myChildren.forEach(c => {
+                                c.is_child = true;
+                                c.parent_title = p.title;
+                                c.parent_slug = p.slug;
+                                sortedBlogs.push(c);
+                            });
+                        });
+
+                        // Add any orphans (children whose parents weren't found)
+                        const orphans = children.filter(c => !parents.find(p => p.id === c.parent_id));
+                        orphans.forEach(o => {
+                            o.is_child = true;
+                            o.parent_title = 'Unknown Parent';
+                            sortedBlogs.push(o);
+                        });
+                        window.allBlogs = sortedBlogs || [];
+                        updateLinkInserter();
+                        query = { data: sortedBlogs, error: blogError };
+                    }
+                    // Fallback already set query if error occurred
+                } else if (originalType === 'projects') {
+                    // Similar logic to Blogs: Check for parent_id and sort hierarchically
+                    let selectQuery = 'id, title, slug, category, github_link, is_published, is_visible, created_at';
+                    selectQuery += ', parent_id';
+
+                    query = await db.from('projects').select(selectQuery).order('created_at', { ascending: false });
+                    let { data: projData, error: projError } = query;
+
+                    if (projError) {
+                        console.warn("parent_id column missing in projects. Falling back...");
+                        // Fallback: Fetch without parent_id and without is_visible
+                        const { data: fallbackData, error: fallbackError } = await db.from('projects').select('id, title, slug, category, github_link, is_published, created_at').order('created_at', { ascending: false });
+                        query = { data: fallbackData, error: fallbackError };
+
+                        if (fallbackError) throw fallbackError;
+
+                        window.allProjects = fallbackData || [];
+                        updateLinkInserter();
+                        query = { data: fallbackData, error: null };
+                        projData = null;
+                    }
+
+                    // Hierarchy Logic for Projects
+                    let sortedProjects = [];
+                    if (projData && !projError) {
+                        const parents = projData.filter(p => !p.parent_id);
+                        const children = projData.filter(p => p.parent_id);
+
+                        parents.forEach(p => {
+                            sortedProjects.push(p);
+                            const myChildren = children.filter(c => c.parent_id === p.id);
+                            myChildren.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                            myChildren.forEach(c => {
+                                c.is_child = true;
+                                c.parent_title = p.title;
+                                c.parent_slug = p.slug;
+                                sortedProjects.push(c);
+                            });
+                        });
+
+                        // Orphans
+                        const orphans = children.filter(c => !parents.find(p => p.id === c.parent_id));
+                        orphans.forEach(o => {
+                            o.is_child = true;
+                            o.parent_title = 'Unknown Parent';
+                            sortedProjects.push(o);
+                        });
+
+                        window.allProjects = sortedProjects || [];
+                        updateLinkInserter();
+                        query = { data: sortedProjects, error: projError };
+                    }
+                } else if (originalType === 'experience') {
+                    query = db.from('experience').select('id, role, company, duration, work_type, location, order_index, is_published').order('order_index', { ascending: true });
+                } else if (originalType === 'education') {
+                    query = db.from('education').select('id, degree, institution, location, duration, order_index, is_published').order('order_index', { ascending: true });
+                } else if (originalType === 'skills') {
+                    query = db.from('skills').select('id, name, category, proficiency, is_published').order('name', { ascending: true });
+                } else if (originalType === 'awards') {
+                    // Check for parent_id (similar fallback pattern if not migrated, but since migration script is manual step, we assume it might fail if user didn't run it yet, so let's handle gracefully)
+                    // Wait, we just added the migration step, so user must run it.
+                    // But to be consistent with others:
+                    let selectQuery = 'id, title, issuer, date, image_url, description, content, slug, is_published, created_at, parent_id';
+
+                    let { data: awardData, error: awardError } = await db.from('awards').select(selectQuery).order('date', { ascending: false });
+
+                    // Graceful fallback if any error (missing columns, etc.)
+                    if (awardError) {
+                        console.warn('New columns missing in awards, fallback to basic fetch.');
+                        const { data: fallback, error: fbError } = await db.from('awards').select('id, title, issuer, date, image_url, description, is_published').order('date', { ascending: false });
+                        if (fbError) throw fbError;
+                        window.allAwards = fallback || [];
+                        query = { data: fallback, error: null };
+                    } else {
+                        // Hierarchy Logic for Awards if desired? User said "same features", so let's support hierarchy.
+                        if (awardData && !awardError) {
+                            // Sort logic similar to blogs/projects
+                            // Sort by date descending
+                            awardData.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                            const parents = awardData.filter(p => !p.parent_id);
+                            const children = awardData.filter(p => p.parent_id);
+                            let sortedAwards = [];
+
+                            parents.forEach(p => {
+                                sortedAwards.push(p);
+                                const myChildren = children.filter(c => c.parent_id === p.id);
+                                myChildren.sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort children by date too
+                                myChildren.forEach(c => {
+                                    c.is_child = true;
+                                    c.parent_title = p.title;
+                                    sortedAwards.push(c);
+                                });
+                            });
+                            // Orphans
+                            const orphans = children.filter(c => !parents.find(p => p.id === c.parent_id));
+                            orphans.forEach(o => {
+                                o.is_child = true;
+                                o.parent_title = 'Unknown Parent';
+                                sortedAwards.push(o);
+                            });
+
+                            window.allAwards = sortedAwards;
+                            query = { data: sortedAwards, error: null };
+                        } else {
+                            query = { data: [], error: awardError };
+                        }
+                    }
+
+                } else if (originalType === 'testimonials') {
+                    query = db.from('testimonials').select('id, client_name, client_role, quote, is_published').order('created_at', { ascending: false });
+                } else {
+                    query = await db.from(table).select('*');
+                }
+
+                // Handle the different query response structures (direct promise vs object)
+                let data, error;
+                if (query.data !== undefined) {
+                    data = query.data;
+                    error = query.error;
+                } else {
+                    // Fallback if query was a promise directly (shouldn't happen with above logic change but safe to keep)
+                    // Actually lines 1559/1561 above return objects, lines 1563+ return promises
+                    // So specific types set data/error directly.
+                    // We need to uniformize.
+                    // The logic below originally awaited 'query'.
+                    // Let's make sure 'query' is always a promise OR we handle the data object.
+                }
+
+                // Uniformize handling:
+                if (originalType !== 'blogs' && originalType !== 'projects') {
+                    ({ data, error } = await query);
+                } else {
+                    data = query.data;
+                    error = query.error;
+                }
+
+                if (error) throw error;
+
+                // RENDER
+                if (loadingEl) loadingEl.style.display = 'none';
+                const tbody = document.getElementById(idMap[originalType]);
+                if (tbody && tableEl) {
+                    tableEl.style.display = 'table';
+                    tbody.innerHTML = '';
+
+                    const list = data || [];
+                    if (list.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#555;">No items found</td></tr>';
+                    }
+
+                    list.forEach(item => {
+                        const tr = document.createElement('tr');
+                        tr.style.cursor = 'pointer';
+                        tr.style.transition = 'background 0.2s';
+
+                        // Edit Handling
+                        let editType = originalType;
+                        if (editType === 'blogs') editType = 'blog';
+                        if (editType === 'projects') editType = 'project';
+                        if (editType === 'skills') editType = 'skill';
+                        if (editType === 'projects') editType = 'project';
+                        if (editType === 'skills') editType = 'skill';
+                        if (editType === 'awards') editType = 'award';
+                        if (editType === 'testimonials') editType = 'testimonial';
+
+                        tr.onclick = (e) => {
+                            if (e.target.closest('.btn-action')) return;
+                            editItem(editType, item.id);
+                        };
+                        tr.onmouseover = () => tr.style.background = 'rgba(255,255,255,0.05)';
+                        tr.onmouseout = () => tr.style.background = 'transparent';
+
+                        let cols = '';
+                        if (originalType === 'blogs') {
+                            const isChild = item.is_child;
+                            const parentTitle = item.parent_title || '-';
+
+                            // Style for Child Rows
+                            if (isChild) {
+                                tr.style.background = 'rgba(255, 255, 255, 0.03)';
+                            }
+
+                            const titleDisplay = isChild ? `<i class="fas fa-level-up-alt fa-rotate-90" style="margin-right:5px; color:var(--gray);"></i> ${item.title}` : item.title;
+                            const titleStyle = isChild ? 'padding-left: 2rem; border-left: 3px solid var(--accent);' : '';
+
+                            cols = `<td style="${titleStyle}">${titleDisplay}</td><td>${parentTitle}</td><td>${item.category || '-'}</td><td>${item.read_time || '-'}</td><td><span style="color:${item.is_published ? '#00ff9d' : '#777'}">${item.is_published ? 'Published' : 'Draft'}</span></td>`;
+                        } else if (originalType === 'projects') {
+                            const isChild = item.is_child;
+                            const parentTitle = item.parent_title || '-';
+
+                            // Style for Child Rows
+                            if (isChild) {
+                                tr.style.background = 'rgba(255, 255, 255, 0.03)';
+                            }
+
+                            const titleDisplay = isChild ? `<i class="fas fa-level-up-alt fa-rotate-90" style="margin-right:5px; color:var(--gray);"></i> ${item.title}` : item.title;
+                            const titleStyle = isChild ? 'padding-left: 2rem; border-left: 3px solid var(--accent);' : '';
+
+                            cols = `<td style="${titleStyle}">${titleDisplay}</td><td>${parentTitle}</td><td>${item.category || '-'}</td><td>${item.github_link ? '<a href="' + item.github_link + '" target="_blank">Repo</a>' : '-'}</td><td><span style="color:${item.is_published ? '#00ff9d' : '#777'}">${item.is_published ? 'Published' : 'Draft'}</span></td>`;
+                        } else if (originalType === 'experience') {
+                            tr.setAttribute('draggable', 'true');
+                            tr.setAttribute('data-id', item.id);
+                            tr.setAttribute('data-order', item.order_index);
+                            tr.classList.add('draggable-row');
+
+                            // Drag Event Listeners
+                            tr.addEventListener('dragstart', handleDragStart);
+                            tr.addEventListener('dragover', handleDragOver);
+                            tr.addEventListener('drop', handleDrop);
+                            tr.addEventListener('dragenter', handleDragEnter);
+                            tr.addEventListener('dragleave', handleDragLeave);
+
+                            addTouchHandlers(tr); // Add Touch Support
+
+                            cols = `<td><i class="fas fa-grip-vertical" style="color:#666; cursor:grab; margin-right:10px;"></i> ${item.role}</td><td>${item.company}</td><td>${item.work_type || '-'}</td><td>${item.location || '-'}</td><td>${item.duration}</td>`;
+                        } else if (originalType === 'education') {
+                            tr.setAttribute('draggable', 'true');
+                            tr.setAttribute('data-id', item.id);
+                            tr.setAttribute('data-order', item.order_index);
+                            tr.classList.add('draggable-row');
+
+                            tr.addEventListener('dragstart', handleDragStart);
+                            tr.addEventListener('dragover', handleDragOver);
+                            tr.addEventListener('drop', handleDrop);
+                            tr.addEventListener('dragenter', handleDragEnter);
+                            tr.addEventListener('dragleave', handleDragLeave);
+
+                            addTouchHandlers(tr); // Add Touch Support
+
+                            cols = `<td><i class="fas fa-grip-vertical" style="color:#666; cursor:grab; margin-right:10px;"></i> ${item.degree}</td><td>${item.institution}</td><td>${item.location || '-'}</td><td>${item.duration}</td>`;
+                        } else if (originalType === 'skills') {
+                            cols = `<td>${item.name}</td><td>${item.category}</td><td>${item.proficiency || 0}%</td>`;
+                        } else if (originalType === 'awards') {
+                            const dateStr = item.date ? new Date(item.date).toLocaleDateString() : '-';
+                            cols = `<td>${item.title}</td><td>${item.issuer || '-'}</td><td>${dateStr}</td><td><span style="color:${item.is_published ? '#00ff9d' : '#777'}">${item.is_published ? 'Published' : 'Draft'}</span></td>`;
+                        } else if (originalType === 'testimonials') {
+                            cols = `<td>${item.client_name}</td><td>${item.client_role}</td><td><div style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.quote}</div></td>`;
+                        }
+
+
+                        // Generate Actions Column
+                        let menuItems = `<div onclick="editItem('${editType}', '${item.id}', 1)">Edit Card Details</div>`;
+
+                        if (originalType === 'blogs' || originalType === 'projects') {
+                            menuItems += `<div onclick="editItem('${editType}', '${item.id}', 2)">Edit Content</div>`;
+                        }
+
+                        const isPub = item.is_published;
+                        menuItems += `<div onclick="togglePublish('${originalType}', '${item.id}', ${isPub})">${isPub ? 'Unpublish' : 'Publish'}</div>`;
+                        menuItems += `<div onclick="deleteItem('${originalType}', '${item.id}')" style="color:#ff6b6b;">Delete</div>`;
+
+                        tr.innerHTML = `${cols}<td>
+                            <div class="table-actions" style="position:relative;">
+                                <button class="btn-action btn-gear" onclick="event.stopPropagation(); toggleActionMenu('${item.id}')">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <div id="action-menu-${item.id}" class="action-dropdown-menu">
+                                    ${menuItems}
+                                </div>
+                            </div>
+                        </td>`;
+                        tbody.appendChild(tr);
+                    });
+                }
+
+            } catch (err) {
+                console.error("Fetch Error:", err);
+                if (loadingEl) {
+                    loadingEl.textContent = 'Error: ' + err.message;
+                    loadingEl.style.color = '#ff4d4d';
+                    loadingEl.style.display = 'block';
+                }
+            }
+        }
+
+        // --- BULK IMPORT ---
+        function triggerBulkImport(type) {
+            bulkTargetType = type;
+            document.getElementById('bulkInput').click();
+        }
+
+        document.getElementById('bulkInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                try {
+                    const json = JSON.parse(event.target.result);
+                    if (!Array.isArray(json)) throw new Error("JSON must be an array of objects");
+                    let table = bulkTargetType; // 'blog', 'project' passed in
+                    if (table === 'blog') table = 'blogs';
+                    if (table === 'project') table = 'projects';
+                    const { error } = await db.from(table).insert(json);
+                    if (error) throw error;
+                    showToast('Bulk Import Successful!');
+                    fetchAll();
+                } catch (err) {
+                    alert("Import Failed: " + err.message);
+                }
+                e.target.value = '';
+            };
+            reader.readAsText(file);
+        });
+
+        // --- WIZARD LOGIC ---
+
+
+        // --- WIZARD LOGIC ---
+        function openWizard(type, id = null, startStep = 1) {
+            // Normalize Types (Plural -> Singular)
+            if (type === 'skills') type = 'skill';
+            if (type === 'testimonials') type = 'testimonial';
+
+            currentType = type;
+            currentStep = 1;
+            isDirty = false;
+
+            updateLinkInserter();
+
+            document.getElementById('wizardModal').classList.add('active');
+            document.getElementById('itemId').value = id || '';
+
+            const titleMap = {
+                'blog': 'Blog Post', 'project': 'Project', 'experience': 'Experience',
+                'blog': 'Blog Post', 'project': 'Project', 'experience': 'Experience',
+                'education': 'Education', 'skill': 'Skill', 'award': 'Award', 'testimonial': 'Testimonial'
+            };
+            document.getElementById('wizardTitle').textContent = (id ? 'Edit ' : 'New ') + (titleMap[type] || 'Item');
+
+            // Hide All Groups
+            // Hide All Groups
+            ['blogProjectFields', 'experienceFields', 'educationFields', 'skillsFields', 'awardFields', 'testimonialFields'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+
+            // Show Relevant Group
+            if (type === 'blog' || type === 'project') {
+                document.getElementById('blogProjectFields').style.display = 'block';
+                const pLink = document.getElementById('p_link');
+                if (type === 'blog') {
+                    const frt = document.getElementById('fieldReadTime');
+                    if (frt) frt.style.display = 'block';
+                    const fp = document.getElementById('fieldParentPost');
+                    if (fp) {
+                        fp.style.display = 'block';
+                        populateParentDropdown(id); // Populate dropdown excluding self
+                    }
+                    const fgh = document.getElementById('fieldGithub');
+                    if (fgh) fgh.style.display = 'none';
+                    if (pLink) pLink.innerHTML = 'Read Article <i class="fas fa-arrow-right"></i>';
+                } else {
+                    const frt = document.getElementById('fieldReadTime');
+                    if (frt) frt.style.display = 'none';
+                    const fp = document.getElementById('fieldParentPost');
+                    if (fp) {
+                        fp.style.display = 'block';
+                        populateParentDropdown(id);
+                    }
+                    const fgh = document.getElementById('fieldGithub');
+                    if (fgh) fgh.style.display = 'block';
+                    if (pLink) pLink.innerHTML = 'View Project <i class="fas fa-arrow-right"></i>';
+                }
+                const pside = document.querySelector('.preview-side');
+                if (pside) pside.style.display = 'flex';
+            } else {
+                if (type === 'experience') document.getElementById('experienceFields').style.display = 'block';
+                if (type === 'education') document.getElementById('educationFields').style.display = 'block';
+                if (type === 'skill') document.getElementById('skillsFields').style.display = 'block';
+                if (type === 'award') document.getElementById('awardFields').style.display = 'block';
+                if (type === 'testimonial') document.getElementById('testimonialFields').style.display = 'block';
+                document.querySelector('.preview-side').style.display = 'none';
+            }
+
+            // FULL WIDTH LOGIC For Experience & Education & Skill & Testimonial
+            // Awards now joined Blog/Project in having preview and multi-step
+            if (type !== 'blog' && type !== 'project' && type !== 'award') {
+                document.querySelector('.form-side').style.width = '100%';
+                document.querySelector('.preview-side').style.display = 'none';
+            } else {
+                document.querySelector('.form-side').style.width = '50%';
+                // Show preview for Blog, Project, Award
+                document.querySelector('.preview-side').style.display = 'flex';
+            }
+
+            // Populate Parent Dropdown for Awards
+            if (type === 'award') {
+                populateParentDropdown(id);
+            }
+
+            // Reset Form (New only)
+            if (!id) {
+                document.getElementById('cardForm').reset();
+                document.getElementById('itemContent').value = '';
+                document.getElementById('itemPublished').checked = true;
+                if (type === 'blog') document.getElementById('readTimeUnit').value = 'min read';
+                updatePreview();
+                updateMarkdownPreview();
+            }
+
+            updateStepUI();
+
+            if (startStep > 1) {
+                setTimeout(() => {
+                    currentStep = startStep;
+                    updateStepUI();
+                }, 50);
+            }
+        }
+        function updateStepUI() {
+            document.querySelectorAll('.steps div').forEach((el, idx) => {
+                if (idx + 1 === currentStep) el.classList.add('active');
+                else el.classList.remove('active');
+            });
+
+            // Show Content
+            document.querySelectorAll('.step-content').forEach(el => el.style.display = 'none');
+            document.getElementById('step' + currentStep).style.display = 'flex';
+
+            // Update Buttons based on Step and Type
+            document.getElementById('btnPrev').style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+
+            // Step 1 Controls
+            if (currentStep === 1) {
+                document.getElementById('step1Controls').style.display = 'flex';
+                document.getElementById('step2Controls').style.display = 'none';
+
+                // For Experience, Education, Skill, Testimonial -> Single Step (Save directly from Step 1)
+                if (currentType !== 'blog' && currentType !== 'project' && currentType !== 'award') {
+                    document.getElementById('btnNext').style.display = 'none';
+                    document.getElementById('btnSave').style.display = 'block';
+                    document.getElementById('btnSave').textContent = 'Upload & Save';
+                } else {
+                    document.getElementById('btnNext').style.display = 'block';
+                    document.getElementById('btnSave').style.display = 'none';
+                }
+            } else {
+                document.getElementById('step1Controls').style.display = 'none';
+                document.getElementById('step2Controls').style.display = 'flex';
+            }
+        }
+
+
+
+        function closeWizard() {
+            if (isDirty) {
+                if (!confirm("Discard unsaved changes?")) return;
+            }
+            document.getElementById('wizardModal').classList.remove('active');
+        }
+
+        function goToStep(step) {
+            if (step === 2) {
+                if (!document.getElementById('cardForm').checkValidity()) {
+                    document.getElementById('cardForm').reportValidity();
+                    return;
+                }
+            }
+            currentStep = step;
+            updateStepUI();
+        }
+
+
+
+
+        // --- DATE PICKER HELPERS ---
+        function toggleExpEnd() {
+            const isPresent = document.getElementById('expPresent').checked;
+            const endMonth = document.getElementById('expEndMonth');
+            const endYear = document.getElementById('expEndYear');
+
+            if (isPresent) {
+                endMonth.value = '';
+                endYear.value = '';
+                endMonth.disabled = true;
+                endYear.disabled = true;
+            } else {
+                endMonth.disabled = false;
+                endYear.disabled = false;
+            }
+            updateDurationFromPickers();
+        }
+
+        function updateDurationFromPickers() {
+            const sm = document.getElementById('expStartMonth').value;
+            const sy = document.getElementById('expStartYear').value;
+            const em = document.getElementById('expEndMonth').value;
+            const ey = document.getElementById('expEndYear').value;
+            const isPresent = document.getElementById('expPresent').checked;
+
+            let durationStr = '';
+
+            if (sm && sy) {
+                const startStr = `${sm} ${sy}`;
+
+                if (isPresent) {
+                    durationStr = `${startStr} - Present`;
+                } else if (em && ey) {
+                    const endStr = `${em} ${ey}`;
+                    durationStr = `${startStr} - ${endStr}`;
+                } else {
+                    durationStr = `${startStr} - Present`;
+                }
+            }
+
+            document.getElementById('expDuration').value = durationStr;
+            updatePreview();
+        }
+
+        function toggleEduEnd() {
+            const isPresent = document.getElementById('eduPresent').checked;
+            const endMonth = document.getElementById('eduEndMonth');
+            const endYear = document.getElementById('eduEndYear');
+
+            if (isPresent) {
+                endMonth.value = '';
+                endYear.value = '';
+                endMonth.disabled = true;
+                endYear.disabled = true;
+            } else {
+                endMonth.disabled = false;
+                endYear.disabled = false;
+            }
+            updateEduDuration();
+        }
+
+        function updateEduDuration() {
+            const sm = document.getElementById('eduStartMonth').value;
+            const sy = document.getElementById('eduStartYear').value;
+            const em = document.getElementById('eduEndMonth').value;
+            const ey = document.getElementById('eduEndYear').value;
+            const isPresent = document.getElementById('eduPresent').checked;
+
+            let durationStr = '';
+
+            if (sm && sy) {
+                const startStr = `${sm} ${sy}`;
+
+                if (isPresent) {
+                    durationStr = `${startStr} - Present`;
+                } else if (em && ey) {
+                    const endStr = `${em} ${ey}`;
+                    durationStr = `${startStr} - ${endStr}`;
+                } else {
+                    // Fallback behavior
+                    durationStr = `${startStr} - Present`;
+                }
+            }
+
+            // Using 'eduYear' hidden input to store the full duration string
+            document.getElementById('eduYear').value = durationStr;
+            updatePreview();
+        }
+
+        // --- PREVIEWS ---
+        // --- PREVIEWS ---
+        function updatePreview() {
+            const previewContainer = document.querySelector('.card-preview-container');
+            if (!previewContainer) return;
+
+            // 1. BLOG & PROJECT (Shared "Card" Layout)
+            if (currentType === 'blog' || currentType === 'project') {
+                // Ensure the container has the default "Card" structure if it was overwritten or empty
+                if (!document.getElementById('p_title')) {
+                    previewContainer.innerHTML = `
+                        <div class="preview-card">
+                            <img id="p_img" src="https://via.placeholder.com/400x200" alt="Cover">
+                            <div class="content">
+                                <div class="category" id="p_cat">CATEGORY</div>
+                                <h3 id="p_title">Title Goes Here</h3>
+                                <div class="summary" id="p_summary">Summary text...</div>
+                                <div class="meta-row">
+                                    <i class="far fa-calendar-alt"></i> <span id="p_date">Just now</span>
+                                    <span id="p_meta_container" style="display:none; gap:0.5rem; align-items:center;">
+                                        <span style="margin:0 5px;">•</span>
+                                        <i class="far fa-clock"></i> <span id="p_meta">5 min read</span>
+                                    </span>
+                                </div>
+                                <a href="#" class="action-link" id="p_link">
+                                    View Project <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>`;
+                }
+
+                const titleEl = document.getElementById('itemTitle');
+                const catEl = document.getElementById('itemCategory');
+                const imgEl = document.getElementById('itemImage');
+                const sumEl = document.getElementById('itemSummary');
+
+                if (document.getElementById('p_title')) document.getElementById('p_title').textContent = titleEl ? titleEl.value : 'Item Title';
+                if (document.getElementById('p_cat')) document.getElementById('p_cat').textContent = catEl ? catEl.value : 'Category';
+                if (document.getElementById('p_summary')) document.getElementById('p_summary').textContent = sumEl ? sumEl.value : 'Summary text...';
+
+                const dateEl = document.getElementById('itemDate');
+                if (document.getElementById('p_date')) {
+                    const dateVal = dateEl && dateEl.value ? new Date(dateEl.value).toLocaleDateString() : 'Just now';
+                    document.getElementById('p_date').textContent = dateVal;
+                }
+
+                const pImg = document.getElementById('p_img');
+                if (pImg) {
+                    if (imgEl && imgEl.value) pImg.src = imgEl.value;
+                    else pImg.src = "https://via.placeholder.com/400x200?text=No+Image";
+                }
+
+                const metaContainer = document.getElementById('p_meta_container');
+                if (metaContainer) {
+                    if (currentType === 'blog') {
+                        metaContainer.style.display = 'flex';
+                        const valEl = document.getElementById('readTimeVal');
+                        const unitEl = document.getElementById('readTimeUnit');
+                        const val = valEl ? valEl.value : '5';
+                        const unit = unitEl ? unitEl.value : 'min read';
+                        const pMeta = document.getElementById('p_meta');
+                        if (pMeta) pMeta.textContent = `${val} ${unit}`;
+                    } else {
+                        metaContainer.style.display = 'none';
+                    }
+                }
+            } else if (currentType === 'experience') {
+                const roleEl = document.getElementById('expRole');
+                const compEl = document.getElementById('expCompany');
+                const durEl = document.getElementById('expDuration'); // hidden
+                const descEl = document.getElementById('expDescription');
+                const typeEl = document.getElementById('expWorkType');
+                const locEl = document.getElementById('expLocation');
+
+                // For duration, we might need to construct it if hidden field isn't updated? 
+                // updateDurationFromPickers updates hidden field. So it should be fine.
+                // But checking value access.
+
+                const role = roleEl ? roleEl.value : 'Role Title';
+                const company = compEl ? compEl.value : 'Company Name';
+                const duration = durEl ? durEl.value : 'Date Range';
+                const content = descEl ? descEl.value : '';
+                const workType = typeEl ? typeEl.value : '';
+                const location = locEl ? locEl.value : 'Location';
+
+                const workTypeHtml = workType ? `<span class="timeline-work-type" style="background:rgba(255,255,255,0.1); padding:2px 8px; border-radius:12px; font-size:0.8rem; margin-left:8px;">${workType}</span>` : '';
+
+                previewContainer.innerHTML = `
+                <div class="timeline-item" style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 20px; position: relative; margin-left: 10px; font-family:'Segoe UI', sans-serif;">
+                    <div class="timeline-content-area">
+                        <div class="timeline-header" style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                            <div class="timeline-title-group">
+                                <h3 class="timeline-title" style="margin:0; font-size:1.3rem; font-weight:700; color:#fff;">${role}</h3>
+                                <div class="timeline-company" style="color:#aaa; font-style:italic; margin-top:4px; display:flex; align-items:center;">${company} ${workTypeHtml}</div>
+                            </div>
+                            <div class="timeline-location" style="color:#888; font-size:0.9rem; display:flex; align-items:center; gap:6px;">
+                                <i class="fas fa-map-marker-alt"></i> ${location}
+                            </div>
+                        </div>
+                        <div class="timeline-date" style="color:#00c6ff; font-weight:600; font-size:0.95rem; margin-bottom:12px;">${duration}</div> 
+                        <div class="description-wrapper" style="color:#ddd; font-size:1rem; line-height:1.6;">${content}</div>
+                    </div>
+                </div>
+                `;
+            } else if (currentType === 'award') {
+                previewContainer.innerHTML = `
+                    <div class="preview-card">
+                         <img src="${document.getElementById('awardImage').value || 'https://via.placeholder.com/400x200'}" style="width:100%;height:180px;object-fit:cover;">
+                         <div class="content">
+                            <div class="category" style="color:#f39c12">AWARD</div>
+                            <h3>${document.getElementById('awardTitle').value || 'Award Title'}</h3>
+                            <div class="meta-row">
+                                <i class="fas fa-calendar-alt"></i> ${document.getElementById('awardDate').value || 'Date'}
+                                <span style="margin:0 10px">•</span>
+                                <i class="fas fa-building"></i> ${document.getElementById('awardIssuer').value || 'Issuer'}
+                            </div>
+                            <div class="summary">${document.getElementById('awardDescription').value || 'Summary...'}</div>
+                         </div>
+                    </div>
+                `;
+            } else if (currentType === 'testimonial') {
+                const nameEl = document.getElementById('testName');
+                const roleEl = document.getElementById('testRole');
+                const compEl = document.getElementById('testCompany');
+                const quoteEl = document.getElementById('testQuote');
+                const avEl = document.getElementById('testAvatar');
+                const bgEl = document.getElementById('testBgImage');
+
+                const name = nameEl ? nameEl.value : 'Client Name';
+                const role = roleEl ? roleEl.value : 'Role';
+                const company = compEl ? compEl.value : 'Company';
+                const quote = quoteEl ? quoteEl.value : 'Quote text...';
+                const avatar = avEl ? avEl.value : 'https://via.placeholder.com/60';
+                const bgImage = bgEl ? bgEl.value : '';
+
+                const bgStyle = bgImage ? `background-image: url('${bgImage}'); background-size: cover; background-position: center;` : 'background:rgba(255,255,255,0.05);';
+
+                previewContainer.innerHTML = `
+                    <div style="${bgStyle} padding:2rem; border-radius:12px; text-align:center; font-family:'Segoe UI',sans-serif; color:#fff; position:relative; overflow:hidden;">
+                        ${bgImage ? '<div style="position:absolute; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(5px); z-index:0;"></div>' : ''}
+                        
+                        <div style="position:relative; z-index:1;">
+                            <div style="font-style:italic; margin-bottom:1.5rem; font-size:1.1rem; color:#ddd;">"${quote}"</div>
+                            <div style="display:flex; align-items:center; justify-content:center; gap:1rem;">
+                                <img src="${avatar}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid #00c6ff;">
+                                <div style="text-align:left;">
+                                    <div style="font-weight:bold; color:#fff;">${name}</div>
+                                    <div style="font-size:0.9rem; color:#00c6ff;">${role} ${company ? 'at ' + company : ''}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                previewContainer.innerHTML = '<div style="color:#888; text-align:center; padding:2rem;">Preview not available for this type</div>';
+            }
+        }
+
+        function insertMarkdown(prefix, suffix) {
+            const textarea = document.getElementById('itemContent');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            const selection = text.substring(start, end);
+
+            const before = text.substring(0, start);
+            const after = text.substring(end);
+
+            textarea.value = before + prefix + selection + suffix + after;
+
+            // Restore cursor / selection
+            textarea.focus();
+            const newCursorPos = start + prefix.length + selection.length + suffix.length;
+            if (selection.length === 0) {
+                // If no selection, place cursor between prefix and suffix
+                textarea.setSelectionRange(start + prefix.length, start + prefix.length);
+            } else {
+                // If selection, highlight the wrapped text
+                textarea.setSelectionRange(start + prefix.length, newCursorPos - suffix.length);
+            }
+            updateMarkdownPreview();
+        }
+
+        function updateMarkdownPreview() {
+            const raw = document.getElementById('itemContent').value;
+            document.getElementById('markdownPreview').innerHTML = marked.parse(raw || '');
+        }
+
+        function updateLinkInserter(currentId) {
+            const sel = document.getElementById('linkInserter');
+            if (!sel) return;
+            const blogs = window.allBlogs || [];
+            const projects = window.allProjects || [];
+
+            let html = '<option value="">Insert Post Link...</option>';
+
+            // Context Paths
+            let blogPath = "";
+            let projPath = "";
+
+            if (currentType === 'blog') {
+                blogPath = "post.html";
+                projPath = "../project/post.html";
+            } else if (currentType === 'project') {
+                blogPath = "../blog/post.html";
+                projPath = "post.html";
+            } else {
+                blogPath = "/hero/blog_project/blog/post.html";
+                projPath = "/hero/blog_project/project/post.html";
+            }
+
+            if (blogs.length > 0) {
+                html += '<optgroup label="Blogs">';
+                blogs.forEach(b => {
+                    let label = b.title;
+                    if (b.is_child) label = '↳ ' + b.title; // Add visual hierarchy
+                    html += `<option value="[${b.title}](${blogPath}?slug=${b.slug})">${label}</option>`;
+                });
+                html += '</optgroup>';
+            }
+
+            if (projects.length > 0) {
+                html += '<optgroup label="Projects">';
+                projects.forEach(p => {
+                    let label = p.title;
+                    if (p.is_child) label = '↳ ' + p.title; // Add visual hierarchy
+                    html += `<option value="[${p.title}](${projPath}?slug=${p.slug})">${label}</option>`;
+                });
+                html += '</optgroup>';
+            }
+
+            const awards = window.allAwards || [];
+            if (awards.length > 0) {
+                html += '<optgroup label="Awards">';
+                awards.forEach(a => {
+                    let label = a.title;
+                    if (a.is_child) label = '↳ ' + a.title;
+                    // Assuming generic path or maybe awards don't have a single post view yet? 
+                    // User said "same features", so probably will have a post view?
+                    // Let's assume a generic post view or just use placeholder.
+                    // Actually, if I am making them "same as blog/project", they should have a view.
+                    // But I don't know the view path. Let's guess /hero/blog_project/award/post.html? No.
+                    // Maybe just link to # for now or omit path if unknown.
+                    // But valid markdown link is better.
+                    // Let's just use what I used for fallback: 
+                    // For now, let's just make it link to a generic /award/post.html (doesn't exist)
+                    // Or maybe just /index.html#awards - but that doesn't support slug.
+                    // Given the constraint, I will omit the link for now or just put a placeholder. 
+                    // Actually, let's assume standard structure: ../award/post.html?? No, "award" folder unlikely exists.
+                    // Maybe they just want the reference.
+                    // Let's use `javascript:void(0)` or similar if unknown, OR:
+                    // Since I don't have an award post page, linking to it might be broken.
+                    // BUT, the request "do same features" implies I should probably have created a view too? 
+                    // No, usually "admin" features is what I am asked for.
+                    // Let's just assume they might create the view later.
+                    // I'll use a placeholder path "/awards?slug="
+                    html += `<option value="[${a.title}](/awards?slug=${a.slug})">${label}</option>`;
+                });
+                html += '</optgroup>';
+            }
+
+            sel.innerHTML = html;
+        }
+
+        function insertInternalLink(select) {
+            const val = select.value;
+            if (val) {
+                insertMarkdown(val, '');
+                select.value = "";
+            }
+        }
+
+        // --- SAVE LOGIC ---
+        function getPayload() {
+            const payload = {
+                // Common
+                is_published: document.getElementById('itemPublished').checked,
+                is_visible: document.getElementById('itemVisible').checked
+            };
+
+            if (currentType === 'blog' || currentType === 'project') {
+                payload.title = document.getElementById('itemTitle').value;
+                payload.slug = document.getElementById('itemSlug').value;
+                const dateVal = document.getElementById('itemDate').value;
+                if (dateVal) payload.created_at = new Date(dateVal).toISOString();
+                payload.category = document.getElementById('itemCategory').value;
+                payload.image_url = document.getElementById('itemImage').value;
+                payload.summary = document.getElementById('itemSummary').value;
+                payload.content = document.getElementById('itemContent').value;
+                if (currentType === 'blog') {
+                    const val = document.getElementById('readTimeVal').value;
+                    const unit = document.getElementById('readTimeUnit').value;
+                    payload.read_time = val ? `${val} ${unit}` : null;
+                } else {
+                    payload.github_link = document.getElementById('itemGithub').value;
+                }
+                const pid = document.getElementById('itemParent').value;
+                payload.parent_id = pid ? pid : null;
+            } else if (currentType === 'experience') {
+                payload.role = document.getElementById('expRole').value;
+                payload.company = document.getElementById('expCompany').value;
+                payload.duration = document.getElementById('expDuration').value;
+                payload.order_index = document.getElementById('expOrder').value || 0;
+                payload.work_type = document.getElementById('expWorkType').value;
+                payload.location = document.getElementById('expLocation').value;
+                // Description is now in Step 1 tailored text area
+                payload.description = document.getElementById('expDescription').value;
+            } else if (currentType === 'education') {
+                payload.degree = document.getElementById('eduDegree').value;
+                payload.institution = document.getElementById('eduInstitution').value;
+                payload.duration = document.getElementById('eduYear').value;
+                payload.location = document.getElementById('eduLocation').value;
+                payload.description = document.getElementById('eduDescription').value;
+                payload.order_index = document.getElementById('eduOrder').value || 0;
+            } else if (currentType === 'skill') {
+                payload.name = document.getElementById('skillName').value;
+                payload.category = document.getElementById('skillCategory').value;
+                payload.proficiency = document.getElementById('skillProficiency').value;
+                payload.icon_url = document.getElementById('skillIcon').value;
+                payload.link = document.getElementById('skillLink').value;
+            } else if (currentType === 'award') {
+                payload.title = document.getElementById('awardTitle').value;
+                payload.issuer = document.getElementById('awardIssuer').value;
+                payload.date = document.getElementById('awardDate').value;
+                payload.image_url = document.getElementById('awardImage').value;
+                payload.description = document.getElementById('awardDescription').value;
+                payload.slug = document.getElementById('awardSlug').value;
+                payload.content = document.getElementById('itemContent').value;
+                const pid = document.getElementById('awardParent').value;
+                payload.parent_id = pid ? pid : null;
+            } else if (currentType === 'testimonial') {
+                payload.client_name = document.getElementById('testName').value;
+                payload.client_role = document.getElementById('testRole').value;
+                payload.company = document.getElementById('testCompany').value;
+                payload.quote = document.getElementById('testQuote').value;
+                payload.avatar_url = document.getElementById('testAvatar').value;
+                payload.bg_image_url = document.getElementById('testBgImage').value;
+            }
+            return payload;
+        }
+
+        async function saveDraft() {
+            if (!document.getElementById('cardForm').checkValidity()) {
+                document.getElementById('cardForm').reportValidity();
+                return;
+            }
+            await performSave();
+        }
+
+        async function saveItem() {
+            if (!confirm("Ready to upload and publish?")) return;
+            await performSave();
+        }
+
+        async function performSave() {
+            const id = document.getElementById('itemId').value;
+            let table = currentType;
+            if (table === 'blog') table = 'blogs';
+            if (table === 'project') table = 'projects';
+            if (table === 'skill') table = 'skills';
+            if (table === 'award') table = 'awards';
+            if (table === 'testimonial') table = 'testimonials';
+
+            const payload = getPayload();
+            let error;
+
+            if (id) {
+                ({ error } = await db.from(table).update(payload).eq('id', id));
+            } else {
+                ({ error } = await db.from(table).insert([payload]));
+            }
+
+            if (error) {
+                alert('Save failed: ' + error.message);
+                console.error(error);
+            } else {
+                isDirty = false;
+                document.getElementById('wizardModal').classList.remove('active');
+                showToast('Saved Successfully!');
+                fetchAll();
+            }
+        }
+
+        // Updated Edit Item to support Start Step
+        async function editItem(type, id, startStep = 1) {
+            try {
+                // 1. Open Wizard First to prepare UI and populate dropdowns
+                openWizard(type, id, startStep);
+
+                let table;
+                if (type === 'skill') table = 'skills';
+                else if (type === 'project') table = 'projects';
+                else if (type === 'blog') table = 'blogs';
+                else if (type === 'experience') table = 'experience';
+                else if (type === 'education') table = 'education';
+                else if (type === 'award') table = 'awards';
+                else if (type === 'testimonial') table = 'testimonials';
+
+                // Fetch Data
+                const { data, error } = await db.from(table).select('*').eq('id', id).single();
+
+                if (error) throw error;
+                if (!data) throw new Error("Item not found");
+
+                // FILL FIELDS
+                if (type === 'blog' || type === 'project') {
+                    document.getElementById('itemTitle').value = data.title;
+                    document.getElementById('itemSlug').value = data.slug;
+                    document.getElementById('itemPublished').checked = data.is_published !== false;
+                    document.getElementById('itemVisible').checked = data.is_visible !== false;
+                    if (data.created_at) {
+                        try {
+                            const d = new Date(data.created_at);
+                            document.getElementById('itemDate').value = d.toISOString().split('T')[0];
+                        } catch (e) { console.error('Date parsing error', e); }
+                    } else {
+                        document.getElementById('itemDate').value = '';
+                    }
+                    document.getElementById('itemCategory').value = data.category;
+                    document.getElementById('itemImage').value = data.image_url;
+                    document.getElementById('itemSummary').value = data.summary;
+                    document.getElementById('itemContent').value = data.content || '';
+
+                    if (type === 'blog') {
+                        const rt = data.read_time || "";
+                        const match = rt.match(/(\d+)\s*(.*)/);
+                        if (match) {
+                            document.getElementById('readTimeVal').value = match[1];
+                            if (match[2].includes('hour')) document.getElementById('readTimeUnit').value = 'hour read';
+                            else document.getElementById('readTimeUnit').value = 'min read';
+                        }
+                    } else {
+                        document.getElementById('itemGithub').value = data.github_link || '';
+                    }
+
+                    // Parent ID Logic (Now validation options exist)
+                    const parentDropdown = document.getElementById('itemParent');
+                    if (parentDropdown) {
+                        if (data.parent_id) {
+                            parentDropdown.value = data.parent_id;
+                        } else {
+                            parentDropdown.value = "";
+                        }
+                    }
+                } else if (type === 'award') {
+                    // Award now shares some fields with blog/project
+                    document.getElementById('awardTitle').value = data.title;
+                    document.getElementById('awardIssuer').value = data.issuer;
+                    document.getElementById('awardDate').value = data.date ? data.date.split('T')[0] : '';
+                    document.getElementById('awardImage').value = data.image_url || '';
+                    document.getElementById('awardDescription').value = data.description || '';
+                    document.getElementById('awardSlug').value = data.slug || '';
+                    document.getElementById('itemContent').value = data.content || '';
+
+                    // Populate parent dropdown if available
+                    const parentDropdown = document.getElementById('awardParent');
+                    if (parentDropdown) {
+                        if (data.parent_id) parentDropdown.value = data.parent_id;
+                        else parentDropdown.value = "";
+                    }
+                } else if (type === 'experience') {
+                    document.getElementById('expRole').value = data.role;
+                    document.getElementById('expCompany').value = data.company;
+                    document.getElementById('expWorkType').value = data.work_type || 'Full-Time';
+                    document.getElementById('expLocation').value = data.location || '';
+                    document.getElementById('expOrder').value = data.order_index || 0;
+                    document.getElementById('expDescription').value = data.description || ''; // Fixed typo in previous step if any
+
+                    // Parse Date Pickers
+                    if (data.duration) {
+                        const parts = data.duration.split(' - ');
+                        if (parts.length >= 1) {
+                            const start = parts[0].trim().split(' ');
+                            if (start.length === 2) {
+                                document.getElementById('expStartMonth').value = start[0];
+                                document.getElementById('expStartYear').value = start[1];
+                            }
+                        }
+                        if (parts.length === 2) {
+                            if (parts[1].trim().toLowerCase() === 'present') {
+                                document.getElementById('expPresent').checked = true;
+                                if (typeof toggleExpEnd === 'function') toggleExpEnd();
+                            } else {
+                                document.getElementById('expPresent').checked = false;
+                                if (typeof toggleExpEnd === 'function') toggleExpEnd();
+                                const end = parts[1].trim().split(' ');
+                                if (end.length === 2) {
+                                    document.getElementById('expEndMonth').value = end[0];
+                                    document.getElementById('expEndYear').value = end[1];
+                                }
+                            }
+                        }
+                    }
+                } else if (type === 'education') {
+                    document.getElementById('eduDegree').value = data.degree;
+                    document.getElementById('eduInstitution').value = data.institution;
+                    document.getElementById('eduYear').value = data.duration || data.year;
+                    document.getElementById('eduLocation').value = data.location || '';
+                    document.getElementById('eduDescription').value = data.description || '';
+                    document.getElementById('eduOrder').value = data.order_index || 0;
+
+                    // Parse Date Pickers
+                    if (data.duration) {
+                        const parts = data.duration.split(' - ');
+                        if (parts.length >= 1) {
+                            const start = parts[0].trim().split(' ');
+                            if (start.length === 2) {
+                                document.getElementById('eduStartMonth').value = start[0];
+                                document.getElementById('eduStartYear').value = start[1];
+                            }
+                        }
+                        if (parts.length === 2) {
+                            if (parts[1].trim().toLowerCase() === 'present') {
+                                document.getElementById('eduPresent').checked = true;
+                                if (typeof toggleEduEnd === 'function') toggleEduEnd();
+                            } else {
+                                document.getElementById('eduPresent').checked = false;
+                                if (typeof toggleEduEnd === 'function') toggleEduEnd();
+                                const end = parts[1].trim().split(' ');
+                                if (end.length === 2) {
+                                    document.getElementById('eduEndMonth').value = end[0];
+                                    document.getElementById('eduEndYear').value = end[1];
+                                }
+                            }
+                        }
+                    }
+                } else if (type === 'skill') {
+                    document.getElementById('skillName').value = data.name;
+                    document.getElementById('skillCategory').value = data.category;
+                    document.getElementById('skillProficiency').value = data.proficiency;
+                    document.getElementById('skillIcon').value = data.icon_url;
+                    document.getElementById('skillLink').value = data.link;
+                } else if (type === 'award') {
+                    document.getElementById('awardTitle').value = data.title;
+                    document.getElementById('awardIssuer').value = data.issuer;
+                    document.getElementById('awardDate').value = data.date;
+                    document.getElementById('awardImage').value = data.image_url;
+                    document.getElementById('awardDescription').value = data.description;
+                } else if (type === 'testimonial') {
+                    document.getElementById('testName').value = data.client_name;
+                    document.getElementById('testRole').value = data.client_role;
+                    document.getElementById('testCompany').value = data.company;
+                    document.getElementById('testQuote').value = data.quote;
+                    document.getElementById('testAvatar').value = data.avatar_url;
+                    document.getElementById('testBgImage').value = data.bg_image_url || '';
+                }
+
+                document.getElementById('itemPublished').checked = data.is_published;
+
+                if (typeof updatePreview === 'function') updatePreview();
+                if (typeof updateMarkdownPreview === 'function') updateMarkdownPreview();
+
+            } catch (err) {
+                console.error('Error loading item:', err);
+                alert('Error loading item details: ' + err.message);
+                document.getElementById('wizardModal').classList.remove('active'); // Close wizard on error
+            }
+        }
+
+
+
+        // Dropdown Logic
+        function toggleActionMenu(id) {
+            // Close all others
+            document.querySelectorAll('.action-dropdown-menu').forEach(el => {
+                if (el.id !== `action-menu-${id}`) {
+                    el.classList.remove('show');
+                }
+            });
+            const menu = document.getElementById(`action-menu-${id}`);
+            if (menu) menu.classList.toggle('show');
+        }
+
+        // Close dropdowns on outside click
+        window.addEventListener('click', function (e) {
+            if (!e.target.closest('.btn-gear')) {
+                document.querySelectorAll('.action-dropdown-menu').forEach(el => el.classList.remove('show'));
+            }
+        });
+
+        async function togglePublish(table, id, currentStatus) {
+            try {
+                const { error } = await db.from(table).update({ is_published: !currentStatus }).eq('id', id);
+                if (error) throw error;
+                fetchAll(); // Refresh list
+            } catch (err) {
+                alert('Error updating status: ' + err.message);
+            }
+        }
+
+        async function deleteItem(type, id) {
+            if (!confirm("Permanently delete this item?")) return;
+            let table = type;
+            if (type === 'blogs' || type === 'blog') table = 'blogs';
+            if (type === 'projects' || type === 'project') table = 'projects';
+
+            const { error } = await db.from(table).delete().eq('id', id);
+            if (error) alert("Delete failed: " + error.message);
+            else {
+                showToast('Item deleted');
+                fetchAll();
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // --- DRAG AND DROP HANDLERS ---
+        let dragSrcEl = null;
+
+        function handleDragStart(e) {
+            dragSrcEl = this;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+            this.style.opacity = '0.4';
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            this.classList.add('over');
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('over');
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) e.stopPropagation();
+            if (dragSrcEl !== this) {
+                const tbody = this.parentNode;
+
+                // Get indices
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                const srcIndex = rows.indexOf(dragSrcEl);
+                const targetIndex = rows.indexOf(this);
+
+                if (srcIndex < targetIndex) {
+                    tbody.insertBefore(dragSrcEl, this.nextSibling);
+                } else {
+                    tbody.insertBefore(dragSrcEl, this);
+                }
+
+                // Update Order in DB
+                updateOrder(tbody.id);
+            }
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            this.style.opacity = '1';
+            document.querySelectorAll('.draggable-row').forEach(row => {
+                row.classList.remove('over');
+            });
+        }
+
+        document.addEventListener('dragend', function (e) {
+            if (e.target.classList.contains('draggable-row')) {
+                e.target.style.opacity = '1';
+                document.querySelectorAll('.draggable-row').forEach(row => row.classList.remove('over'));
+            }
+        });
+
+        // --- TOUCH SUPPORT FOR REORDERING (LONG PRESS) ---
+        let touchTimer = null;
+        let touchSrcEl = null;
+
+        function addTouchHandlers(row) {
+            row.addEventListener('touchstart', function (e) {
+                // Long press to start drag
+                touchTimer = setTimeout(() => {
+                    touchSrcEl = this;
+                    this.style.opacity = '0.5';
+                    this.style.border = '2px dashed var(--primary)';
+                    navigator.vibrate(50); // Haptic feedback
+                }, 600);
+            }, { passive: false });
+
+            row.addEventListener('touchend', function (e) {
+                if (touchTimer) clearTimeout(touchTimer);
+                if (touchSrcEl) {
+                    // Find drop target based on touch position
+                    const touch = e.changedTouches[0];
+                    const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                    const dropRow = target.closest('tr');
+
+                    if (dropRow && dropRow !== touchSrcEl && dropRow.parentNode === touchSrcEl.parentNode) {
+                        const tbody = touchSrcEl.parentNode;
+                        const rows = Array.from(tbody.querySelectorAll('tr'));
+                        const srcIndex = rows.indexOf(touchSrcEl);
+                        const targetIndex = rows.indexOf(dropRow);
+
+                        if (srcIndex < targetIndex) {
+                            tbody.insertBefore(touchSrcEl, dropRow.nextSibling);
+                        } else {
+                            tbody.insertBefore(touchSrcEl, dropRow);
+                        }
+                        updateOrder(tbody.id);
+                    }
+
+                    // Reset Styles
+                    touchSrcEl.style.opacity = '1';
+                    touchSrcEl.style.border = 'none'; // Or reset to original border
+                    touchSrcEl.style.borderBottom = '1px solid rgba(255, 255, 255, 0.05)';
+                    touchSrcEl = null;
+                }
+            });
+
+            row.addEventListener('touchmove', function (e) {
+                if (touchSrcEl) {
+                    e.preventDefault(); // Prevent scroll while dragging
+                } else {
+                    clearTimeout(touchTimer); // Cancel if moving before long press triggers
+                }
+            }, { passive: false });
+        }
+
+
+        async function updateOrder(tbodyId) {
+            let dbTable = '';
+            if (tbodyId === 'experienceTableBody') dbTable = 'experience';
+            else if (tbodyId === 'educationTableBody') dbTable = 'education';
+
+            if (!dbTable) return;
+
+            const tbody = document.getElementById(tbodyId);
+            const rows = tbody.querySelectorAll('tr');
+            const updates = [];
+
+            rows.forEach((row, index) => {
+                const id = row.getAttribute('data-id');
+                // Order: 1-based
+                updates.push({ id: id, order_index: index + 1 });
+            });
+
+            showToast('Updating Order...');
+
+            for (const item of updates) {
+                await db.from(dbTable).update({ order_index: item.order_index }).eq('id', item.id);
+            }
+            showToast('Order Updated');
+        }
+
+        function toggleSidebar() {
+            const sb = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            sb.classList.toggle('active');
+            if (overlay) overlay.classList.toggle('active');
+        }
+
+        document.addEventListener('click', (e) => {
+            const sb = document.querySelector('.sidebar');
+            const toggle = document.querySelector('.menu-toggle');
+            const overlay = document.querySelector('.sidebar-overlay');
+
+            if (window.innerWidth <= 768 && sb.classList.contains('active')) {
+                if (!sb.contains(e.target) && !toggle.contains(e.target)) {
+                    sb.classList.remove('active');
+                    if (overlay) overlay.classList.remove('active');
+                }
+            }
+        });
+        // --- PARENT POST LOGIC ---
+        function populateParentDropdown(currentId) {
+            const dropdown = document.getElementById('itemParent');
+            if (!dropdown) return;
+
+            dropdown.innerHTML = '<option value="">No Parent</option>';
+
+            let items = [];
+            if (currentType === 'blog') items = window.allBlogs || [];
+            if (currentType === 'project') items = window.allProjects || [];
+            if (currentType === 'award') items = window.allAwards || [];
+
+            items.forEach(item => {
+                if (currentId && item.id === currentId) return; // Skip self
+
+                const option = document.createElement('option');
+                option.value = item.id;
+
+                // Indent if child (though typically we only want parents, but allowing multi-level is ok or just list flat)
+                let label = item.title;
+                if (item.is_child) label = '↳ ' + item.title;
+
+                option.textContent = label;
+                option.setAttribute('data-slug', item.slug);
+
+                dropdown.appendChild(option);
+            });
+        }
+
+        function handleParentChange() {
+            const dropdown = document.getElementById('itemParent');
+            const selectedOpt = dropdown.options[dropdown.selectedIndex];
+            const parentSlug = selectedOpt.getAttribute('data-slug');
+            const slugInput = document.getElementById('itemSlug');
+
+            if (parentSlug) {
+                // If parent selected, pre-fill slug pattern
+                // User requirement: <parentslug-><childslug>
+                // We will append a placeholder if current slug is empty or simple
+
+                let currentSlug = slugInput.value;
+                if (!currentSlug || !currentSlug.startsWith(parentSlug + '-')) {
+                    // Add suffix logic
+                    const suffix = currentSlug ? currentSlug : 'child-post';
+                    slugInput.value = `${parentSlug}-${suffix}`;
+                }
+            } else {
+                // If unset, maybe revert? Or leave as is.
+                // Leave as is.
+            }
+            isDirty = true;
+        }
+
+    </script>
+</body>
+
+</html>

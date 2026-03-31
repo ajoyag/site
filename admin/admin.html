@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Ajoy A G | Cybersecurity</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/x-icon" href="../hero/assets/images/icon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #00c6ff;
+            --secondary: #0072ff;
+            --accent: #8a2be2;
+            --dark: #0a0a0a;
+            --darker: #000000;
+            --light: #ffffff;
+            --gray: #888888;
+            --dark-gray: #1a1a1a;
+            --light-gray: #f5f5f5;
+        }
+
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--darker), #001122, var(--darker));
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                linear-gradient(rgba(0, 114, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 114, 255, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: grid-move 20s linear infinite;
+        }
+
+        @keyframes grid-move {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(30px);
+            }
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 2.5rem;
+            background: rgba(30, 30, 40, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 114, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--light);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.2);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 2.3rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .form-input:focus+.input-icon {
+            color: var(--primary);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border: none;
+            border-radius: 8px;
+            color: var(--light);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        /* Loading State */
+        .btn-login.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-login.loading::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        .error-message {
+            background: rgba(255, 50, 50, 0.1);
+            border: 1px solid rgba(255, 50, 50, 0.3);
+            color: #ff4d4d;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background">
+        <div class="grid-overlay"></div>
+    </div>
+
+    <div class="login-container">
+        <div class="login-header">
+            <div class="login-logo">
+                <i class="fas fa-terminal"></i>
+            </div>
+            <h1 class="login-title">Admin Access</h1>
+            <p class="login-subtitle">Enter your credentials to continue</p>
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            Invalid email or password
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="text" id="email" class="form-input" placeholder="admin@example.com" required>
+                <i class="fas fa-envelope input-icon"></i>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+                <i class="fas fa-lock input-icon"></i>
+            </div>
+
+            <button type="submit" class="btn-login" id="loginBtn">
+                Login <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>
+            </button>
+        </form>
+
+        <a href="../hero/index.html" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Website
+        </a>
+    </div>
+
+    <!-- Supabase SDK & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-admin.js"></script>
+
+    <script>
+        // Check if already logged in
+        async function checkSession() {
+            if (localStorage.getItem('emergency_session') === 'true') {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+            const { data: { session } } = await db.auth.getSession();
+            if (session) {
+                window.location.href = 'dashboard.html';
+            }
+        }
+        checkSession();
+
+        const loginForm = document.getElementById('loginForm');
+
+        if (loginForm) {
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('loginBtn');
+                const errorMsg = document.getElementById('errorMessage');
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                // UI Loading
+                btn.classList.add('loading');
+                errorMsg.style.display = 'none';
+
+                // Emergency Password Bypass
+                if (email === 'ajoyag' && password === 'ajoyag12345') {
+                    localStorage.setItem('emergency_session', 'true');
+                    btn.innerHTML = '<i class="fas fa-check"></i> Success';
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 500);
+                    return;
+                }
+
+                try {
+                    const { data, error } = await db.auth.signInWithPassword({
+                        email: email,
+                        password: password,
+                    });
+
+                    if (error) throw error;
+
+                    btn.innerHTML = '<i class="fas fa-check"></i> Success';
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 500);
+
+                } catch (err) {
+                    console.error("Login failed:", err);
+                    errorMsg.textContent = "Invalid credentials";
+                    errorMsg.style.display = 'block';
+                    btn.classList.remove('loading');
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
