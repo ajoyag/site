@@ -1462,18 +1462,24 @@
     <section id="services" class="section">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Security Engagements</h2>
-                <p class="section-subtitle">Comprehensive assessment workflows designed to reduce business risk.</p>
+                <h2 class="section-title">Core Areas of Expertise</h2>
+                <p class="section-subtitle">Building secure enterprise systems across cloud, identity, applications, governance, and security operations.</p>
             </div>
 
             <div class="tab-layout gs-up">
                 <div class="tab-menu">
                     <button class="tab-btn active" onclick="setService('pt', this)"><i
-                            class="fas fa-search-location"></i> Product & App Security</button>
-                    <button class="tab-btn" onclick="setService('rt', this)"><i class="fas fa-user-secret"></i>
-                        Adversary Simulation</button>
-                    <button class="tab-btn" onclick="setService('cloud', this)"><i class="fas fa-cloud-shield"></i>
-                        Cloud & Infra Audit</button>
+                            class="fas fa-search-location"></i> Security Engineering</button>
+                    <button class="tab-btn" onclick="setService('rt', this)"><i 
+                            class="fas fa-user-secret"></i> Application & Product</button>
+                    <button class="tab-btn" onclick="setService('cloud', this)"><i 
+                            class="fas fa-cloud-shield"></i> Cloud & Identity</button>
+                    <button class="tab-btn" onclick="setService('cloud', this)"><i 
+                            class="fas fa-cloud-shield"></i> Detection Engineering & Automation</button>
+                    <button class="tab-btn" onclick="setService('cloud', this)"><i 
+                            class="fas fa-cloud-shield"></i> Governance, Risk & Compliance</button>
+                    <button class="tab-btn" onclick="setService('cloud', this)"><i 
+                            class="fas fa-cloud-shield"></i> Vulnerability Management</button>
                 </div>
                 <div class="tab-content-panel" id="service-panel">
                     <!-- Default Content for PT -->
@@ -1740,30 +1746,59 @@
 
         // --- 2. Services Tab Logic ---
         // --- 2. Services Data & Logic ---
-        const sData = {
-            pt: {
-                t: "Product Penetration Testing",
-                d: "A rigorous, deep-dive assessment of your SaaS platforms, mobile apps, and APIs before launch or compliance audits.",
-                scope: "External Web Apps, REST/GraphQL APIs, Mobile SDKs.",
-                proc: "Recon > Logic Testing > Exploitation > Reporting.",
-                del: "Executive Summary, Technical Risk Log, Remediation Guide.",
-                i: "fa-search-location"
+       const sData = {
+            se: {
+                t: "Security Engineering",
+                d: "Designing and implementing enterprise security solutions across cloud, endpoint, identity, and application environments through automation, detection engineering, and Microsoft security technologies.",
+                scope: "Enterprise Security Architecture, Endpoint Protection, Identity Security.",
+                proc: "Design > Implement > Monitor > Improve.",
+                del: "Security Architecture, Engineering Solutions, Operational Controls.",
+                i: "fa-shield-halved"
             },
-            rt: {
-                t: "Adversary Simulation (Red Team)",
-                d: "A full-scope attack simulation targeting your people, processes, and technology to test detection and response capabilities.",
-                scope: "Employee Phishing, Internal Network, Endpoint Detection.",
-                proc: "OSINT > Initial Access > Lateral Movement > Data Exfil.",
-                del: "Attack Path Map, Detection Gap Analysis, Debrief Workshop.",
-                i: "fa-user-secret"
+        
+            app: {
+                t: "Application Security",
+                d: "Improving enterprise applications through secure SDLC, threat modeling, vulnerability assessments, API security testing, and security-focused design reviews.",
+                scope: "Web Applications, APIs, Secure SDLC, Threat Modeling.",
+                proc: "Threat Modeling > Security Testing > Risk Analysis > Remediation.",
+                del: "Security Assessment, Threat Model, Remediation Recommendations.",
+                i: "fa-code"
             },
+        
             cloud: {
-                t: "Cloud & Infrastructure Audit",
-                d: "Comprehensive review of your AWS/Azure/GCP environment and internal networks to prevent data leaks and misconfigurations.",
-                scope: "AWS/Azure Configs, Docker/K8s Clusters, CI/CD Pipelines.",
-                proc: "Config Review > IAM Analysis > Container Breakout Tests.",
-                del: "Compliance Report, Hardening Checklist, Architecture Review.",
-                i: "fa-cloud-shield"
+                t: "Cloud & Identity",
+                d: "Securing cloud infrastructure and enterprise identities using Zero Trust principles, identity governance, endpoint compliance, and cloud security best practices.",
+                scope: "Azure, Entra ID, Intune, Identity & Access Management.",
+                proc: "Identity Review > Access Validation > Security Hardening > Continuous Monitoring.",
+                del: "Identity Review, Security Baseline, Cloud Hardening Report.",
+                i: "fa-cloud"
+            },
+        
+            auto: {
+                t: "Automation",
+                d: "Developing PowerShell and Python automation to improve vulnerability remediation, telemetry analysis, endpoint compliance, and enterprise security operations.",
+                scope: "Security Automation, Endpoint Management, Detection Engineering.",
+                proc: "Automate > Validate > Deploy > Monitor.",
+                del: "Automation Scripts, Operational Workflows, Security Integrations.",
+                i: "fa-gears"
+            },
+        
+            grc: {
+                t: "Governance & Risk",
+                d: "Supporting enterprise governance through security policies, vendor risk assessments, compliance implementation, and risk management aligned with industry standards.",
+                scope: "Vendor Security, Risk Assessment, Compliance, Security Governance.",
+                proc: "Assess > Prioritize > Mitigate > Govern.",
+                del: "Risk Assessment, Compliance Documentation, Governance Framework.",
+                i: "fa-scale-balanced"
+            },
+        
+            vm: {
+                t: "Vulnerability Management",
+                d: "Managing enterprise vulnerabilities through continuous assessment, remediation tracking, exposure reduction, and secure score improvements.",
+                scope: "Microsoft Defender VM, Qualys, Secure Score, Exposure Management.",
+                proc: "Discover > Prioritize > Remediate > Verify.",
+                del: "Vulnerability Reports, Remediation Tracking, Exposure Analysis.",
+                i: "fa-bug"
             }
         };
 
